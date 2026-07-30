@@ -3,7 +3,6 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
-import '../core/theme/theme_provider.dart';
 import '../providers/settings_provider.dart';
 import 'login_screen.dart';
 import 'order_screen.dart';
@@ -11,6 +10,9 @@ import 'profile/edit_profile_screen.dart';
 import 'settings/notification_preferences_screen.dart';
 import 'settings/account_privacy_screen.dart';
 import 'share/share_app_screen.dart';
+import 'orders/order_list_screen.dart';
+import 'wallet/wallet_screen.dart';
+import 'support/support_home_screen.dart';
 import 'about/about_us_screen.dart';
 
 const Color kGreen = Color(0xFF0C831F);
@@ -43,7 +45,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
-    final themeProvider = context.watch<ThemeProvider>();
     final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
@@ -59,7 +60,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 16),
               _buildQuickActions(scheme),
               const SizedBox(height: 16),
-              _buildSettingsCard(settings, themeProvider, scheme),
+              _buildSettingsCard(settings, scheme),
               const SizedBox(height: 20),
               _buildSectionLabel('Your information', scheme),
               _buildSectionCard(scheme, [
@@ -77,8 +78,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 20),
               _buildSectionLabel('Payment and coupons', scheme),
               _buildSectionCard(scheme, [
-                _tile(Icons.account_balance_wallet_outlined, 'GoFresh Money',
-                    () => _showComingSoon('GoFresh Money'), scheme),
+                _tile(Icons.account_balance_wallet_outlined, 'GoFresh Money', () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const WalletScreen()));
+                }, scheme),
                 _tile(Icons.credit_card_outlined, 'Payment settings',
                     () => _showComingSoon('Payment settings'), scheme),
                 _tile(Icons.redeem_outlined, 'Claim gift card',
@@ -233,18 +236,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Expanded(
             child: _quickAction(Icons.shopping_bag_outlined, 'Your orders', () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const OrderScreen()));
+                  MaterialPageRoute(builder: (_) => const OrderListScreen()));
             }, scheme),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: _quickAction(Icons.account_balance_wallet_outlined,
-                'GoFresh Money', () => _showComingSoon('GoFresh Money'), scheme),
+                'GoFresh Money', () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const WalletScreen()));
+            }, scheme),
           ),
           const SizedBox(width: 10),
           Expanded(
-            child: _quickAction(Icons.headset_mic_outlined, 'Need help?',
-                () => _showComingSoon('Help & Support'), scheme),
+            child: _quickAction(Icons.headset_mic_outlined, 'Need help?', () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const SupportHomeScreen()));
+            }, scheme),
           ),
         ],
       ),
@@ -280,8 +288,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ---------- Settings ----------
 
-  Widget _buildSettingsCard(
-      SettingsProvider settings, ThemeProvider themeProvider, ColorScheme scheme) {
+  Widget _buildSettingsCard(SettingsProvider settings, ColorScheme scheme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -291,32 +298,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         child: Column(
           children: [
-            ListTile(
-              leading: Icon(Icons.wb_sunny_outlined, color: scheme.onSurface),
-              title: Text('Appearance',
-                  style: GoogleFonts.poppins(
-                      fontSize: 14, fontWeight: FontWeight.w600, color: scheme.onSurface)),
-              trailing: InkWell(
-                onTap: () {
-                  final next = themeProvider.mode == ThemeMode.light
-                      ? ThemeMode.dark
-                      : themeProvider.mode == ThemeMode.dark
-                          ? ThemeMode.system
-                          : ThemeMode.light;
-                  themeProvider.setMode(next);
-                },
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(themeProvider.label.toUpperCase(),
-                        style: GoogleFonts.poppins(
-                            fontSize: 13, fontWeight: FontWeight.w700, color: kGreen)),
-                    const Icon(Icons.keyboard_arrow_down, color: kGreen),
-                  ],
-                ),
-              ),
-            ),
-            Divider(height: 1, indent: 16, endIndent: 16, color: scheme.outlineVariant),
             SwitchListTile(
               value: settings.hideSensitive,
               activeColor: kGreen,

@@ -1,9 +1,17 @@
 ﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
+import '../core/theme/theme_provider.dart';
+import '../providers/settings_provider.dart';
 import 'login_screen.dart';
 import 'order_screen.dart';
+import 'profile/edit_profile_screen.dart';
+import 'settings/notification_preferences_screen.dart';
+import 'settings/account_privacy_screen.dart';
+import 'share/share_app_screen.dart';
+import 'about/about_us_screen.dart';
 
 const Color kGreen = Color(0xFF0C831F);
 const Color kBg = Color(0xFFF5F5F7);
@@ -18,8 +26,6 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   String _name = '';
   String _phone = '';
-  bool _hideSensitive = false;
-  String _appearance = 'Light';
 
   @override
   void initState() {
@@ -32,12 +38,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     setState(() {
       _name = prefs.getString('user_name') ?? 'User';
       _phone = prefs.getString('user_phone') ?? '';
-      _hideSensitive = prefs.getBool('hide_sensitive') ?? false;
     });
   }
 
   @override
   Widget build(BuildContext context) {
+    final settings = context.watch<SettingsProvider>();
+    final themeProvider = context.watch<ThemeProvider>();
+
     return Scaffold(
       backgroundColor: kBg,
       body: SafeArea(
@@ -51,7 +59,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 16),
               _buildQuickActions(),
               const SizedBox(height: 16),
-              _buildSettingsCard(),
+              _buildSettingsCard(settings, themeProvider),
               const SizedBox(height: 20),
               _buildSectionLabel('Your information'),
               _buildSectionCard([
@@ -82,14 +90,27 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 20),
               _buildSectionLabel('Other information'),
               _buildSectionCard([
-                _tile(Icons.ios_share_outlined, 'Share the app',
-                    () => _showComingSoon('Share app')),
-                _tile(Icons.info_outline, 'About us', _showAboutUs),
-                _tile(Icons.lock_outline, 'Account privacy',
-                    () => _showComingSoon('Account privacy')),
+                _tile(Icons.ios_share_outlined, 'Share the app', () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const ShareAppScreen()));
+                }),
+                _tile(Icons.info_outline, 'About us', () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const AboutUsScreen()));
+                }),
+                _tile(Icons.lock_outline, 'Account privacy', () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const AccountPrivacyScreen()));
+                }),
                 _tile(Icons.notifications_none_outlined,
-                    'Notification preferences',
-                    () => _showComingSoon('Notification preferences')),
+                    'Notification preferences', () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const NotificationPreferencesScreen()));
+                }),
                 _tile(Icons.logout, 'Log out', _confirmLogout, isLast: true),
               ]),
               const SizedBox(height: 30),
@@ -133,7 +154,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           const SizedBox(height: 12),
           GestureDetector(
-            onTap: _showEditProfile,
+            onTap: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const EditProfileScreen()));
+            },
             child: CircleAvatar(
               radius: 42,
               backgroundColor: Colors.white,
@@ -254,7 +278,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ---------- Settings ----------
 
-  Widget _buildSettingsCard() {
+  Widget _buildSettingsCard(SettingsProvider settings, ThemeProvider themeProvider) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
@@ -270,18 +294,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
               trailing: InkWell(
                 onTap: () {
-                  setState(() {
-                    _appearance = _appearance == 'Light'
-                        ? 'Dark'
-                        : _appearance == 'Dark'
-                            ? 'System'
-                            : 'Light';
-                  });
+                  final next = themeProvider.mode == ThemeMode.light
+                      ? ThemeMode.dark
+                      : themeProvider.mode == ThemeMode.dark
+                          ? ThemeMode.system
+                          : ThemeMode.light;
+                  themeProvider.setMode(next);
                 },
                 child: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
-                    Text(_appearance.toUpperCase(),
+                    Text(themeProvider.label.toUpperCase(),
                         style: GoogleFonts.poppins(
                             fontSize: 13, fontWeight: FontWeight.w700, color: kGreen)),
                     const Icon(Icons.keyboard_arrow_down, color: kGreen),
@@ -291,12 +314,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
             const Divider(height: 1, indent: 16, endIndent: 16),
             SwitchListTile(
-              value: _hideSensitive,
+              value: settings.hideSensitive,
               activeColor: kGreen,
-              onChanged: (val) async {
-                setState(() => _hideSensitive = val);
-                final prefs = await SharedPreferences.getInstance();
-                await prefs.setBool('hide_sensitive', val);
+              onChanged: (val) {
+                context.read<SettingsProvider>().setHideSensitive(val);
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(val
+                        ? 'Sensitive items hidden'
+                        : 'Sensitive items visible'),
+                    backgroundColor: kGreen,
+                    behavior: SnackBarBehavior.floating,
+                  ),
+                );
               },
               secondary: const Icon(Icons.visibility_off_outlined, color: Colors.black87),
               title: Text('Hide sensitive items',
@@ -364,15 +394,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  void _showAboutUs() {
-    showAboutDialog(
-      context: context,
-      applicationName: 'GoFresh',
-      applicationVersion: '1.0.0',
-      applicationLegalese: '© 2026 GoFresh. All rights reserved.',
-    );
-  }
-
   void _confirmLogout() {
     showDialog(
       context: context,
@@ -390,6 +411,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 final prefs = await SharedPreferences.getInstance();
                 await prefs.clear();
                 if (context.mounted) {
+                  context.read<SettingsProvider>().clear();
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (_) => const LoginScreen()),
@@ -437,53 +459,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
                         content: Text('Address saved', style: GoogleFonts.poppins()),
-                        backgroundColor: kGreen,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: kGreen,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-              child: Text('Save', style: GoogleFonts.poppins(color: Colors.white))),
-        ],
-      ),
-    );
-  }
-
-  void _showEditProfile() {
-    final nameController = TextEditingController(text: _name);
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Edit profile', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-        content: TextField(
-          controller: nameController,
-          decoration: InputDecoration(
-            hintText: 'Enter your name',
-            hintStyle: GoogleFonts.poppins(color: Colors.grey),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          style: GoogleFonts.poppins(),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Cancel', style: GoogleFonts.poppins(color: Colors.grey))),
-          ElevatedButton(
-              onPressed: () async {
-                if (nameController.text.isNotEmpty) {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.setString('user_name', nameController.text);
-                  setState(() => _name = nameController.text);
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Profile updated', style: GoogleFonts.poppins()),
                         backgroundColor: kGreen,
                         behavior: SnackBarBehavior.floating,
                       ),

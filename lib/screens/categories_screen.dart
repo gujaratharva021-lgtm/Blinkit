@@ -1,8 +1,10 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../constants/asset_constants.dart';
+import '../models/category.dart' as models;
 import 'product_detail_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
@@ -15,23 +17,23 @@ class CategoriesScreen extends StatefulWidget {
 class _CategoriesScreenState extends State<CategoriesScreen> {
   int _selectedIndex = 0;
 
-  final List<Map<String, dynamic>> _categories = [
-    {'name': 'Fruits', 'icon': Icons.free_breakfast, 'color': Color(0xFFFF9800)},
-    {'name': 'Beverages', 'icon': Icons.local_drink, 'color': Color(0xFF0C831F)},
-    {'name': 'Bakery', 'icon': Icons.bakery_dining, 'color': Color(0xFF795548)},
-    {'name': 'Biscuits', 'icon': Icons.cookie, 'color': Color(0xFFFFB300)},
-    {'name': 'Namkeen', 'icon': Icons.rice_bowl, 'color': Color(0xFFFF7043)},
-    {'name': 'Wafers', 'icon': Icons.lunch_dining, 'color': Color(0xFFEF5350)},
-    {'name': 'Ketchup', 'icon': Icons.set_meal, 'color': Color(0xFFE53935)},
-    {'name': 'Shampoo', 'icon': Icons.shower, 'color': Color(0xFF26C6DA)},
-    {'name': 'Soap', 'icon': Icons.soap, 'color': Color(0xFF66BB6A)},
-    {'name': 'Personal Care', 'icon': Icons.spa, 'color': Color(0xFFE91E63)},
-    {'name': 'Pickle', 'icon': Icons.emoji_food_beverage, 'color': Color(0xFF8BC34A)},
-    {'name': 'Puja Items', 'icon': Icons.temple_hindu, 'color': Color(0xFFFF8F00)},
-    {'name': 'Toys', 'icon': Icons.toys, 'color': Color(0xFF7E57C2)},
-    {'name': 'Clothes', 'icon': Icons.checkroom, 'color': Color(0xFF26A69A)},
-    {'name': 'Ice Creams', 'icon': Icons.icecream, 'color': Color(0xFFEC407A)},
-    {'name': 'Chocolate', 'icon': Icons.cake, 'color': Color(0xFF6D4C41)},
+  final List<models.Category> _categories = const [
+    models.Category(name: 'Fruits', image: AssetConstants.fruits),
+    models.Category(name: 'Beverages', image: AssetConstants.beverages),
+    models.Category(name: 'Bakery', image: AssetConstants.bakery),
+    models.Category(name: 'Biscuits', image: AssetConstants.biscuits),
+    models.Category(name: 'Namkeen', image: AssetConstants.namkeen),
+    models.Category(name: 'Wafers', image: AssetConstants.wafers),
+    models.Category(name: 'Ketchup', image: AssetConstants.ketchup),
+    models.Category(name: 'Shampoo', image: AssetConstants.shampoo),
+    models.Category(name: 'Soap', image: AssetConstants.soap),
+    models.Category(name: 'Personal Care', image: AssetConstants.personalCare),
+    models.Category(name: 'Pickle', image: AssetConstants.pickle),
+    models.Category(name: 'Puja Items', image: AssetConstants.pujaItems),
+    models.Category(name: 'Toys', image: AssetConstants.toys),
+    models.Category(name: 'Clothes', image: AssetConstants.clothes),
+    models.Category(name: 'Ice Creams', image: AssetConstants.iceCreams),
+    models.Category(name: 'Chocolate', image: AssetConstants.chocolate),
   ];
 
   final Map<String, List<Map<String, dynamic>>> _categoryProducts = {
@@ -489,7 +491,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final selectedCategory = _categories[_selectedIndex]['name'] as String;
+    final selectedCategory = _categories[_selectedIndex].name;
     final products = _categoryProducts[selectedCategory] ?? [];
     final cart = context.watch<CartProvider>();
 
@@ -515,7 +517,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                 return GestureDetector(
                   onTap: () => setState(() => _selectedIndex = index),
                   child: Container(
-                    padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 8),
+                    padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 8),
                     decoration: BoxDecoration(
                       color: isSelected
                           ? const Color(0xFF0C831F).withOpacity(0.1)
@@ -529,11 +531,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     ),
                     child: Column(
                       children: [
-                        Icon(cat['icon'],
-                            color: isSelected ? const Color(0xFF0C831F) : Colors.grey,
-                            size: 26),
+                        Container(
+                          width: 48,
+                          height: 48,
+                          padding: const EdgeInsets.all(6),
+                          decoration: BoxDecoration(
+                            color: isSelected
+                                ? const Color(0xFF0C831F).withOpacity(0.12)
+                                : const Color(0xFFF5F5F5),
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: ClipRRect(
+                            borderRadius: BorderRadius.circular(10),
+                            child: Image.asset(cat.image, fit: BoxFit.cover),
+                          ),
+                        ),
                         const SizedBox(height: 4),
-                        Text(cat['name'],
+                        Text(cat.name,
                             style: GoogleFonts.poppins(
                                 fontSize: 10,
                                 fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
@@ -606,7 +620,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('â‚¹${product['price']}',
+                                Text('₹${product['price']}',
                                     style: GoogleFonts.poppins(
                                         fontSize: 13, fontWeight: FontWeight.bold,
                                         color: const Color(0xFF0C831F))),

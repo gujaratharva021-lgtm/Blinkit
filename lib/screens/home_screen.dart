@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -578,29 +578,29 @@ class _HomeScreenState extends State<HomeScreen> {
             // New Blinkit/Instamart-style category navigation
             const HomeCategorySections(),
 
-            // Product Sections â€” Offers 3 sections ke baad
-            _buildProductSection('ðŸŽ Fresh Fruits', 'Fruits'),
-            _buildProductSection('ðŸ¦ Ice Creams', 'Ice Creams'),
-            _buildProductSection('ðŸ« Chocolate', 'Chocolate'),
+            // Product Sections — Offers 3 sections ke baad
+            _buildProductSection('🍎 Fresh Fruits', 'Fruits'),
+            _buildProductSection('🍦 Ice Creams', 'Ice Creams'),
+            _buildProductSection('🍫 Chocolate', 'Chocolate'),
 
-            // âœ… Coupons & Offers â€” 3 sections ke baad
+            // ✅ Coupons & Offers — 3 sections ke baad
             _buildOffersSection(),
 
-            _buildProductSection('ðŸŸ Snacks', 'Snacks'),
-            _buildProductSection('ðŸ¥¤ Beverages', 'Beverages'),
-            _buildProductSection('ðŸ¥ Bakery', 'Bakery'),
-            _buildProductSection('ðŸª Biscuits', 'Biscuits'),
-            _buildProductSection('ðŸ¥œ Namkeen', 'Namkeen'),
-            _buildProductSection('ðŸŸ Wafers', 'Wafers'),
-            _buildProductSection('ðŸ¥¤ Cold Drinks', 'Cold Drinks'),
-            _buildProductSection('ðŸ… Ketchup', 'Ketchup'),
-            _buildProductSection('ðŸ§´ Shampoo', 'Shampoo'),
-            _buildProductSection('ðŸ§¼ Soap', 'Soap'),
-            _buildProductSection('ðŸ’„ Personal Care', 'Personal Care'),
-            _buildProductSection('ðŸ¥’ Pickle', 'Pickle'),
-            _buildProductSection('ðŸª” Puja Items', 'Puja Items'),
-            _buildProductSection('ðŸ§¸ Toys', 'Toys'),
-            _buildProductSection('ðŸ‘• Clothes', 'Clothes'),
+            _buildProductSection('🍟 Snacks', 'Snacks'),
+            _buildProductSection('🥤 Beverages', 'Beverages'),
+            _buildProductSection('🥐 Bakery', 'Bakery'),
+            _buildProductSection('🍪 Biscuits', 'Biscuits'),
+            _buildProductSection('🥜 Namkeen', 'Namkeen'),
+            _buildProductSection('🍟 Wafers', 'Wafers'),
+            _buildProductSection('🥤 Cold Drinks', 'Cold Drinks'),
+            _buildProductSection('🍅 Ketchup', 'Ketchup'),
+            _buildProductSection('🧴 Shampoo', 'Shampoo'),
+            _buildProductSection('🧼 Soap', 'Soap'),
+            _buildProductSection('💄 Personal Care', 'Personal Care'),
+            _buildProductSection('🥒 Pickle', 'Pickle'),
+            _buildProductSection('🪔 Puja Items', 'Puja Items'),
+            _buildProductSection('🧸 Toys', 'Toys'),
+            _buildProductSection('👕 Clothes', 'Clothes'),
             const SizedBox(height: 80),
           ],
         ),
@@ -655,7 +655,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('â‚¹${cart.cartTotal}',
+                        Text('₹${cart.cartTotal}',
                             style: GoogleFonts.poppins(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -686,20 +686,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // âœ… Coupons & Offers Section
+  // ✅ Coupons & Offers Section
   Widget _buildOffersSection() {
     final List<Map<String, dynamic>> offers = [
-      {'amount': 'â‚¹50 OFF', 'min': 'above â‚¹599', 'color': const Color(0xFF4CAF50)},
-      {'amount': 'â‚¹100 OFF', 'min': 'above â‚¹1199', 'color': const Color(0xFF4CAF50)},
-      {'amount': 'â‚¹150 OFF', 'min': 'above â‚¹1799', 'color': const Color(0xFF4CAF50)},
-      {'amount': 'â‚¹200 OFF', 'min': 'above â‚¹2399', 'color': const Color(0xFF4CAF50)},
+      {'amount': '₹50 OFF', 'min': 'above ₹599', 'color': const Color(0xFF4CAF50)},
+      {'amount': '₹100 OFF', 'min': 'above ₹1199', 'color': const Color(0xFF4CAF50)},
+      {'amount': '₹150 OFF', 'min': 'above ₹1799', 'color': const Color(0xFF4CAF50)},
+      {'amount': '₹200 OFF', 'min': 'above ₹2399', 'color': const Color(0xFF4CAF50)},
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-          child: Text('ðŸ·ï¸ Coupons & Offers',
+          child: Text('🏷️ Coupons & Offers',
               style: GoogleFonts.poppins(
                   fontSize: 16, fontWeight: FontWeight.bold)),
         ),
@@ -821,7 +821,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('â‚¹${product['price']}',
+                                Text('₹${product['price']}',
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,

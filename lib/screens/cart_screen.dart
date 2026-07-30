@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
@@ -113,7 +113,7 @@ class _CartScreenState extends State<CartScreen> {
                     if (!unlocked) ...[
                       const SizedBox(height: 4),
                       Text(
-                        'Add items worth â‚¹${remaining.toStringAsFixed(0)} more to unlock FREE delivery',
+                        'Add items worth ₹${remaining.toStringAsFixed(0)} more to unlock FREE delivery',
                         style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[700]),
                       ),
                     ],
@@ -140,7 +140,7 @@ class _CartScreenState extends State<CartScreen> {
                         ],
                       ),
                     ),
-                    Text('â‚¹${item.price}', style: GoogleFonts.poppins(
+                    Text('₹${item.price}', style: GoogleFonts.poppins(
                         fontSize: 14, fontWeight: FontWeight.bold)),
                     const SizedBox(width: 12),
                     Container(
@@ -178,11 +178,11 @@ class _CartScreenState extends State<CartScreen> {
               const Divider(height: 24),
               Text('Bill details', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14)),
               const SizedBox(height: 10),
-              _billRow('Item Total', 'â‚¹${cart.cartTotal}'),
-              _billRow('Delivery Fee', unlocked ? 'FREE' : 'â‚¹$deliveryFee'),
-              _billRow('Platform Fee', 'â‚¹$platformFee'),
+              _billRow('Item Total', '₹${cart.cartTotal}'),
+              _billRow('Delivery Fee', unlocked ? 'FREE' : '₹$deliveryFee'),
+              _billRow('Platform Fee', '₹$platformFee'),
               const Divider(),
-              _billRow('Grand Total', 'â‚¹${unlocked ? cart.cartTotal + platformFee : total}', isBold: true),
+              _billRow('Grand Total', '₹${unlocked ? cart.cartTotal + platformFee : total}', isBold: true),
             ],
           ),
           Align(
@@ -219,7 +219,7 @@ class _CartScreenState extends State<CartScreen> {
                           : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('â‚¹${unlocked ? cart.cartTotal + platformFee : total}',
+                          Text('₹${unlocked ? cart.cartTotal + platformFee : total}',
                               style: GoogleFonts.poppins(
                                   color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
                           Row(

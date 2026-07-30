@@ -14,7 +14,6 @@ import 'share/share_app_screen.dart';
 import 'about/about_us_screen.dart';
 
 const Color kGreen = Color(0xFF0C831F);
-const Color kBg = Color(0xFFF5F5F7);
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -45,73 +44,74 @@ class _ProfileScreenState extends State<ProfileScreen> {
   Widget build(BuildContext context) {
     final settings = context.watch<SettingsProvider>();
     final themeProvider = context.watch<ThemeProvider>();
+    final scheme = Theme.of(context).colorScheme;
 
     return Scaffold(
-      backgroundColor: kBg,
+      backgroundColor: scheme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              _buildHeader(),
+              _buildHeader(scheme),
               const SizedBox(height: 16),
-              _buildBirthdayBanner(),
+              _buildBirthdayBanner(scheme),
               const SizedBox(height: 16),
-              _buildQuickActions(),
+              _buildQuickActions(scheme),
               const SizedBox(height: 16),
-              _buildSettingsCard(settings, themeProvider),
+              _buildSettingsCard(settings, themeProvider, scheme),
               const SizedBox(height: 20),
-              _buildSectionLabel('Your information'),
-              _buildSectionCard([
-                _tile(Icons.menu_book_outlined, 'Address book', _showAddressDialog),
+              _buildSectionLabel('Your information', scheme),
+              _buildSectionCard(scheme, [
+                _tile(Icons.menu_book_outlined, 'Address book', _showAddressDialog, scheme),
                 _tile(Icons.favorite_border, 'Your wishlist',
-                    () => _showComingSoon('Wishlist')),
+                    () => _showComingSoon('Wishlist'), scheme),
                 _tile(Icons.description_outlined, 'GST details',
-                    () => _showComingSoon('GST details')),
+                    () => _showComingSoon('GST details'), scheme),
                 _tile(Icons.card_giftcard_outlined, 'E-gift cards',
-                    () => _showComingSoon('E-gift cards')),
+                    () => _showComingSoon('E-gift cards'), scheme),
                 _tile(Icons.receipt_long_outlined, 'Your prescriptions',
-                    () => _showComingSoon('Prescriptions'),
+                    () => _showComingSoon('Prescriptions'), scheme,
                     isLast: true),
               ]),
               const SizedBox(height: 20),
-              _buildSectionLabel('Payment and coupons'),
-              _buildSectionCard([
+              _buildSectionLabel('Payment and coupons', scheme),
+              _buildSectionCard(scheme, [
                 _tile(Icons.account_balance_wallet_outlined, 'GoFresh Money',
-                    () => _showComingSoon('GoFresh Money')),
+                    () => _showComingSoon('GoFresh Money'), scheme),
                 _tile(Icons.credit_card_outlined, 'Payment settings',
-                    () => _showComingSoon('Payment settings')),
+                    () => _showComingSoon('Payment settings'), scheme),
                 _tile(Icons.redeem_outlined, 'Claim gift card',
-                    () => _showComingSoon('Claim gift card')),
+                    () => _showComingSoon('Claim gift card'), scheme),
                 _tile(Icons.card_membership_outlined, 'Your collected rewards',
-                    () => _showComingSoon('Rewards'),
+                    () => _showComingSoon('Rewards'), scheme,
                     isLast: true),
               ]),
               const SizedBox(height: 20),
-              _buildSectionLabel('Other information'),
-              _buildSectionCard([
+              _buildSectionLabel('Other information', scheme),
+              _buildSectionCard(scheme, [
                 _tile(Icons.ios_share_outlined, 'Share the app', () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const ShareAppScreen()));
-                }),
+                }, scheme),
                 _tile(Icons.info_outline, 'About us', () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const AboutUsScreen()));
-                }),
+                }, scheme),
                 _tile(Icons.lock_outline, 'Account privacy', () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (_) => const AccountPrivacyScreen()));
-                }),
+                }, scheme),
                 _tile(Icons.notifications_none_outlined,
                     'Notification preferences', () {
                   Navigator.push(
                       context,
                       MaterialPageRoute(
                           builder: (_) => const NotificationPreferencesScreen()));
-                }),
-                _tile(Icons.logout, 'Log out', _confirmLogout, isLast: true),
+                }, scheme),
+                _tile(Icons.logout, 'Log out', _confirmLogout, scheme, isLast: true),
               ]),
               const SizedBox(height: 30),
             ],
@@ -123,15 +123,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ---------- Header ----------
 
-  Widget _buildHeader() {
+  Widget _buildHeader(ColorScheme scheme) {
     return Container(
       width: double.infinity,
       padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topCenter,
           end: Alignment.bottomCenter,
-          colors: [Color(0xFFE3F6E4), kBg],
+          colors: [scheme.primaryContainer, scheme.surface],
         ),
       ),
       child: Column(
@@ -143,11 +143,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 child: Container(
                   width: 40,
                   height: 40,
-                  decoration: const BoxDecoration(
-                    color: Colors.white,
+                  decoration: BoxDecoration(
+                    color: scheme.surfaceContainerHighest,
                     shape: BoxShape.circle,
                   ),
-                  child: const Icon(Icons.arrow_back, color: Colors.black87),
+                  child: Icon(Icons.arrow_back, color: scheme.onSurface),
                 ),
               ),
             ],
@@ -160,7 +160,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             },
             child: CircleAvatar(
               radius: 42,
-              backgroundColor: Colors.white,
+              backgroundColor: scheme.surfaceContainerHighest,
               child: Text(
                 _name.isNotEmpty ? _name[0].toUpperCase() : 'U',
                 style: GoogleFonts.poppins(
@@ -171,24 +171,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 12),
           Text('Your account',
               style: GoogleFonts.poppins(
-                  fontSize: 20, fontWeight: FontWeight.bold, color: Colors.black87)),
+                  fontSize: 20, fontWeight: FontWeight.bold, color: scheme.onSurface)),
           if (_phone.isNotEmpty) ...[
             const SizedBox(height: 4),
             Text('+91 $_phone',
-                style: GoogleFonts.poppins(fontSize: 13, color: Colors.black54)),
+                style: GoogleFonts.poppins(
+                    fontSize: 13, color: scheme.onSurface.withOpacity(0.6))),
           ],
         ],
       ),
     );
   }
 
-  Widget _buildBirthdayBanner() {
+  Widget _buildBirthdayBanner(ColorScheme scheme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
-          color: const Color(0xFFEFFAEF),
+          color: scheme.primaryContainer,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Row(
@@ -199,7 +200,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 children: [
                   Text('Add your birthday',
                       style: GoogleFonts.poppins(
-                          fontSize: 15, fontWeight: FontWeight.bold, color: Colors.black87)),
+                          fontSize: 15, fontWeight: FontWeight.bold, color: scheme.onSurface)),
                   const SizedBox(height: 4),
                   GestureDetector(
                     onTap: () => _showComingSoon('Birthday'),
@@ -224,7 +225,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ---------- Quick actions ----------
 
-  Widget _buildQuickActions() {
+  Widget _buildQuickActions(ColorScheme scheme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
@@ -233,31 +234,31 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: _quickAction(Icons.shopping_bag_outlined, 'Your orders', () {
               Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const OrderScreen()));
-            }),
+            }, scheme),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: _quickAction(Icons.account_balance_wallet_outlined,
-                'GoFresh Money', () => _showComingSoon('GoFresh Money')),
+                'GoFresh Money', () => _showComingSoon('GoFresh Money'), scheme),
           ),
           const SizedBox(width: 10),
           Expanded(
             child: _quickAction(Icons.headset_mic_outlined, 'Need help?',
-                () => _showComingSoon('Help & Support')),
+                () => _showComingSoon('Help & Support'), scheme),
           ),
         ],
       ),
     );
   }
 
-  Widget _quickAction(IconData icon, String label, VoidCallback onTap) {
+  Widget _quickAction(IconData icon, String label, VoidCallback onTap, ColorScheme scheme) {
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(20),
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 18, horizontal: 8),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(20),
           boxShadow: [
             BoxShadow(color: Colors.black.withOpacity(0.04), blurRadius: 8),
@@ -269,7 +270,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
             const SizedBox(height: 8),
             Text(label,
                 textAlign: TextAlign.center,
-                style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600)),
+                style: GoogleFonts.poppins(
+                    fontSize: 12, fontWeight: FontWeight.w600, color: scheme.onSurface)),
           ],
         ),
       ),
@@ -278,20 +280,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ---------- Settings ----------
 
-  Widget _buildSettingsCard(SettingsProvider settings, ThemeProvider themeProvider) {
+  Widget _buildSettingsCard(
+      SettingsProvider settings, ThemeProvider themeProvider, ColorScheme scheme) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(
           children: [
             ListTile(
-              leading: const Icon(Icons.wb_sunny_outlined, color: Colors.black87),
+              leading: Icon(Icons.wb_sunny_outlined, color: scheme.onSurface),
               title: Text('Appearance',
-                  style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
+                  style: GoogleFonts.poppins(
+                      fontSize: 14, fontWeight: FontWeight.w600, color: scheme.onSurface)),
               trailing: InkWell(
                 onTap: () {
                   final next = themeProvider.mode == ThemeMode.light
@@ -312,7 +316,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               ),
             ),
-            const Divider(height: 1, indent: 16, endIndent: 16),
+            Divider(height: 1, indent: 16, endIndent: 16, color: scheme.outlineVariant),
             SwitchListTile(
               value: settings.hideSensitive,
               activeColor: kGreen,
@@ -328,11 +332,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                 );
               },
-              secondary: const Icon(Icons.visibility_off_outlined, color: Colors.black87),
+              secondary: Icon(Icons.visibility_off_outlined, color: scheme.onSurface),
               title: Text('Hide sensitive items',
-                  style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
+                  style: GoogleFonts.poppins(
+                      fontSize: 14, fontWeight: FontWeight.w600, color: scheme.onSurface)),
               subtitle: Text('Hide sensitive products from recommendations and search',
-                  style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey)),
+                  style: GoogleFonts.poppins(
+                      fontSize: 11, color: scheme.onSurface.withOpacity(0.6))),
             ),
           ],
         ),
@@ -342,23 +348,24 @@ class _ProfileScreenState extends State<ProfileScreen> {
 
   // ---------- Generic section helpers ----------
 
-  Widget _buildSectionLabel(String title) {
+  Widget _buildSectionLabel(String title, ColorScheme scheme) {
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
       child: Align(
         alignment: Alignment.centerLeft,
         child: Text(title,
-            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
+            style: GoogleFonts.poppins(
+                fontSize: 16, fontWeight: FontWeight.bold, color: scheme.onSurface)),
       ),
     );
   }
 
-  Widget _buildSectionCard(List<Widget> tiles) {
+  Widget _buildSectionCard(ColorScheme scheme, List<Widget> tiles) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: scheme.surfaceContainerHighest,
           borderRadius: BorderRadius.circular(20),
         ),
         child: Column(children: tiles),
@@ -366,17 +373,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _tile(IconData icon, String title, VoidCallback onTap, {bool isLast = false}) {
+  Widget _tile(IconData icon, String title, VoidCallback onTap, ColorScheme scheme,
+      {bool isLast = false}) {
     return Column(
       children: [
         ListTile(
-          leading: Icon(icon, color: Colors.black87),
+          leading: Icon(icon, color: scheme.onSurface),
           title: Text(title,
-              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
-          trailing: const Icon(Icons.chevron_right, color: Colors.grey),
+              style: GoogleFonts.poppins(
+                  fontSize: 14, fontWeight: FontWeight.w600, color: scheme.onSurface)),
+          trailing: Icon(Icons.chevron_right, color: scheme.onSurface.withOpacity(0.5)),
           onTap: onTap,
         ),
-        if (!isLast) const Divider(height: 1, indent: 16, endIndent: 16),
+        if (!isLast)
+          Divider(height: 1, indent: 16, endIndent: 16, color: scheme.outlineVariant),
       ],
     );
   }

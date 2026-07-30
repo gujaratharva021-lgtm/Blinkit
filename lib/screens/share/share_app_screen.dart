@@ -1,5 +1,7 @@
 ﻿import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:share_plus/share_plus.dart';
 import '../../providers/referral_provider.dart';
 
 const Color kGreen = Color(0xFF0C831F);
@@ -55,9 +57,8 @@ class _ShareAppScreenState extends State<ShareAppScreen> {
                           IconButton(
                             icon: const Icon(Icons.copy, color: Colors.white),
                             onPressed: () {
-                              // Clipboard write kept minimal here; wire
-                              // package:flutter/services Clipboard.setData
-                              // if exact copy behavior is needed.
+                              Clipboard.setData(
+                                  ClipboardData(text: referral.referralCode));
                               ScaffoldMessenger.of(context).showSnackBar(
                                 const SnackBar(content: Text('Code copied')),
                               );
@@ -87,9 +88,11 @@ class _ShareAppScreenState extends State<ShareAppScreen> {
                   width: double.infinity,
                   child: ElevatedButton.icon(
                     onPressed: () {
-                      // Wire package:share_plus Share.share(...) here.
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Share sheet opened')),
+                      SharePlus.instance.share(
+                        ShareParams(
+                          text:
+                              'Use my referral code ${referral.referralCode} on GoFresh app and get exciting offers! Download now.',
+                        ),
                       );
                     },
                     icon: const Icon(Icons.share, color: Colors.white),

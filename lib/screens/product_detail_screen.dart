@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
@@ -85,7 +85,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final qty = cart.getQuantity(product['name']);
 
     return Scaffold(
-      backgroundColor: Colors.grey[100],
+      backgroundColor: Theme.of(context).colorScheme.surface,
       body: Stack(
         children: [
           CustomScrollView(
@@ -93,23 +93,23 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               SliverAppBar(
                 expandedHeight: 280,
                 pinned: true,
-                backgroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.surface,
                 leading: GestureDetector(
                   onTap: () => Navigator.pop(context),
                   child: Container(
                     margin: const EdgeInsets.all(8),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       shape: BoxShape.circle,
                       boxShadow: [BoxShadow(
                           color: Colors.grey.withOpacity(0.3), blurRadius: 8)],
                     ),
-                    child: const Icon(Icons.arrow_back, color: Colors.black),
+                    child: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     child: _buildProductImage(product['image']),
                   ),
                 ),
@@ -120,7 +120,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Container(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,7 +165,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   color: const Color(0xFF0C831F),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Text('₹${product['price']}',
+                                child: Text('â‚¹${product['price']}',
                                     style: GoogleFonts.poppins(
                                         color: Colors.white,
                                         fontSize: 18,
@@ -173,7 +173,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                  'MRP ₹${(product['price'] * 1.3).toInt()}',
+                                  'MRP â‚¹${(product['price'] * 1.3).toInt()}',
                                   style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       color: Colors.grey,
@@ -181,7 +181,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       TextDecoration.lineThrough)),
                               const SizedBox(width: 8),
                               Text(
-                                  '₹${(product['price'] * 0.3).toInt()} OFF',
+                                  'â‚¹${(product['price'] * 0.3).toInt()} OFF',
                                   style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       color: Colors.green,
@@ -195,7 +195,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     const SizedBox(height: 8),
 
                     Container(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       padding: const EdgeInsets.all(16),
                       child: Row(
                         children: [
@@ -203,7 +203,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.grey[100],
+                                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Column(
@@ -224,7 +224,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             child: Container(
                               padding: const EdgeInsets.all(12),
                               decoration: BoxDecoration(
-                                color: Colors.grey[100],
+                                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Column(
@@ -248,7 +248,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                     // Highlights
                     Container(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       child: Column(
                         children: [
                           GestureDetector(
@@ -291,7 +291,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
 
                     // Information
                     Container(
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.surface,
                       child: Column(
                         children: [
                           GestureDetector(
@@ -344,7 +344,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: Theme.of(context).colorScheme.surface,
                 boxShadow: [BoxShadow(
                     color: Colors.grey.withOpacity(0.2), blurRadius: 10)],
               ),
@@ -359,8 +359,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: Stack(
                       alignment: Alignment.center,
                       children: [
-                        const Icon(Icons.shopping_cart_outlined,
-                            color: Colors.black),
+                        Icon(Icons.shopping_cart_outlined,
+                            color: Theme.of(context).colorScheme.onSurface),
                         if (cart.cartCount > 0)
                           Positioned(
                             top: 4, right: 4,

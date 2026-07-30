@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
@@ -42,11 +42,11 @@ class _CartScreenState extends State<CartScreen> {
           Text(label, style: GoogleFonts.poppins(
               fontSize: 13,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: isBold ? Colors.black : Colors.grey[600])),
+              color: isBold ? Theme.of(context).colorScheme.onSurface : Colors.grey[600])),
           Text(value, style: GoogleFonts.poppins(
               fontSize: 13,
               fontWeight: isBold ? FontWeight.bold : FontWeight.normal,
-              color: isBold ? kBrandGreen : Colors.black87)),
+              color: isBold ? kBrandGreen : Theme.of(context).colorScheme.onSurface)),
         ],
       ),
     );
@@ -60,11 +60,11 @@ class _CartScreenState extends State<CartScreen> {
     final unlocked = remaining <= 0;
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         title: Text('My Cart (${cart.cartCount} items)',
             style: GoogleFonts.poppins(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
       ),
@@ -113,7 +113,7 @@ class _CartScreenState extends State<CartScreen> {
                     if (!unlocked) ...[
                       const SizedBox(height: 4),
                       Text(
-                        'Add items worth ₹${remaining.toStringAsFixed(0)} more to unlock FREE delivery',
+                        'Add items worth â‚¹${remaining.toStringAsFixed(0)} more to unlock FREE delivery',
                         style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[700]),
                       ),
                     ],
@@ -140,7 +140,7 @@ class _CartScreenState extends State<CartScreen> {
                         ],
                       ),
                     ),
-                    Text('₹${item.price}', style: GoogleFonts.poppins(
+                    Text('â‚¹${item.price}', style: GoogleFonts.poppins(
                         fontSize: 14, fontWeight: FontWeight.bold)),
                     const SizedBox(width: 12),
                     Container(
@@ -178,11 +178,11 @@ class _CartScreenState extends State<CartScreen> {
               const Divider(height: 24),
               Text('Bill details', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14)),
               const SizedBox(height: 10),
-              _billRow('Item Total', '₹${cart.cartTotal}'),
-              _billRow('Delivery Fee', unlocked ? 'FREE' : '₹$deliveryFee'),
-              _billRow('Platform Fee', '₹$platformFee'),
+              _billRow('Item Total', 'â‚¹${cart.cartTotal}'),
+              _billRow('Delivery Fee', unlocked ? 'FREE' : 'â‚¹$deliveryFee'),
+              _billRow('Platform Fee', 'â‚¹$platformFee'),
               const Divider(),
-              _billRow('Grand Total', '₹${unlocked ? cart.cartTotal + platformFee : total}', isBold: true),
+              _billRow('Grand Total', 'â‚¹${unlocked ? cart.cartTotal + platformFee : total}', isBold: true),
             ],
           ),
           Align(
@@ -219,7 +219,7 @@ class _CartScreenState extends State<CartScreen> {
                           : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('₹${unlocked ? cart.cartTotal + platformFee : total}',
+                          Text('â‚¹${unlocked ? cart.cartTotal + platformFee : total}',
                               style: GoogleFonts.poppins(
                                   color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
                           Row(

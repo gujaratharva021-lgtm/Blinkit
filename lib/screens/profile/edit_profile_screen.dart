@@ -4,6 +4,7 @@ import '../../providers/profile_provider.dart';
 import '../../widgets/avatar_picker_sheet.dart';
 
 const Color kGreen = Color(0xFF0C831F);
+const List<String> kGenderOptions = ['Male', 'Female', 'Other'];
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -16,7 +17,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
-  String _gender = 'Not specified';
+  final _phoneCtrl = TextEditingController();
+  String _gender = kGenderOptions.first;
   DateTime? _dob;
   bool _loaded = false;
 
@@ -28,7 +30,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       if (p != null) {
         _nameCtrl.text = p.name;
         _emailCtrl.text = p.email;
-        _gender = p.gender;
+        _phoneCtrl.text = p.phone;
+        _gender = kGenderOptions.contains(p.gender) ? p.gender : kGenderOptions.first;
         _dob = p.dob;
       }
       _loaded = true;
@@ -36,9 +39,16 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   }
 
   @override
+  void dispose() {
+    _nameCtrl.dispose();
+    _emailCtrl.dispose();
+    _phoneCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final provider = context.watch<ProfileProvider>();
-    final phone = provider.profile?.phone ?? '';
 
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F7),
@@ -101,25 +111,28 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                initialValue: '+91 $phone',
-                readOnly: true,
+                controller: _phoneCtrl,
+                keyboardType: TextInputType.phone,
+                maxLength: 10,
                 decoration: const InputDecoration(
-                    labelText: 'Mobile',
-                    border: OutlineInputBorder(),
-                    filled: true,
-                    fillColor: Color(0xFFEFEFEF)),
+                  labelText: 'Mobile',
+                  prefixText: '+91 ',
+                  border: OutlineInputBorder(),
+                  counterText: '',
+                ),
+                validator: (v) {
+                  if (v == null || v.trim().length != 10) {
+                    return 'Enter a valid 10-digit mobile number';
+                  }
+                  return null;
+                },
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
                 initialValue: _gender,
                 decoration: const InputDecoration(
                     labelText: 'Gender', border: OutlineInputBorder()),
-                items: const [
-                  'Not specified',
-                  'Male',
-                  'Female',
-                  'Other',
-                ]
+                items: kGenderOptions
                     .map((g) => DropdownMenuItem(value: g, child: Text(g)))
                     .toList(),
                 onChanged: (v) => setState(() => _gender = v ?? _gender),

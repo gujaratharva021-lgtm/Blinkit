@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
@@ -494,19 +494,19 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     final cart = context.watch<CartProvider>();
 
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
         title: Text('Categories',
-            style: GoogleFonts.poppins(color: Colors.black87, fontWeight: FontWeight.bold)),
-        iconTheme: const IconThemeData(color: Colors.black87),
+            style: GoogleFonts.poppins(color: Theme.of(context).colorScheme.onSurface, fontWeight: FontWeight.bold)),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
       ),
       body: Row(
         children: [
           Container(
             width: 90,
-            color: Colors.white,
+            color: Theme.of(context).colorScheme.surface,
             child: ListView.builder(
               itemCount: _categories.length,
               itemBuilder: (context, index) {
@@ -581,7 +581,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   ),
                     child: Container(
                       decoration: BoxDecoration(
-                        color: Colors.white,
+                        color: Theme.of(context).colorScheme.surface,
                         borderRadius: BorderRadius.circular(14),
                         boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.08), blurRadius: 6)],
                       ),
@@ -606,7 +606,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('₹${product['price']}',
+                                Text('â‚¹${product['price']}',
                                     style: GoogleFonts.poppins(
                                         fontSize: 13, fontWeight: FontWeight.bold,
                                         color: const Color(0xFF0C831F))),
@@ -672,3 +672,4 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     );
   }
 }
+

@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -392,11 +392,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
     return Scaffold(
-      backgroundColor: const Color(0xFFFFFFFF),
+      backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Theme.of(context).colorScheme.surface,
         elevation: 0,
-        iconTheme: const IconThemeData(color: Colors.black87),
+        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
         title: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -405,16 +405,16 @@ class _HomeScreenState extends State<HomeScreen> {
                 const Icon(Icons.bolt, color: Color(0xFF0C831F), size: 14),
                 Text('Delivery in 10 minutes',
                     style: GoogleFonts.poppins(
-                        color: Colors.black87, fontSize: 11, fontWeight: FontWeight.w600)),
+                        color: Theme.of(context).colorScheme.onSurface, fontSize: 11, fontWeight: FontWeight.w600)),
               ],
             ),
             Row(
               children: [
-                const Icon(Icons.location_on, color: Colors.black87, size: 14),
+                Icon(Icons.location_on, color: Theme.of(context).colorScheme.onSurface, size: 14),
                 Text('Mumbai, Maharashtra',
                     style: GoogleFonts.poppins(
-                        color: Colors.black, fontSize: 13, fontWeight: FontWeight.bold)),
-                const Icon(Icons.keyboard_arrow_down, color: Colors.black87, size: 16),
+                        color: Theme.of(context).colorScheme.onSurface, fontSize: 13, fontWeight: FontWeight.bold)),
+                Icon(Icons.keyboard_arrow_down, color: Theme.of(context).colorScheme.onSurface, size: 16),
               ],
             ),
           ],
@@ -423,7 +423,7 @@ class _HomeScreenState extends State<HomeScreen> {
           Stack(
             children: [
               IconButton(
-                icon: const Icon(Icons.shopping_cart, color: Colors.black87),
+                icon: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSurface),
                 onPressed: () => Navigator.push(
                     context, MaterialPageRoute(builder: (_) => const CartScreen())),
               ),
@@ -458,7 +458,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 margin: const EdgeInsets.all(12),
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
-                  color: const Color(0xFFF2F2F2),
+                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Row(
@@ -574,29 +574,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 16),
 
-            // Product Sections — Offers 3 sections ke baad
-            _buildProductSection('🍎 Fresh Fruits', 'Fruits'),
-            _buildProductSection('🍦 Ice Creams', 'Ice Creams'),
-            _buildProductSection('🍫 Chocolate', 'Chocolate'),
+            // Product Sections â€” Offers 3 sections ke baad
+            _buildProductSection('ðŸŽ Fresh Fruits', 'Fruits'),
+            _buildProductSection('ðŸ¦ Ice Creams', 'Ice Creams'),
+            _buildProductSection('ðŸ« Chocolate', 'Chocolate'),
 
-            // ✅ Coupons & Offers — 3 sections ke baad
+            // âœ… Coupons & Offers â€” 3 sections ke baad
             _buildOffersSection(),
 
-            _buildProductSection('🍟 Snacks', 'Snacks'),
-            _buildProductSection('🥤 Beverages', 'Beverages'),
-            _buildProductSection('🥐 Bakery', 'Bakery'),
-            _buildProductSection('🍪 Biscuits', 'Biscuits'),
-            _buildProductSection('🥜 Namkeen', 'Namkeen'),
-            _buildProductSection('🍟 Wafers', 'Wafers'),
-            _buildProductSection('🥤 Cold Drinks', 'Cold Drinks'),
-            _buildProductSection('🍅 Ketchup', 'Ketchup'),
-            _buildProductSection('🧴 Shampoo', 'Shampoo'),
-            _buildProductSection('🧼 Soap', 'Soap'),
-            _buildProductSection('💄 Personal Care', 'Personal Care'),
-            _buildProductSection('🥒 Pickle', 'Pickle'),
-            _buildProductSection('🪔 Puja Items', 'Puja Items'),
-            _buildProductSection('🧸 Toys', 'Toys'),
-            _buildProductSection('👕 Clothes', 'Clothes'),
+            _buildProductSection('ðŸŸ Snacks', 'Snacks'),
+            _buildProductSection('ðŸ¥¤ Beverages', 'Beverages'),
+            _buildProductSection('ðŸ¥ Bakery', 'Bakery'),
+            _buildProductSection('ðŸª Biscuits', 'Biscuits'),
+            _buildProductSection('ðŸ¥œ Namkeen', 'Namkeen'),
+            _buildProductSection('ðŸŸ Wafers', 'Wafers'),
+            _buildProductSection('ðŸ¥¤ Cold Drinks', 'Cold Drinks'),
+            _buildProductSection('ðŸ… Ketchup', 'Ketchup'),
+            _buildProductSection('ðŸ§´ Shampoo', 'Shampoo'),
+            _buildProductSection('ðŸ§¼ Soap', 'Soap'),
+            _buildProductSection('ðŸ’„ Personal Care', 'Personal Care'),
+            _buildProductSection('ðŸ¥’ Pickle', 'Pickle'),
+            _buildProductSection('ðŸª” Puja Items', 'Puja Items'),
+            _buildProductSection('ðŸ§¸ Toys', 'Toys'),
+            _buildProductSection('ðŸ‘• Clothes', 'Clothes'),
             const SizedBox(height: 80),
           ],
         ),
@@ -651,7 +651,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('₹${cart.cartTotal}',
+                        Text('â‚¹${cart.cartTotal}',
                             style: GoogleFonts.poppins(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -682,20 +682,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ✅ Coupons & Offers Section
+  // âœ… Coupons & Offers Section
   Widget _buildOffersSection() {
     final List<Map<String, dynamic>> offers = [
-      {'amount': '₹50 OFF', 'min': 'above ₹599', 'color': const Color(0xFF4CAF50)},
-      {'amount': '₹100 OFF', 'min': 'above ₹1199', 'color': const Color(0xFF4CAF50)},
-      {'amount': '₹150 OFF', 'min': 'above ₹1799', 'color': const Color(0xFF4CAF50)},
-      {'amount': '₹200 OFF', 'min': 'above ₹2399', 'color': const Color(0xFF4CAF50)},
+      {'amount': 'â‚¹50 OFF', 'min': 'above â‚¹599', 'color': const Color(0xFF4CAF50)},
+      {'amount': 'â‚¹100 OFF', 'min': 'above â‚¹1199', 'color': const Color(0xFF4CAF50)},
+      {'amount': 'â‚¹150 OFF', 'min': 'above â‚¹1799', 'color': const Color(0xFF4CAF50)},
+      {'amount': 'â‚¹200 OFF', 'min': 'above â‚¹2399', 'color': const Color(0xFF4CAF50)},
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-          child: Text('🏷️ Coupons & Offers',
+          child: Text('ðŸ·ï¸ Coupons & Offers',
               style: GoogleFonts.poppins(
                   fontSize: 16, fontWeight: FontWeight.bold)),
         ),
@@ -729,7 +729,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         style: GoogleFonts.poppins(
                             fontSize: 16,
                             fontWeight: FontWeight.bold,
-                            color: Colors.black)),
+                            color: Theme.of(context).colorScheme.onSurface)),
                     Text(offer['min'],
                         style: GoogleFonts.poppins(
                             fontSize: 10, color: Colors.grey)),
@@ -785,7 +785,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   width: 150,
                   margin: const EdgeInsets.only(right: 12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
+                    color: Theme.of(context).colorScheme.surface,
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
@@ -817,7 +817,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('₹${product['price']}',
+                                Text('â‚¹${product['price']}',
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,

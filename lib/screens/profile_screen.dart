@@ -56,8 +56,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
             children: [
               _buildHeader(scheme),
               const SizedBox(height: 16),
-              _buildBirthdayBanner(scheme),
-              const SizedBox(height: 16),
               _buildQuickActions(scheme),
               const SizedBox(height: 16),
               _buildSettingsCard(settings, scheme),
@@ -182,46 +180,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     fontSize: 13, color: scheme.onSurface.withOpacity(0.6))),
           ],
         ],
-      ),
-    );
-  }
-
-  Widget _buildBirthdayBanner(ColorScheme scheme) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: scheme.primaryContainer,
-          borderRadius: BorderRadius.circular(20),
-        ),
-        child: Row(
-          children: [
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text('Add your birthday',
-                      style: GoogleFonts.poppins(
-                          fontSize: 15, fontWeight: FontWeight.bold, color: scheme.onSurface)),
-                  const SizedBox(height: 4),
-                  GestureDetector(
-                    onTap: () => _showComingSoon('Birthday'),
-                    child: Row(
-                      children: [
-                        Text('Enter details',
-                            style: GoogleFonts.poppins(
-                                fontSize: 13, fontWeight: FontWeight.w600, color: kGreen)),
-                        const Icon(Icons.chevron_right, size: 16, color: kGreen),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            const Icon(Icons.cake_outlined, size: 40, color: kGreen),
-          ],
-        ),
       ),
     );
   }

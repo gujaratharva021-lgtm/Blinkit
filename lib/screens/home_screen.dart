@@ -10,6 +10,7 @@ import 'categories_screen.dart';
 import 'profile_screen.dart';
 import 'product_detail_screen.dart';
 import '../widgets/wishlist_intro_sheet.dart';
+import '../features/category_nav/screens/home_category_sections.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool showWishlistIntro;
@@ -573,6 +574,9 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
 
             const SizedBox(height: 16),
+
+            // New Blinkit/Instamart-style category navigation
+            const HomeCategorySections(),
 
             // Product Sections â€” Offers 3 sections ke baad
             _buildProductSection('ðŸŽ Fresh Fruits', 'Fruits'),

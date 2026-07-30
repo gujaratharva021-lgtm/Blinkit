@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../../constants/asset_constants.dart';
 import '../models/category_models.dart';
 
 /// Static mock dataset for the home category-navigation module.
@@ -20,28 +21,36 @@ class CategoryMockData {
         categories: [
           _category('cat_veg_fruits', 'Vegetables & Fruits', 'sec_grocery',
               Icons.eco, const Color(0xFF3AA655),
-              ['Fresh Vegetables', 'Fresh Fruits', 'Organic Produce', 'Exotic Fruits']),
+              ['Fresh Vegetables', 'Fresh Fruits', 'Organic Produce', 'Exotic Fruits'],
+              image: AssetConstants.vegetablesFruits),
           _category('cat_atta_rice_dal', 'Atta, Rice & Dal', 'sec_grocery',
               Icons.grain, const Color(0xFFC08A3E),
-              ['Atta & Flours', 'Rice & Rice Products', 'Dals & Pulses', 'Sugar & Jaggery']),
+              ['Atta & Flours', 'Rice & Rice Products', 'Dals & Pulses', 'Sugar & Jaggery'],
+              image: AssetConstants.attaRiceDal),
           _category('cat_oil_ghee_masala', 'Oil, Ghee & Masala', 'sec_grocery',
               Icons.local_fire_department, const Color(0xFFE0592A),
-              ['Edible Oils', 'Ghee & Vanaspati', 'Whole Spices', 'Masala & Blends']),
+              ['Edible Oils', 'Ghee & Vanaspati', 'Whole Spices', 'Masala & Blends'],
+              image: AssetConstants.oilGheeMasala),
           _category('cat_dairy_bread_eggs', 'Dairy, Bread & Eggs', 'sec_grocery',
               Icons.egg_alt, const Color(0xFF2F8FD1),
-              ['Milk', 'Bread & Pav', 'Eggs', 'Butter & Cheese']),
+              ['Milk', 'Bread & Pav', 'Eggs', 'Butter & Cheese'],
+              image: AssetConstants.dairyBreadEggs),
           _category('cat_bakery_biscuits', 'Bakery & Biscuits', 'sec_grocery',
               Icons.cookie, const Color(0xFFB07A2E),
-              ['Cookies', 'Cream Biscuits', 'Cakes & Rolls', 'Glucose Biscuits']),
+              ['Cookies', 'Cream Biscuits', 'Cakes & Rolls', 'Glucose Biscuits'],
+              image: AssetConstants.bakeryBiscuits),
           _category('cat_dryfruits_cereals', 'Dry Fruits & Cereals', 'sec_grocery',
               Icons.scatter_plot, const Color(0xFF8A5A2E),
-              ['Almonds & Cashews', 'Raisins & Dates', 'Breakfast Cereals', 'Muesli & Oats']),
+              ['Almonds & Cashews', 'Raisins & Dates', 'Breakfast Cereals', 'Muesli & Oats'],
+              image: AssetConstants.dryFruitsCereals),
           _category('cat_meat_fish', 'Chicken, Meat & Fish', 'sec_grocery',
               Icons.set_meal, const Color(0xFFC1392B),
-              ['Fresh Chicken', 'Mutton', 'Fish & Seafood', 'Marinated & Ready to Cook']),
+              ['Fresh Chicken', 'Mutton', 'Fish & Seafood', 'Marinated & Ready to Cook'],
+              image: AssetConstants.chickenMeatFish),
           _category('cat_kitchenware', 'Kitchenware & Appliances', 'sec_grocery',
               Icons.blender, const Color(0xFF5B6B73),
-              ['Cookware', 'Storage & Containers', 'Small Appliances', 'Water Bottles']),
+              ['Cookware', 'Storage & Containers', 'Small Appliances', 'Water Bottles'],
+              image: AssetConstants.kitchenwareAppliances),
         ],
       ),
       CategorySectionModel(
@@ -126,7 +135,7 @@ class CategoryMockData {
   }
 
   static CategoryModel _category(String id, String title, String sectionId,
-      IconData icon, Color color, List<String> subCategoryTitles) {
+      IconData icon, Color color, List<String> subCategoryTitles, {String? image}) {
     final subs = <SubCategoryModel>[];
     for (var i = 0; i < subCategoryTitles.length; i++) {
       subs.add(SubCategoryModel(
@@ -143,6 +152,7 @@ class CategoryMockData {
       icon: icon,
       color: color,
       subCategories: subs,
+      image: image,
     );
   }
 

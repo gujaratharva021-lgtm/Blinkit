@@ -17,12 +17,26 @@ class CategoryTile extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
-          CategoryPlaceholderImage(
-            icon: category.icon,
-            color: category.color,
-            size: 64,
-            borderRadius: 18,
-          ),
+          category.image != null
+              ? Container(
+                  width: 80,
+                  height: 80,
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: category.color.withOpacity(0.10),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: ClipRRect(
+                    borderRadius: BorderRadius.circular(10),
+                    child: Image.asset(category.image!, fit: BoxFit.cover),
+                  ),
+                )
+              : CategoryPlaceholderImage(
+                  icon: category.icon,
+                  color: category.color,
+                  size: 64,
+                  borderRadius: 18,
+                ),
           const SizedBox(height: 8),
           Text(
             category.title,

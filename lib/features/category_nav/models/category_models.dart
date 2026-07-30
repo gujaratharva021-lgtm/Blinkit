@@ -102,6 +102,10 @@ class CategoryModel {
   final Color color;
   final List<SubCategoryModel> subCategories;
 
+  /// Local asset path (e.g. `assets/categories/vegetables_fruits.png`).
+  /// Null falls back to the icon-based placeholder tile.
+  final String? image;
+
   const CategoryModel({
     required this.id,
     required this.title,
@@ -109,6 +113,7 @@ class CategoryModel {
     required this.icon,
     required this.color,
     required this.subCategories,
+    this.image,
   });
 }
 

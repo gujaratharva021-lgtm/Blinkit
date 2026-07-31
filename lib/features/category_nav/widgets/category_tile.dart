@@ -19,9 +19,9 @@ class CategoryTile extends StatelessWidget {
         children: [
           category.image != null
               ? Container(
-                  width: 80,
-                  height: 80,
-                  padding: const EdgeInsets.all(10),
+                  width: 120,
+                  height: 120,
+                  padding: EdgeInsets.zero,
                   decoration: BoxDecoration(
                     color: category.color.withOpacity(0.10),
                     borderRadius: BorderRadius.circular(16),

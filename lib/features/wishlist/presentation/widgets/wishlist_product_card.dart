@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../domain/entities/wishlist_item_entity.dart';
 
 class WishlistProductCard extends StatelessWidget {
@@ -106,11 +106,11 @@ class WishlistProductCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Text('â‚¹${item.price.toStringAsFixed(0)}',
+                        Text('?,?${item.price.toStringAsFixed(0)}',
                             style: theme.textTheme.titleMedium),
                         const SizedBox(width: 6),
                         Text(
-                          'â‚¹${item.mrp.toStringAsFixed(0)}',
+                          '?,?${item.mrp.toStringAsFixed(0)}',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             decoration: TextDecoration.lineThrough,
                           ),

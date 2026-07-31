@@ -9,7 +9,7 @@ import '../screens/product_details_screen.dart';
 /// Route definitions for the category-navigation flow.
 ///
 /// Like the existing `profile` GoRoutes (see lib/routes/app_router.dart),
-/// this list is NOT wired into the app's root router yet â€” the app still
+/// this list is NOT wired into the app's root router yet — the app still
 /// navigates via Navigator/MaterialPageRoute end to end. Use
 /// [CategoryNavRoutes.openCategory] / [openProductDetails] below for
 /// actual navigation; wire `categoryNavRoutes` into a root GoRouter

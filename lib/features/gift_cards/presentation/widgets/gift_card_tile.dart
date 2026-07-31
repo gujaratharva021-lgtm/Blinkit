@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import '../../domain/entities/gift_card_entity.dart';
 
@@ -94,7 +94,7 @@ class GiftCardTile extends StatelessWidget {
                   children: [
                     Text('Balance', style: theme.textTheme.bodyMedium),
                     Text(
-                      'â‚¹${card.balance.toStringAsFixed(0)}',
+                      '?,?${card.balance.toStringAsFixed(0)}',
                       style: theme.textTheme.titleLarge,
                     ),
                   ],

@@ -1,4 +1,4 @@
-﻿/// Generic UI state used by every feature provider in this module set.
+/// Generic UI state used by every feature provider in this module set.
 enum ViewStatus { initial, loading, loaded, empty, error }
 
 /// Simple failure wrapper returned by mock repositories instead of throwing,
@@ -11,7 +11,7 @@ class AppFailure {
   String toString() => message;
 }
 
-/// Result<T> â€” success holds data, failure holds an AppFailure.
+/// Result<T> ??" success holds data, failure holds an AppFailure.
 class Result<T> {
   final T? data;
   final AppFailure? failure;

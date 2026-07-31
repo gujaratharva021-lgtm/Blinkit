@@ -3,7 +3,7 @@ import '../../../constants/asset_constants.dart';
 import '../models/category_models.dart';
 
 /// Static mock dataset for the home category-navigation module.
-/// No backend/API calls â€” [CategoryRepository] reads from this file and
+/// No backend/API calls — [CategoryRepository] reads from this file and
 /// wraps it in Futures to simulate network latency.
 class CategoryMockData {
   CategoryMockData._();
@@ -47,6 +47,10 @@ class CategoryMockData {
               Icons.blender, const Color(0xFF5B6B73),
               ['Cookware', 'Storage & Containers', 'Small Appliances', 'Water Bottles'],
               image: AssetConstants.kitchenwareAppliances),
+          _category('cat_chicken_meat_fish', 'Chicken & Meat', 'sec_grocery',
+              Icons.set_meal, const Color(0xFFD84315),
+              ['Chicken', 'Mutton', 'Fish & Seafood', 'Eggs'],
+              image: AssetConstants.chickenMeatFish),
         ],
       ),
       CategorySectionModel(
@@ -103,10 +107,6 @@ class CategoryMockData {
               Icons.face_retouching_natural, const Color(0xFFDB8A7A),
               ['Face Wash', 'Moisturizers', 'Sunscreen', 'Face Masks'],
               image: AssetConstants.skinFace),
-          _category('cat_beauty_cosmetics', 'Beauty & Cosmetics', 'sec_beauty',
-              Icons.brush, const Color(0xFFA13D6B),
-              ['Makeup', 'Lipsticks', 'Nail Care', 'Fragrances'],
-              image: AssetConstants.beautyCosmetics),
           _category('cat_feminine_hygiene', 'Feminine Hygiene', 'sec_beauty',
               Icons.favorite, const Color(0xFFD1477A),
               ['Sanitary Pads', 'Tampons', 'Intimate Wash', 'Menstrual Cups'],
@@ -238,3 +238,4 @@ class CategoryMockData {
     return _productsFor(category);
   }
 }
+

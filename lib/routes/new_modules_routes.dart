@@ -1,11 +1,11 @@
-﻿import 'package:go_router/go_router.dart';
+import 'package:go_router/go_router.dart';
 import '../features/address_book/presentation/screens/address_list_screen.dart';
 import '../features/wishlist/presentation/screens/wishlist_screen.dart';
 import '../features/gst_details/presentation/screens/gst_list_screen.dart';
 import '../features/gift_cards/presentation/screens/gift_cards_screen.dart';
 import '../features/gift_cards/presentation/screens/redeem_gift_card_screen.dart';
 
-/// Route path constants â€” reference these instead of hardcoded strings
+/// Route path constants ??" reference these instead of hardcoded strings
 /// wherever you navigate to these screens.
 class AppRoutePaths {
   AppRoutePaths._();

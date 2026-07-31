@@ -1,10 +1,10 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import '../models/address_model.dart';
 
 /// Mock datasource. A [Dio] instance is kept here so the class shape matches
-/// a real network datasource â€” swap the body of each method for an actual
+/// a real network datasource ??" swap the body of each method for an actual
 /// `dio.get(...)` / `dio.post(...)` call once the backend is ready.
 class AddressMockDataSource {
   final Dio _dio = Dio();

@@ -23,12 +23,12 @@ class AssetConstants {
 
   // Grocery & Kitchen home-category images (category_nav module)
   static const String vegetablesFruits = '$_base/vegetables_fruits.png';
+  static const String chickenMeatFish = '$_base/chicken_meat_fish.png';
   static const String attaRiceDal = '$_base/atta_rice_dal.png';
   static const String oilGheeMasala = '$_base/oil_ghee_masala.png';
   static const String dairyBreadEggs = '$_base/dairy_bread_eggs.png';
   static const String bakeryBiscuits = '$_base/bakery_biscuits.png';
   static const String dryFruitsCereals = '$_base/dry_fruits_cereals.png';
-  static const String chickenMeatFish = '$_base/chicken_meat_fish.png';
   static const String kitchenwareAppliances = '$_base/kitchenware_appliances.png';
 
   // Snacks & Drinks home-category images (category_nav module)

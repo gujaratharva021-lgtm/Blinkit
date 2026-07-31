@@ -3,7 +3,7 @@ import '../models/category_models.dart';
 
 /// Frontend-only repository. Wraps [CategoryMockData] with a small
 /// artificial delay so loading/skeleton states have something to show.
-/// Swap the method bodies for real API/Dio calls once a backend exists â€”
+/// Swap the method bodies for real API/Dio calls once a backend exists —
 /// the public signatures are written to be a drop-in replacement.
 class CategoryRepository {
   Future<List<CategorySectionModel>> fetchHomeSections() async {

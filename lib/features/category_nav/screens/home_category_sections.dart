@@ -72,11 +72,11 @@ class _HomeCategorySectionsState extends State<HomeCategorySections> {
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: section.categories.length,
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4,
-                mainAxisSpacing: 18,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: section.title == 'Beauty & Personal Care' ? 3 : 4,
+                mainAxisSpacing: section.title == 'Beauty & Personal Care' ? 12 : 14,
                 crossAxisSpacing: 6,
-                childAspectRatio: 0.75,
+                childAspectRatio: section.title == 'Beauty & Personal Care' ? 0.85 : 0.58,
               ),
               itemBuilder: (context, index) {
                 final category = section.categories[index];

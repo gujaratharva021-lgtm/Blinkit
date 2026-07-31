@@ -26,7 +26,7 @@ extension SortOptionLabel on SortOption {
 
 /// A single product shown in the category product grid and on the
 /// product details page. Uses an [icon]/[color] pair as a placeholder
-/// image since this module runs on mock data only â€” swap in a real
+/// image since this module runs on mock data only — swap in a real
 /// `imageUrl` + `CachedNetworkImage` once product photography/API is
 /// available.
 class ProductModel {

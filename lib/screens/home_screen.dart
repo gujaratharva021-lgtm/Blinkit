@@ -11,6 +11,7 @@ import 'profile_screen.dart';
 import 'product_detail_screen.dart';
 import '../widgets/wishlist_intro_sheet.dart';
 import '../features/category_nav/screens/home_category_sections.dart';
+import 'notifications/notification_list_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool showWishlistIntro;
@@ -393,6 +394,12 @@ class _HomeScreenState extends State<HomeScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: Icon(Icons.notifications_none_outlined,
+                color: Theme.of(context).colorScheme.onSurface),
+            onPressed: () => Navigator.push(
+                context, MaterialPageRoute(builder: (_) => const NotificationListScreen())),
+          ),
           Stack(
             children: [
               IconButton(

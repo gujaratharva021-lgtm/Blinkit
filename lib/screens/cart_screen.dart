@@ -14,11 +14,126 @@ class CartScreen extends StatefulWidget {
   State<CartScreen> createState() => _CartScreenState();
 }
 
+class _CouponInfo {
+  final String code;
+  final String description;
+  final bool isPercent;
+  final double value;
+  final double maxDiscount;
+  final double minCartValue;
+
+  const _CouponInfo({
+    required this.code,
+    required this.description,
+    required this.isPercent,
+    required this.value,
+    this.maxDiscount = double.infinity,
+    this.minCartValue = 0,
+  });
+}
+
 class _CartScreenState extends State<CartScreen> {
   bool _isLoading = false;
   static const int deliveryFee = 25;
   static const int platformFee = 5;
   static const double freeDeliveryThreshold = 299;
+
+  final TextEditingController _couponController = TextEditingController();
+  String? _appliedCouponCode;
+  double _discount = 0;
+  String? _couponError;
+
+  static const List<_CouponInfo> _availableCoupons = [
+    _CouponInfo(
+      code: 'SAVE50',
+      description: 'Flat ₹50 off on orders above ₹200',
+      isPercent: false,
+      value: 50,
+      minCartValue: 200,
+    ),
+    _CouponInfo(
+      code: 'SAVE100',
+      description: 'Flat ₹100 off on orders above ₹500',
+      isPercent: false,
+      value: 100,
+      minCartValue: 500,
+    ),
+    _CouponInfo(
+      code: 'WELCOME10',
+      description: '10% off up to ₹50 on your order',
+      isPercent: true,
+      value: 10,
+      maxDiscount: 50,
+      minCartValue: 0,
+    ),
+  ];
+
+  @override
+  void dispose() {
+    _couponController.dispose();
+    super.dispose();
+  }
+
+  void _applyCoupon(double cartTotal) {
+    final code = _couponController.text.trim().toUpperCase();
+    if (code.isEmpty) {
+      setState(() {
+        _couponError = 'Please enter a coupon code';
+      });
+      return;
+    }
+
+    final match = _availableCoupons.where((c) => c.code == code).toList();
+    if (match.isEmpty) {
+      setState(() {
+        _couponError = 'Invalid coupon code';
+        _appliedCouponCode = null;
+        _discount = 0;
+      });
+      return;
+    }
+
+    final coupon = match.first;
+    if (cartTotal < coupon.minCartValue) {
+      setState(() {
+        _couponError =
+            'Add items worth ₹${coupon.minCartValue.toStringAsFixed(0)} to use this coupon';
+        _appliedCouponCode = null;
+        _discount = 0;
+      });
+      return;
+    }
+
+    double discount = coupon.isPercent
+        ? (cartTotal * coupon.value / 100)
+        : coupon.value;
+    if (discount > coupon.maxDiscount) discount = coupon.maxDiscount;
+    if (discount > cartTotal) discount = cartTotal;
+
+    setState(() {
+      _appliedCouponCode = coupon.code;
+      _discount = discount;
+      _couponError = null;
+    });
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(
+            'Coupon ${coupon.code} applied! You saved ₹${discount.toStringAsFixed(0)}'),
+        backgroundColor: kBrandGreen,
+        duration: const Duration(seconds: 2),
+      ),
+    );
+  }
+
+  void _removeCoupon() {
+    setState(() {
+      _appliedCouponCode = null;
+      _discount = 0;
+      _couponError = null;
+      _couponController.clear();
+    });
+  }
 
   Widget _buildCartImage(String imagePath) {
     if (imagePath.startsWith('assets/')) {
@@ -58,6 +173,8 @@ class _CartScreenState extends State<CartScreen> {
     final total = cart.cartTotal + deliveryFee + platformFee;
     final remaining = freeDeliveryThreshold - cart.cartTotal;
     final unlocked = remaining <= 0;
+    final preDiscountTotal = unlocked ? cart.cartTotal + platformFee : total;
+    final grandTotal = (preDiscountTotal - _discount).clamp(0, double.infinity).round();
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -176,13 +293,118 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               )),
               const Divider(height: 24),
+              Text('Apply Coupon', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14)),
+              const SizedBox(height: 10),
+              if (_appliedCouponCode == null) ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: _couponController,
+                        textCapitalization: TextCapitalization.characters,
+                        style: GoogleFonts.poppins(fontSize: 13),
+                        decoration: InputDecoration(
+                          hintText: 'Enter coupon code',
+                          hintStyle: GoogleFonts.poppins(fontSize: 13, color: Colors.grey),
+                          isDense: true,
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 12),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          enabledBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: BorderSide(color: Colors.grey.shade300),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                            borderSide: const BorderSide(color: kBrandGreen),
+                          ),
+                        ),
+                        onSubmitted: (_) => _applyCoupon(cart.cartTotal.toDouble()),
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Material(
+                      color: kBrandGreen,
+                      borderRadius: BorderRadius.circular(10),
+                      child: InkWell(
+                        borderRadius: BorderRadius.circular(10),
+                        onTap: () => _applyCoupon(cart.cartTotal.toDouble()),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
+                          child: Text('Apply',
+                              style: GoogleFonts.poppins(
+                                  color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                if (_couponError != null) ...[
+                  const SizedBox(height: 6),
+                  Text(_couponError!,
+                      style: GoogleFonts.poppins(fontSize: 12, color: Colors.red)),
+                ],
+                const SizedBox(height: 6),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: _availableCoupons.map((c) => InkWell(
+                    onTap: () {
+                      _couponController.text = c.code;
+                      _applyCoupon(cart.cartTotal.toDouble());
+                    },
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: kLightGreenBg,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: kBrandGreen.withOpacity(0.3)),
+                      ),
+                      child: Text(c.code,
+                          style: GoogleFonts.poppins(
+                              fontSize: 11, fontWeight: FontWeight.w600, color: kBrandGreen)),
+                    ),
+                  )).toList(),
+                ),
+              ] else
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: kLightGreenBg,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(color: kBrandGreen.withOpacity(0.4)),
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.local_offer, color: kBrandGreen, size: 18),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        child: Text(
+                            "'$_appliedCouponCode' applied \u2014 you saved ₹${_discount.toStringAsFixed(0)}",
+                            style: GoogleFonts.poppins(
+                                fontSize: 12, fontWeight: FontWeight.w600, color: kBrandGreen)),
+                      ),
+                      InkWell(
+                        onTap: _removeCoupon,
+                        child: Text('Remove',
+                            style: GoogleFonts.poppins(
+                                fontSize: 12, fontWeight: FontWeight.bold, color: Colors.red)),
+                      ),
+                    ],
+                  ),
+                ),
+              const Divider(height: 24),
               Text('Bill details', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14)),
               const SizedBox(height: 10),
               _billRow('Item Total', '₹${cart.cartTotal}'),
               _billRow('Delivery Fee', unlocked ? 'FREE' : '₹$deliveryFee'),
               _billRow('Platform Fee', '₹$platformFee'),
+              if (_discount > 0)
+                _billRow('Coupon Discount', '-₹${_discount.toStringAsFixed(0)}'),
               const Divider(),
-              _billRow('Grand Total', '₹${unlocked ? cart.cartTotal + platformFee : total}', isBold: true),
+              _billRow('Grand Total', '₹$grandTotal', isBold: true),
             ],
           ),
           Align(
@@ -201,7 +423,6 @@ class _CartScreenState extends State<CartScreen> {
                         'price': item.price,
                         'quantity': item.quantity,
                       }).toList();
-                      final grandTotal = unlocked ? cart.cartTotal + platformFee : total;
                       Navigator.push(
                         context,
                         MaterialPageRoute(
@@ -219,7 +440,7 @@ class _CartScreenState extends State<CartScreen> {
                           : Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('₹${unlocked ? cart.cartTotal + platformFee : total}',
+                          Text('₹$grandTotal',
                               style: GoogleFonts.poppins(
                                   color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
                           Row(

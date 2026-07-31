@@ -1,0 +1,24 @@
+﻿[
+  {
+    "id": "gc_1",
+    "cardNumber": "GC-4821-9910-2201",
+    "balance": 500.0,
+    "expiryDate": "2027-03-31",
+    "status": "active"
+  },
+  {
+    "id": "gc_2",
+    "cardNumber": "GC-1120-7734-5567",
+    "balance": 150.0,
+    "expiryDate": "2026-12-31",
+    "status": "active"
+  },
+  {
+    "id": "gc_3",
+    "cardNumber": "GC-9981-2245-1190",
+    "balance": 0.0,
+    "expiryDate": "2026-01-15",
+    "status": "redeemed"
+  }
+]
+

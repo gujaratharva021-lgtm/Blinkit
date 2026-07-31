@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -40,27 +40,6 @@ class _HomeScreenState extends State<HomeScreen> {
     {'title': 'Bakery Fresh', 'subtitle': 'Baked fresh every day', 'color': Color(0xFF795548), 'image': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600'},
   ];
 
-  final List<Map<String, dynamic>> _categories = [
-    {'name': 'Chocolate', 'icon': Icons.rectangle, 'color': Color(0xFFFF5722)},
-    {'name': 'Fruits', 'icon': Icons.apple, 'color': Color(0xFFFF5722)},
-    {'name': 'Snacks', 'icon': Icons.fastfood, 'color': Color(0xFFFF9800)},
-    {'name': 'Ice Creams', 'icon': Icons.icecream, 'color': Color(0xFF0C831F)},
-    {'name': 'Beverages', 'icon': Icons.local_drink, 'color': Color(0xFF0C831F)},
-    {'name': 'Bakery', 'icon': Icons.bakery_dining, 'color': Color(0xFF795548)},
-    {'name': 'Biscuits', 'icon': Icons.cookie, 'color': Color(0xFFFFB300)},
-    {'name': 'Namkeen', 'icon': Icons.rice_bowl, 'color': Color(0xFFFF7043)},
-    {'name': 'Wafers', 'icon': Icons.lunch_dining, 'color': Color(0xFFEF5350)},
-    {'name': 'Cold Drinks', 'icon': Icons.local_drink, 'color': Color(0xFF42A5F5)},
-    {'name': 'Ketchup', 'icon': Icons.set_meal, 'color': Color(0xFFE53935)},
-    {'name': 'Shampoo', 'icon': Icons.shower, 'color': Color(0xFF26C6DA)},
-    {'name': 'Soap', 'icon': Icons.soap, 'color': Color(0xFF66BB6A)},
-    {'name': 'Personal Care', 'icon': Icons.spa, 'color': Color(0xFFE91E63)},
-    {'name': 'Pickle', 'icon': Icons.set_meal, 'color': Color(0xFF8BC34A)},
-    {'name': 'Puja Items', 'icon': Icons.temple_hindu, 'color': Color(0xFFFF8F00)},
-    {'name': 'Toys', 'icon': Icons.toys, 'color': Color(0xFF7E57C2)},
-    {'name': 'Clothes', 'icon': Icons.checkroom, 'color': Color(0xFF26A69A)},
-  ];
-
   final List<Map<String, dynamic>> _products = [
     // --- Fruits ---
     {'name': 'Apple', 'price': 120, 'unit': '4 pcs', 'category': 'Fruits', 'image': 'assets/images/Fruits/Apple.png'},
@@ -79,8 +58,7 @@ class _HomeScreenState extends State<HomeScreen> {
 
     // --- Chocolate ---
     {'name': 'Amul Chocolate Milk', 'price': 40, 'unit': '200ml', 'category': 'Chocolate', 'image': 'assets/images/Chocolate/amul_chocolate_milk.jpg'},
-    {'name': '5 Star Chocolate', 'price': 10, 'unit': '1 pc', 'category': 'Chocolate', 'image': 'assets/images/Chocolate/cadbury_5star.jpg'},
-    {'name': 'Dairy Milk Small', 'price': 10, 'unit': '1 pc', 'category': 'Chocolate', 'image': 'assets/images/Chocolate/dairy_milk_small.jpg'},
+    {'name': '5 Star Chocolate', 'price': 10, 'unit': '1 pc', 'category': 'Chocolate', 'image': 'assets/images/Chocolate/cadbury_5star.jpg'},    {'name': 'Dairy Milk Small', 'price': 10, 'unit': '1 pc', 'category': 'Chocolate', 'image': 'assets/images/Chocolate/dairy_milk_small.jpg'},
     {'name': 'Dairy Milk', 'price': 10, 'unit': '1 pc', 'category': 'Chocolate', 'image': 'assets/images/Chocolate/Dairy_milk.png'},
     {'name': 'Dark Fantasy Pie', 'price': 30, 'unit': '1 pc', 'category': 'Chocolate', 'image': 'assets/images/Chocolate/DarkFantasy_pie.jpg'},
     {'name': 'Dark Fantasy', 'price': 35, 'unit': '1 pack', 'category': 'Chocolate', 'image': 'assets/images/Chocolate/dark_fantasy.jpg'},
@@ -133,8 +111,7 @@ class _HomeScreenState extends State<HomeScreen> {
     {'name': 'Kwality Walls Magnum Chocolate Truffle', 'price': 120, 'unit': '1 pc', 'category': 'Ice Creams', 'image': 'assets/images/Ice Creams/kwality-walls-magnum-chocolate-truffle-ice-cream.png'},
     {'name': 'Kwality Walls Sandwich', 'price': 40, 'unit': '1 pc', 'category': 'Ice Creams', 'image': 'assets/images/Ice Creams/kwality-walls-sandwich.png'},
     {'name': 'Magnum Almond Ice Cream', 'price': 120, 'unit': '1 pc', 'category': 'Ice Creams', 'image': 'assets/images/Ice Creams/Magnum Almond ice cream.png'},
-    {'name': 'Magnum Almond', 'price': 110, 'unit': '1 pc', 'category': 'Ice Creams', 'image': 'assets/images/Ice Creams/Magnum Almond.png'},
-    {'name': 'Magnum Chocolate', 'price': 110, 'unit': '1 pc', 'category': 'Ice Creams', 'image': 'assets/images/Ice Creams/Magnum Chocolate.png'},
+    {'name': 'Magnum Almond', 'price': 110, 'unit': '1 pc', 'category': 'Ice Creams', 'image': 'assets/images/Ice Creams/Magnum Almond.png'},    {'name': 'Magnum Chocolate', 'price': 110, 'unit': '1 pc', 'category': 'Ice Creams', 'image': 'assets/images/Ice Creams/Magnum Chocolate.png'},
     {'name': 'Magnum Dark Chocolate', 'price': 120, 'unit': '1 pc', 'category': 'Ice Creams', 'image': 'assets/images/Ice Creams/Magnum dark chocolate.png'},
     {'name': 'Magnum Ice Cream', 'price': 110, 'unit': '1 pc', 'category': 'Ice Creams', 'image': 'assets/images/Ice Creams/Magnum ice cream.png'},
     {'name': 'Sweet Delicious Oreo', 'price': 140, 'unit': '1 tub', 'category': 'Ice Creams', 'image': 'assets/images/Ice Creams/Sweet-delicious oreo.jpg'},
@@ -212,7 +189,6 @@ class _HomeScreenState extends State<HomeScreen> {
     {'name': 'Soy Nuts', 'price': 40, 'unit': '200g', 'category': 'Namkeen', 'image': 'assets/images/Namkeen/Soy Nuts.png'},
     {'name': 'Spicy Almonds', 'price': 99, 'unit': '200g', 'category': 'Namkeen', 'image': 'assets/images/Namkeen/Spicy almonds.png'},
     {'name': 'BTW Spicy Almonds', 'price': 99, 'unit': '200g', 'category': 'Namkeen', 'image': 'assets/images/Namkeen/Spicy almonds(1).png'},
-
     // --- Wafers ---
     {'name': 'Banana Wafers', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/Banana Wafers.jpg'},
     {'name': 'Yellow Banana Wafers', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/Banana Wafers(1).png'},
@@ -223,11 +199,9 @@ class _HomeScreenState extends State<HomeScreen> {
     {'name': 'Bingo Mad Angles', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/Bingo Mad Angles Masala Chips(4).jpg'},
     {'name': 'Cheese & Cream', 'price': 25, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/Cheese & Cream.jpg'},
     {'name': 'Cheese Balls', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/Cheese Balls.png'},
-    {'name': 'Victory Cheese Balls', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/cheese balls(1).png'},
-    {'name': 'Smark Snacks Cheese Balls', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/cheese balls(2).png'},
+    {'name': 'Victory Cheese Balls', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/cheese balls(1).png'},    {'name': 'Smark Snacks Cheese Balls', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/cheese balls(2).png'},
     {'name': 'PeppyCheese Balls', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/cheese balls(3).jpg'},
-    {'name': 'Jackpot Cheese Balls', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/cheese balls(4).png'},
-    {'name': 'Kurkure Chilli Chatka', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/Chilli Chatka.png'},
+    {'name': 'Jackpot Cheese Balls', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/cheese balls(4).png'},    {'name': 'Kurkure Chilli Chatka', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/Chilli Chatka.png'},
     {'name': 'Lays Classic Salted Plain Chips', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/Classic Salted  Plain Chips.jpg'},
     {'name': 'Chipsona Classic Salted Chips', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/Classic Salted  Plain Chips(1).png'},
     {'name': 'Parle Classic Salted Chips', 'price': 20, 'unit': '100g', 'category': 'Wafers', 'image': 'assets/images/Wafers/Classic Salted  Plain Chips(2).jpg'},
@@ -287,8 +261,7 @@ class _HomeScreenState extends State<HomeScreen> {
     {'name': 'Chicken Pickle', 'price': 150, 'unit': '500g', 'category': 'Pickle', 'image': 'assets/images/pickel/Chicken Pickle.jpg'},
 
     // --- Puja Items ---
-    {'name': 'Bell (Ghanti)', 'price': 150, 'unit': '1 pc', 'category': 'Puja Items', 'image': 'assets/images/puja items/Bell (Ghanti).jpg'},
-    {'name': 'Brass Pooja Thali', 'price': 299, 'unit': '1 set', 'category': 'Puja Items', 'image': 'assets/images/puja items/Brass Pooja Thali Set.png'},
+    {'name': 'Bell (Ghanti)', 'price': 150, 'unit': '1 pc', 'category': 'Puja Items', 'image': 'assets/images/puja items/Bell (Ghanti).jpg'},    {'name': 'Brass Pooja Thali', 'price': 299, 'unit': '1 set', 'category': 'Puja Items', 'image': 'assets/images/puja items/Brass Pooja Thali Set.png'},
     {'name': 'Camphor', 'price': 50, 'unit': '100g', 'category': 'Puja Items', 'image': 'assets/images/puja items/Camphor Karpoor Round.jpg'},
     {'name': 'Agarbatti', 'price': 50, 'unit': '1 pack', 'category': 'Puja Items', 'image': 'assets/images/puja items/mangaldeep rose puja agarbati.png'},
     {'name': 'Diya (Lamp)', 'price': 50, 'unit': '1 pc', 'category': 'Puja Items', 'image': 'assets/images/puja items/Diva ( lamp ).jpg'},
@@ -304,8 +277,7 @@ class _HomeScreenState extends State<HomeScreen> {
     {'name': 'Hot Wheels F1', 'price': 199, 'unit': '1 pc', 'category': 'Toys', 'image': 'assets/images/toys items/Hot Wheels F1.jpg'},
     {'name': 'Hot Wheels Batman', 'price': 249, 'unit': '1 pc', 'category': 'Toys', 'image': 'assets/images/toys items/Hot Wheels Batman.jpg'},
     {'name': 'Hot Wheels 5 Pack', 'price': 499, 'unit': '1 pc', 'category': 'Toys', 'image': 'assets/images/toys items/Hot Wheels 5.jpg'},
-    {'name': 'Nissan Skyline Toy', 'price': 299, 'unit': '1 pc', 'category': 'Toys', 'image': 'assets/images/toys items/Nissan Skyline.jpg'},
-    {'name': 'Quad Bike Toy', 'price': 349, 'unit': '1 pc', 'category': 'Toys', 'image': 'assets/images/toys items/Quad Bike.jpg'},
+    {'name': 'Nissan Skyline Toy', 'price': 299, 'unit': '1 pc', 'category': 'Toys', 'image': 'assets/images/toys items/Nissan Skyline.jpg'},    {'name': 'Quad Bike Toy', 'price': 349, 'unit': '1 pc', 'category': 'Toys', 'image': 'assets/images/toys items/Quad Bike.jpg'},
     {'name': 'Hot Wheels 52 Pack', 'price': 599, 'unit': '1 pc', 'category': 'Toys', 'image': 'assets/images/toys items/Hot Wheels 52.jpg'},
 
     // --- Clothes ---
@@ -529,78 +501,31 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 16),
 
-            // Categories
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12),
-              child: Text('Shop by Category',
-                  style: GoogleFonts.poppins(
-                      fontSize: 16, fontWeight: FontWeight.bold)),
-            ),
-            const SizedBox(height: 8),
-            SizedBox(
-              height: 90,
-              child: ListView.builder(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 12),
-                itemCount: _categories.length,
-                itemBuilder: (context, index) {
-                  final cat = _categories[index];
-                  return Container(
-                    width: 70,
-                    margin: const EdgeInsets.only(right: 10),
-                    child: Column(
-                      children: [
-                        Container(
-                          width: 55,
-                          height: 55,
-                          decoration: BoxDecoration(
-                            color: cat['color'].withOpacity(0.15),
-                            borderRadius: BorderRadius.circular(14),
-                          ),
-                          child: Icon(cat['icon'], color: cat['color'], size: 28),
-                        ),
-                        const SizedBox(height: 4),
-                        Text(cat['name'],
-                            style: GoogleFonts.poppins(
-                                fontSize: 10, fontWeight: FontWeight.w500),
-                            textAlign: TextAlign.center,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis),
-                      ],
-                    ),
-                  );
-                },
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
             // New Blinkit/Instamart-style category navigation
             const HomeCategorySections(),
 
-            // Product Sections — Offers 3 sections ke baad
-            _buildProductSection('🍎 Fresh Fruits', 'Fruits'),
-            _buildProductSection('🍦 Ice Creams', 'Ice Creams'),
-            _buildProductSection('🍫 Chocolate', 'Chocolate'),
+            // Product Sections â€” Offers 3 sections ke baad
+            _buildProductSection('ðŸŽ Fresh Fruits', 'Fruits'),
+            _buildProductSection('ðŸ¦ Ice Creams', 'Ice Creams'),
+            _buildProductSection('ðŸ« Chocolate', 'Chocolate'),
 
-            // ✅ Coupons & Offers — 3 sections ke baad
+            // âœ… Coupons & Offers â€” 3 sections ke baad
             _buildOffersSection(),
 
-            _buildProductSection('🍟 Snacks', 'Snacks'),
-            _buildProductSection('🥤 Beverages', 'Beverages'),
-            _buildProductSection('🥐 Bakery', 'Bakery'),
-            _buildProductSection('🍪 Biscuits', 'Biscuits'),
-            _buildProductSection('🥜 Namkeen', 'Namkeen'),
-            _buildProductSection('🍟 Wafers', 'Wafers'),
-            _buildProductSection('🥤 Cold Drinks', 'Cold Drinks'),
-            _buildProductSection('🍅 Ketchup', 'Ketchup'),
-            _buildProductSection('🧴 Shampoo', 'Shampoo'),
-            _buildProductSection('🧼 Soap', 'Soap'),
-            _buildProductSection('💄 Personal Care', 'Personal Care'),
-            _buildProductSection('🥒 Pickle', 'Pickle'),
-            _buildProductSection('🪔 Puja Items', 'Puja Items'),
-            _buildProductSection('🧸 Toys', 'Toys'),
-            _buildProductSection('👕 Clothes', 'Clothes'),
+            _buildProductSection('ðŸŸ Snacks', 'Snacks'),
+            _buildProductSection('ðŸ¥¤ Beverages', 'Beverages'),
+            _buildProductSection('ðŸ¥ª Biscuits', 'Biscuits'),
+            _buildProductSection('ðŸ¥œ Namkeen', 'Namkeen'),
+            _buildProductSection('ðŸŸ Wafers', 'Wafers'),
+            _buildProductSection('ðŸ¥¤ Cold Drinks', 'Cold Drinks'),
+            _buildProductSection('ðŸ… Ketchup', 'Ketchup'),
+            _buildProductSection('ðŸ§´ Shampoo', 'Shampoo'),
+            _buildProductSection('ðŸ§¼ Soap', 'Soap'),
+            _buildProductSection('ðŸ’„ Personal Care', 'Personal Care'),
+            _buildProductSection('ðŸ¥’ Pickle', 'Pickle'),
+            _buildProductSection('ðŸª” Puja Items', 'Puja Items'),
+            _buildProductSection('ðŸ§¸ Toys', 'Toys'),
+            _buildProductSection('ðŸ‘• Clothes', 'Clothes'),
             const SizedBox(height: 80),
           ],
         ),
@@ -655,7 +580,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('₹${cart.cartTotal}',
+                        Text('â‚¹${cart.cartTotal}',
                             style: GoogleFonts.poppins(
                                 color: Colors.white,
                                 fontWeight: FontWeight.bold,
@@ -686,20 +611,20 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ✅ Coupons & Offers Section
+  // âœ… Coupons & Offers Section
   Widget _buildOffersSection() {
     final List<Map<String, dynamic>> offers = [
-      {'amount': '₹50 OFF', 'min': 'above ₹599', 'color': const Color(0xFF4CAF50)},
-      {'amount': '₹100 OFF', 'min': 'above ₹1199', 'color': const Color(0xFF4CAF50)},
-      {'amount': '₹150 OFF', 'min': 'above ₹1799', 'color': const Color(0xFF4CAF50)},
-      {'amount': '₹200 OFF', 'min': 'above ₹2399', 'color': const Color(0xFF4CAF50)},
+      {'amount': 'â‚¹50 OFF', 'min': 'above â‚¹599', 'color': const Color(0xFF4CAF50)},
+      {'amount': 'â‚¹100 OFF', 'min': 'above â‚¹1199', 'color': const Color(0xFF4CAF50)},
+      {'amount': 'â‚¹150 OFF', 'min': 'above â‚¹1799', 'color': const Color(0xFF4CAF50)},
+      {'amount': 'â‚¹200 OFF', 'min': 'above â‚¹2399', 'color': const Color(0xFF4CAF50)},
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-          child: Text('🏷️ Coupons & Offers',
+          child: Text('ðŸ·ï¸ Coupons & Offers',
               style: GoogleFonts.poppins(
                   fontSize: 16, fontWeight: FontWeight.bold)),
         ),
@@ -821,7 +746,7 @@ class _HomeScreenState extends State<HomeScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('₹${product['price']}',
+                                Text('â‚¹${product['price']}',
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,

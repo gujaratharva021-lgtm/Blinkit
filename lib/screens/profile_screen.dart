@@ -14,6 +14,10 @@ import 'orders/order_list_screen.dart';
 import 'wallet/wallet_screen.dart';
 import 'support/support_home_screen.dart';
 import 'about/about_us_screen.dart';
+import '../features/address_book/presentation/screens/address_list_screen.dart';
+import '../features/wishlist/presentation/screens/wishlist_screen.dart';
+import '../features/gst_details/presentation/screens/gst_list_screen.dart';
+import '../features/gift_cards/presentation/screens/gift_cards_screen.dart';
 
 const Color kGreen = Color(0xFF0C831F);
 
@@ -62,13 +66,22 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 20),
               _buildSectionLabel('Your information', scheme),
               _buildSectionCard(scheme, [
-                _tile(Icons.menu_book_outlined, 'Address book', _showAddressDialog, scheme),
-                _tile(Icons.favorite_border, 'Your wishlist',
-                    () => _showComingSoon('Wishlist'), scheme),
-                _tile(Icons.description_outlined, 'GST details',
-                    () => _showComingSoon('GST details'), scheme),
-                _tile(Icons.card_giftcard_outlined, 'E-gift cards',
-                    () => _showComingSoon('E-gift cards'), scheme),
+                _tile(Icons.menu_book_outlined, 'Address book', () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const AddressListScreen()));
+                }, scheme),
+                _tile(Icons.favorite_border, 'Your wishlist', () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const WishlistScreen()));
+                }, scheme),
+                _tile(Icons.description_outlined, 'GST details', () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const GstListScreen()));
+                }, scheme),
+                _tile(Icons.card_giftcard_outlined, 'E-gift cards', () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const GiftCardsScreen()));
+                }, scheme),
                 _tile(Icons.receipt_long_outlined, 'Your prescriptions',
                     () => _showComingSoon('Prescriptions'), scheme,
                     isLast: true),
@@ -82,8 +95,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }, scheme),
                 _tile(Icons.credit_card_outlined, 'Payment settings',
                     () => _showComingSoon('Payment settings'), scheme),
-                _tile(Icons.redeem_outlined, 'Claim gift card',
-                    () => _showComingSoon('Claim gift card'), scheme),
+                _tile(Icons.redeem_outlined, 'Claim gift card', () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const GiftCardsScreen()));
+                }, scheme),
                 _tile(Icons.card_membership_outlined, 'Your collected rewards',
                     () => _showComingSoon('Rewards'), scheme,
                     isLast: true),
@@ -372,53 +389,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
               child: Text('Logout', style: GoogleFonts.poppins(color: Colors.white))),
-        ],
-      ),
-    );
-  }
-
-  void _showAddressDialog() {
-    final controller = TextEditingController();
-    showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: Text('Add address', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
-        content: TextField(
-          controller: controller,
-          decoration: InputDecoration(
-            hintText: 'Enter your address',
-            hintStyle: GoogleFonts.poppins(color: Colors.grey),
-            border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          style: GoogleFonts.poppins(),
-          maxLines: 3,
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Cancel', style: GoogleFonts.poppins(color: Colors.grey))),
-          ElevatedButton(
-              onPressed: () async {
-                if (controller.text.isNotEmpty) {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.setString('saved_address', controller.text);
-                  if (context.mounted) {
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Address saved', style: GoogleFonts.poppins()),
-                        backgroundColor: kGreen,
-                        behavior: SnackBarBehavior.floating,
-                      ),
-                    );
-                  }
-                }
-              },
-              style: ElevatedButton.styleFrom(
-                  backgroundColor: kGreen,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10))),
-              child: Text('Save', style: GoogleFonts.poppins(color: Colors.white))),
         ],
       ),
     );

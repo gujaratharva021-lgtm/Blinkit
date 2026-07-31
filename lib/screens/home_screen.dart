@@ -1,4 +1,4 @@
-?import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -12,6 +12,9 @@ import 'product_detail_screen.dart';
 import '../widgets/wishlist_intro_sheet.dart';
 import '../features/category_nav/screens/home_category_sections.dart';
 import 'notifications/notification_list_screen.dart';
+import '../features/category_nav/data/category_mock_data.dart';
+import '../features/category_nav/models/category_models.dart';
+import '../features/category_nav/routes/category_nav_routes.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool showWishlistIntro;
@@ -511,21 +514,23 @@ class _HomeScreenState extends State<HomeScreen> {
             // New Blinkit/Instamart-style category navigation
             const HomeCategorySections(),
 
+            _buildPromoBanner(),
+
             // Product Sections — Offers 3 sections ke baad
-            _buildProductSection('� Fresh Fruits', 'Fruits'),
-            _buildProductSection('� Ice Creams', 'Ice Creams'),
-            _buildProductSection('� Chocolate', 'Chocolate'),
+            _buildProductSection('🍎 Fresh Fruits', 'Fruits'),
+            _buildProductSection('🍦 Ice Creams', 'Ice Creams'),
+            _buildProductSection('🍫 Chocolate', 'Chocolate'),
 
             // ✅ Coupons & Offers — 3 sections ke baad
             _buildOffersSection(),
 
-            _buildProductSection('� Snacks', 'Snacks'),
+            _buildProductSection('🍟 Snacks', 'Snacks'),
             _buildProductSection('🥤 Beverages', 'Beverages'),
             _buildProductSection('🥪 Biscuits', 'Biscuits'),
             _buildProductSection('🥜 Namkeen', 'Namkeen'),
-            _buildProductSection('� Wafers', 'Wafers'),
+            _buildProductSection('🥔 Wafers', 'Wafers'),
             _buildProductSection('🥤 Cold Drinks', 'Cold Drinks'),
-            _buildProductSection('� Ketchup', 'Ketchup'),
+            _buildProductSection('🍅 Ketchup', 'Ketchup'),
             _buildProductSection('🧴 Shampoo', 'Shampoo'),
             _buildProductSection('🧼 Soap', 'Soap'),
             _buildProductSection('💄 Personal Care', 'Personal Care'),
@@ -717,6 +722,111 @@ class _HomeScreenState extends State<HomeScreen> {
         ),
         const SizedBox(height: 8),
       ],
+    );
+  }
+
+  CategoryModel? _findCategoryById(String id) {
+    for (final section in CategoryMockData.sections) {
+      for (final cat in section.categories) {
+        if (cat.id == id) return cat;
+      }
+    }
+    return null;
+  }
+
+  Widget _promoTile(String categoryId, String label, IconData icon, Color color) {
+    return GestureDetector(
+      onTap: () {
+        final category = _findCategoryById(categoryId);
+        if (category != null) {
+          CategoryNavRoutes.openCategory(context, category);
+        }
+      },
+      behavior: HitTestBehavior.opaque,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Container(
+            width: 64,
+            height: 64,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+            ),
+            child: Icon(icon, color: color, size: 30),
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: 72,
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+              style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPromoBanner() {
+    return Container(
+      margin: const EdgeInsets.fromLTRB(12, 0, 12, 20),
+      padding: const EdgeInsets.fromLTRB(16, 16, 16, 18),
+      decoration: BoxDecoration(
+        color: const Color(0xFFDCF3DC),
+        borderRadius: BorderRadius.circular(18),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text('Stock up your kitchen!',
+                        style: GoogleFonts.poppins(
+                            fontSize: 18, fontWeight: FontWeight.bold)),
+                    const SizedBox(height: 4),
+                    Text('Fresh groceries, snacks & essentials, delivered fast',
+                        style: GoogleFonts.poppins(
+                            fontSize: 12, color: Colors.black54)),
+                  ],
+                ),
+              ),
+              SizedBox(
+                width: 64,
+                height: 56,
+                child: Stack(
+                  alignment: Alignment.center,
+                  children: [
+                    Icon(Icons.shopping_basket, size: 48, color: const Color(0xFF0C831F)),
+                    Positioned(
+                      right: 0,
+                      bottom: 0,
+                      child: Icon(Icons.local_grocery_store, size: 26, color: const Color(0xFFE0592A)),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              _promoTile('cat_veg_fruits', 'Fruits & Vegetables', Icons.eco, const Color(0xFF3AA655)),
+              _promoTile('cat_dairy_bread_eggs', 'Dairy, Bread & Eggs', Icons.egg_alt, const Color(0xFF2F8FD1)),
+              _promoTile('cat_chips_namkeen', 'Chips & Namkeen', Icons.fastfood, const Color(0xFFE0A72A)),
+              _promoTile('cat_cleaners_repellents', 'Cleaners & Repellents', Icons.cleaning_services, const Color(0xFF2F7FC1)),
+            ],
+          ),
+        ],
+      ),
     );
   }
 

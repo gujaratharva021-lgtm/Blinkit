@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../widgets/state_views.dart';
@@ -74,9 +74,9 @@ class _HomeCategorySectionsState extends State<HomeCategorySections> {
               itemCount: section.categories.length,
               gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
                 crossAxisCount: section.title == 'Beauty & Personal Care' ? 3 : 4,
-                mainAxisSpacing: section.title == 'Beauty & Personal Care' ? 12 : 14,
-                crossAxisSpacing: 6,
-                childAspectRatio: section.title == 'Beauty & Personal Care' ? 0.85 : 0.58,
+                mainAxisSpacing: section.title == 'Beauty & Personal Care' ? 12 : 10,
+                crossAxisSpacing: 8,
+                childAspectRatio: section.title == 'Beauty & Personal Care' ? 0.85 : 0.72,
               ),
               itemBuilder: (context, index) {
                 final category = section.categories[index];

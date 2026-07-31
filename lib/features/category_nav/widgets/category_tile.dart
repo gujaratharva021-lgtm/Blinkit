@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/category_models.dart';
 import 'category_placeholder_image.dart';
@@ -14,38 +14,43 @@ class CategoryTile extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       behavior: HitTestBehavior.opaque,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          category.image != null
-              ? Container(
-                  width: 120,
-                  height: 120,
-                  padding: EdgeInsets.zero,
-                  decoration: BoxDecoration(
-                    color: category.color.withOpacity(0.10),
-                    borderRadius: BorderRadius.circular(16),
-                  ),
-                  child: ClipRRect(
-                    borderRadius: BorderRadius.circular(10),
-                    child: Image.asset(category.image!, fit: BoxFit.cover),
-                  ),
-                )
-              : CategoryPlaceholderImage(
-                  icon: category.icon,
-                  color: category.color,
-                  size: 64,
-                  borderRadius: 18,
-                ),
-          const SizedBox(height: 8),
-          Text(
-            category.title,
-            textAlign: TextAlign.center,
-            maxLines: 2,
-            overflow: TextOverflow.ellipsis,
-            style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, height: 1.2),
-          ),
-        ],
+      child: LayoutBuilder(
+        builder: (context, constraints) {
+          final double tileSize = constraints.maxWidth;
+          return Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              category.image != null
+                  ? Container(
+                      width: tileSize,
+                      height: tileSize,
+                      padding: EdgeInsets.zero,
+                      decoration: BoxDecoration(
+                        color: category.color.withOpacity(0.10),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.asset(category.image!, fit: BoxFit.cover),
+                      ),
+                    )
+                  : CategoryPlaceholderImage(
+                      icon: category.icon,
+                      color: category.color,
+                      size: tileSize * 0.55,
+                      borderRadius: 18,
+                    ),
+              const SizedBox(height: 6),
+              Text(
+                category.title,
+                textAlign: TextAlign.center,
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+                style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, height: 1.2),
+              ),
+            ],
+          );
+        },
       ),
     );
   }

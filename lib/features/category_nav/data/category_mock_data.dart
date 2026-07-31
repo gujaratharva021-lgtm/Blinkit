@@ -119,9 +119,7 @@ class CategoryMockData {
               Icons.medical_services, const Color(0xFF2E7D5B),
               ['OTC Medicines', 'Health Supplements', 'First Aid', 'Protein & Nutrition'],
               image: AssetConstants.healthPharma),
-          _category('cat_sexual_wellness', 'Sexual Wellness', 'sec_beauty',
-              Icons.favorite_border, const Color(0xFFB0206E),
-              ['Condoms', 'Lubricants', 'Pregnancy Tests', 'Intimate Care']),
+          
         ],
       ),
       CategorySectionModel(

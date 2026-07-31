@@ -714,7 +714,10 @@ class _HomeScreenState extends State<HomeScreen> {
                 onTap: () => Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (_) => ProductDetailScreen(product: product),
+                    builder: (_) => ProductDetailScreen(
+                      product: product,
+                      allProducts: items,
+                    ),
                   ),
                 ),
                 child: Container(

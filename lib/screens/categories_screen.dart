@@ -590,7 +590,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (_) => ProductDetailScreen(product: product),
+                      builder: (_) => ProductDetailScreen(
+                        product: product,
+                        allProducts: products,
+                      ),
                     ),
                   ),
                     child: Container(

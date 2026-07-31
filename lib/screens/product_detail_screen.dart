@@ -6,8 +6,13 @@ import '../providers/cart_provider.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Map<String, dynamic> product;
+  final List<Map<String, dynamic>> allProducts;
 
-  const ProductDetailScreen({super.key, required this.product});
+  const ProductDetailScreen({
+    super.key,
+    required this.product,
+    this.allProducts = const [],
+  });
 
   @override
   State<ProductDetailScreen> createState() => _ProductDetailScreenState();
@@ -16,6 +21,72 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _highlightsExpanded = true;
   bool _infoExpanded = true;
+
+  late final PageController _galleryController;
+  int _galleryIndex = 0;
+
+  late final List<String> _galleryImages;
+  late final List<_ReviewData> _reviews;
+  late final double _avgRating;
+  late final List<Map<String, dynamic>> _relatedProducts;
+
+  @override
+  void initState() {
+    super.initState();
+    _galleryController = PageController();
+
+    final baseImage = widget.product['image'] as String;
+    // Product data only has a single hero image, so the gallery reuses it
+    // across a few "angles" until real multi-image assets are added.
+    _galleryImages = [baseImage, baseImage, baseImage];
+
+    _reviews = _mockReviews(widget.product['name'] as String);
+    _avgRating = _reviews.isEmpty
+        ? 0
+        : _reviews.map((r) => r.rating).reduce((a, b) => a + b) /
+            _reviews.length;
+
+    _relatedProducts = _computeRelatedProducts();
+  }
+
+  @override
+  void dispose() {
+    _galleryController.dispose();
+    super.dispose();
+  }
+
+  List<_ReviewData> _mockReviews(String productName) {
+    return [
+      _ReviewData(
+        name: 'Aditi Sharma',
+        rating: 5,
+        comment: 'Good quality and delivered fresh. Will order again.',
+        daysAgo: 2,
+      ),
+      _ReviewData(
+        name: 'Rohan Mehta',
+        rating: 4,
+        comment: 'Packaging could be better but the product itself is nice.',
+        daysAgo: 6,
+      ),
+      _ReviewData(
+        name: 'Priya Nair',
+        rating: 4,
+        comment: 'As described, matches what was shown in the app.',
+        daysAgo: 11,
+      ),
+    ];
+  }
+
+  List<Map<String, dynamic>> _computeRelatedProducts() {
+    final category = widget.product['category'];
+    final currentName = widget.product['name'];
+    final related = widget.allProducts
+        .where((p) => p['category'] == category && p['name'] != currentName)
+        .toList();
+    related.shuffle();
+    return related.take(10).toList();
+  }
 
   String _getGoodFor(String category) {
     switch (category) {
@@ -110,7 +181,43 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
                     color: Theme.of(context).colorScheme.surface,
-                    child: _buildProductImage(product['image']),
+                    child: Stack(
+                      children: [
+                        PageView.builder(
+                          controller: _galleryController,
+                          itemCount: _galleryImages.length,
+                          onPageChanged: (i) =>
+                              setState(() => _galleryIndex = i),
+                          itemBuilder: (_, i) =>
+                              _buildProductImage(_galleryImages[i]),
+                        ),
+                        if (_galleryImages.length > 1)
+                          Positioned(
+                            bottom: 12,
+                            left: 0,
+                            right: 0,
+                            child: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: List.generate(
+                                _galleryImages.length,
+                                (i) => AnimatedContainer(
+                                  duration: const Duration(milliseconds: 200),
+                                  margin:
+                                      const EdgeInsets.symmetric(horizontal: 3),
+                                  width: _galleryIndex == i ? 18 : 6,
+                                  height: 6,
+                                  decoration: BoxDecoration(
+                                    color: _galleryIndex == i
+                                        ? const Color(0xFF0C831F)
+                                        : Colors.grey.shade400,
+                                    borderRadius: BorderRadius.circular(3),
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -331,6 +438,186 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
 
+                    const SizedBox(height: 8),
+
+                    // Reviews
+                    Container(
+                      color: Theme.of(context).colorScheme.surface,
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            children: [
+                              Text('Ratings & Reviews',
+                                  style: GoogleFonts.poppins(
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold)),
+                              const Spacer(),
+                              if (_reviews.isNotEmpty)
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 4),
+                                  decoration: BoxDecoration(
+                                    color: const Color(0xFF0C831F),
+                                    borderRadius: BorderRadius.circular(6),
+                                  ),
+                                  child: Row(
+                                    children: [
+                                      Text(_avgRating.toStringAsFixed(1),
+                                          style: GoogleFonts.poppins(
+                                              color: Colors.white,
+                                              fontSize: 12,
+                                              fontWeight: FontWeight.w600)),
+                                      const SizedBox(width: 2),
+                                      const Icon(Icons.star,
+                                          color: Colors.white, size: 12),
+                                    ],
+                                  ),
+                                ),
+                            ],
+                          ),
+                          Text('${_reviews.length} reviews',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 12, color: Colors.grey)),
+                          const SizedBox(height: 12),
+                          ..._reviews.map((r) => Padding(
+                                padding: const EdgeInsets.only(bottom: 14),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        CircleAvatar(
+                                          radius: 14,
+                                          backgroundColor:
+                                              const Color(0xFFE8F5E9),
+                                          child: Text(
+                                            r.name.isNotEmpty
+                                                ? r.name[0]
+                                                : '?',
+                                            style: GoogleFonts.poppins(
+                                                color: const Color(0xFF0C831F),
+                                                fontWeight: FontWeight.bold),
+                                          ),
+                                        ),
+                                        const SizedBox(width: 8),
+                                        Expanded(
+                                          child: Text(r.name,
+                                              style: GoogleFonts.poppins(
+                                                  fontSize: 13,
+                                                  fontWeight:
+                                                      FontWeight.w600)),
+                                        ),
+                                        Row(
+                                          children: List.generate(
+                                            5,
+                                            (i) => Icon(
+                                              i < r.rating
+                                                  ? Icons.star
+                                                  : Icons.star_border,
+                                              size: 14,
+                                              color: const Color(0xFFFFA41C),
+                                            ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 36),
+                                      child: Text(r.comment,
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 12.5,
+                                              color: Colors.grey.shade700)),
+                                    ),
+                                    Padding(
+                                      padding:
+                                          const EdgeInsets.only(left: 36, top: 2),
+                                      child: Text(
+                                          '${r.daysAgo} day${r.daysAgo == 1 ? '' : 's'} ago',
+                                          style: GoogleFonts.poppins(
+                                              fontSize: 11,
+                                              color: Colors.grey)),
+                                    ),
+                                  ],
+                                ),
+                              )),
+                        ],
+                      ),
+                    ),
+
+                    // Related Products
+                    if (_relatedProducts.isNotEmpty) ...[
+                      const SizedBox(height: 8),
+                      Container(
+                        color: Theme.of(context).colorScheme.surface,
+                        padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                        child: Text('You might also like',
+                            style: GoogleFonts.poppins(
+                                fontSize: 16, fontWeight: FontWeight.bold)),
+                      ),
+                      Container(
+                        color: Theme.of(context).colorScheme.surface,
+                        height: 200,
+                        child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          padding: const EdgeInsets.symmetric(horizontal: 12),
+                          itemCount: _relatedProducts.length,
+                          itemBuilder: (context, index) {
+                            final related = _relatedProducts[index];
+                            return GestureDetector(
+                              onTap: () => Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => ProductDetailScreen(
+                                    product: related,
+                                    allProducts: widget.allProducts,
+                                  ),
+                                ),
+                              ),
+                              child: Container(
+                                width: 130,
+                                margin: const EdgeInsets.only(right: 10),
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  border:
+                                      Border.all(color: Colors.grey.shade200),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment:
+                                      CrossAxisAlignment.start,
+                                  children: [
+                                    SizedBox(
+                                      height: 90,
+                                      width: double.infinity,
+                                      child:
+                                          _buildProductImage(related['image']),
+                                    ),
+                                    const SizedBox(height: 6),
+                                    Text(related['name'],
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w500)),
+                                    const SizedBox(height: 4),
+                                    Text('₹${related['price']}',
+                                        style: GoogleFonts.poppins(
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.bold)),
+                                  ],
+                                ),
+                              ),
+                            );
+                          },
+                        ),
+                      ),
+                    ],
+
                     const SizedBox(height: 100),
                   ],
                 ),
@@ -474,4 +761,18 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
+}
+
+class _ReviewData {
+  final String name;
+  final int rating;
+  final String comment;
+  final int daysAgo;
+
+  _ReviewData({
+    required this.name,
+    required this.rating,
+    required this.comment,
+    required this.daysAgo,
+  });
 }

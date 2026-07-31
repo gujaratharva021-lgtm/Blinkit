@@ -10,6 +10,7 @@ import 'profile/edit_profile_screen.dart';
 import 'settings/notification_preferences_screen.dart';
 import 'notifications/notification_list_screen.dart';
 import 'settings/account_privacy_screen.dart';
+import 'settings/change_password_screen.dart';
 import 'share/share_app_screen.dart';
 import 'orders/order_list_screen.dart';
 import 'wallet/wallet_screen.dart';
@@ -124,6 +125,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       context,
                       MaterialPageRoute(
                           builder: (_) => const AccountPrivacyScreen()));
+                }, scheme),
+                _tile(Icons.lock_reset_outlined, 'Change password', () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (_) => const ChangePasswordScreen()));
                 }, scheme),
                 _tile(Icons.notifications_active_outlined,
                     'Notifications', () {

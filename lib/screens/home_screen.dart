@@ -573,40 +573,50 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       floatingActionButton: cart.cartCount > 0
           ? Padding(
-              padding: const EdgeInsets.only(bottom: 56),
+              padding: const EdgeInsets.only(bottom: 14),
               child: Material(
-                color: const Color(0xFF0C831F),
-                borderRadius: BorderRadius.circular(10),
+                color: Colors.transparent,
                 child: InkWell(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(40),
                   onTap: () => Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const CartScreen())),
                   child: Container(
-                    width: MediaQuery.of(context).size.width - 24,
-                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+                    height: 60,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0C831F),
+                      borderRadius: BorderRadius.circular(40),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.25),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
                     child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Text('â‚¹${cart.cartTotal}',
-                            style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15)),
-                        Row(
+                        _buildCartThumbnails(cart),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text('View cart',
                                 style: GoogleFonts.poppins(
                                     color: Colors.white,
                                     fontWeight: FontWeight.bold,
                                     fontSize: 15)),
-                            const SizedBox(width: 6),
-                            Text('${cart.cartCount} item${cart.cartCount > 1 ? 's' : ''}',
+                            Text(
+                                '${cart.cartCount} item${cart.cartCount > 1 ? 's' : ''}',
                                 style: GoogleFonts.poppins(
-                                    color: Colors.white70, fontSize: 12)),
-                            const SizedBox(width: 4),
-                            const Icon(Icons.arrow_forward, color: Colors.white, size: 18),
+                                    color: Colors.white70, fontSize: 11)),
                           ],
                         ),
+                        const SizedBox(width: 18),
+                        const Icon(Icons.chevron_right,
+                            color: Colors.white, size: 22),
                       ],
                     ),
                   ),
@@ -615,6 +625,36 @@ class _HomeScreenState extends State<HomeScreen> {
             )
           : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  // Small overlapping circular thumbnails of items currently in the cart,
+  // shown on the "View cart" pill.
+  Widget _buildCartThumbnails(CartProvider cart) {
+    final items = cart.cartItems.values.take(2).toList();
+    return SizedBox(
+      width: items.length > 1 ? 54 : 40,
+      height: 40,
+      child: Stack(
+        children: [
+          for (int i = 0; i < items.length; i++)
+            Positioned(
+              left: i * 22.0,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: ClipOval(
+                  child: _buildImage(items[i].image, height: 40),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 

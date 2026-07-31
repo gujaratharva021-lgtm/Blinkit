@@ -1,7 +1,4 @@
 /// Central registry of local asset image paths used across the app.
-/// Category images are placeholder art generated as stand-ins —
-/// swap the files in assets/categories/ with real photography whenever
-/// it's available; the paths/filenames below can stay the same.
 class AssetConstants {
   AssetConstants._();
 
@@ -33,4 +30,29 @@ class AssetConstants {
   static const String dryFruitsCereals = '$_base/dry_fruits_cereals.png';
   static const String chickenMeatFish = '$_base/chicken_meat_fish.png';
   static const String kitchenwareAppliances = '$_base/kitchenware_appliances.png';
+
+  // Snacks & Drinks home-category images (category_nav module)
+  static const String chipsNamkeen = '$_base/chips_namkeen.png';
+  static const String sweetsChocolates = '$_base/sweets_chocolates.png';
+  static const String drinksJuices = '$_base/drinks_juices.png';
+  static const String teaCoffeeMilk = '$_base/tea_coffee_milk.png';
+  static const String instantFood = '$_base/instant_food.png';
+  static const String saucesSpreads = '$_base/sauces_spreads.png';
+  static const String paanCorner = '$_base/paan_corner.png';
+  static const String iceCreamsMore = '$_base/ice_creams_more.png';
+
+  // Beauty & Personal Care home-category images (category_nav module)
+  static const String bathBody = '$_base/bath_body.png';
+  static const String hairCare = '$_base/hair.png';
+  static const String skinFace = '$_base/skin_face.png';
+  static const String beautyCosmetics = '$_base/beauty_cosmetics.png';
+  static const String feminineHygiene = '$_base/feminine_hygiene.png';
+  static const String babyCare = '$_base/baby_care.png';
+  static const String healthPharma = '$_base/health_pharma.png';
+
+  // Household Essentials home-category images (category_nav module)
+  static const String homeLifestyle = '$_base/home_lifestyle.png';
+  static const String cleanersRepellents = '$_base/cleaners_repellents.png';
+  static const String electronicsCategory = '$_base/electronics.png';
+  static const String stationeryGames = '$_base/stationery_games.png';
 }

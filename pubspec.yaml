@@ -57,5 +57,6 @@ flutter:
     - assets/images/puja items/
     - assets/images/toys items/
     - assets/images/cloths items/
-
+    - assets/categories/
+    
     - assets/data/

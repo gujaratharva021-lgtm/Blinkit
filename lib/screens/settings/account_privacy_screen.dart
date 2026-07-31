@@ -1,6 +1,5 @@
 ﻿import 'package:flutter/material.dart';
 import '../../widgets/confirm_dialog.dart';
-import 'change_password_screen.dart';
 
 const Color kGreen = Color(0xFF0C831F);
 
@@ -15,19 +14,6 @@ class AccountPrivacyScreen extends StatelessWidget {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: ListTile(
-              leading: const Icon(Icons.lock_reset_outlined, color: kGreen),
-              title: const Text('Change password'),
-              subtitle: const Text('Update your account password'),
-              trailing: const Icon(Icons.chevron_right),
-              onTap: () => Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const ChangePasswordScreen())),
-            ),
-          ),
-          const SizedBox(height: 12),
           Card(
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),

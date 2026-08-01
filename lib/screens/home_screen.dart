@@ -1029,13 +1029,32 @@ class _HomeScreenState extends State<HomeScreen> {
                                 : Colors.black,
                             borderRadius: BorderRadius.circular(24),
                           ),
-                          child: Text('Shop now',
-                              style: GoogleFonts.poppins(
-                                  color: promo['textColor'] == Colors.white
-                                      ? Colors.black
-                                      : Colors.white,
-                                  fontSize: 12,
-                                  fontWeight: FontWeight.w600)),
+                          GestureDetector(
+  onTap: () {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (_) => const CategoriesScreen()),
+    );
+  },
+  child: Container(
+    padding: const EdgeInsets.symmetric(
+        horizontal: 16, vertical: 8),
+    decoration: BoxDecoration(
+      color: promo['textColor'] == Colors.white
+          ? Colors.white
+          : Colors.black,
+      borderRadius: BorderRadius.circular(24),
+    ),
+    child: Text('Shop now',
+        style: GoogleFonts.poppins(
+            color: promo['textColor'] == Colors.white
+                ? Colors.black
+                : Colors.white,
+            fontSize: 12,
+            fontWeight: FontWeight.w600)),
+  ),
+),
                         ),
                       ],
                     ),

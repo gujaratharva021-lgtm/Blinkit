@@ -442,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                       child: Container(
                                         padding: const EdgeInsets.all(4),
                                         decoration: const BoxDecoration(
-                                            color: Colors.red, shape: BoxShape.circle),
+                                            color: Color(0xFF0C831F), shape: BoxShape.circle),
                                         child: Text('${cart.cartCount}',
                                             style: const TextStyle(
                                                 color: Colors.white,

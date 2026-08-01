@@ -1,0 +1,13 @@
+diff --git a/lib/screens/home_screen.dart b/lib/screens/home_screen.dart
+index 2a7c955..dd8d7b0 100644
+--- a/lib/screens/home_screen.dart
++++ b/lib/screens/home_screen.dart
+@@ -442,7 +442,7 @@ class _HomeScreenState extends State<HomeScreen> {
+                                       child: Container(
+                                         padding: const EdgeInsets.all(4),
+                                         decoration: const BoxDecoration(
+-                                            color: Colors.red, shape: BoxShape.circle),
++                                            color: Color(0xFF0C831F), shape: BoxShape.circle),
+                                         child: Text('${cart.cartCount}',
+                                             style: const TextStyle(
+                                                 color: Colors.white,

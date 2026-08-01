@@ -507,7 +507,9 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
   @override
   Widget build(BuildContext context) {
     final selectedCategory = _categories[_selectedIndex].name;
-    final products = _categoryProducts[selectedCategory] ?? [];
+    final products = (_categoryProducts[selectedCategory] ?? [])
+        .map((p) => {...p, 'category': p['category'] ?? selectedCategory})
+        .toList();
     final cart = context.watch<CartProvider>();
 
     return Scaffold(
@@ -547,17 +549,10 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                     child: Column(
                       children: [
                         Container(
-                          width: 48,
-                          height: 48,
-                          padding: const EdgeInsets.all(6),
-                          decoration: BoxDecoration(
-                            color: isSelected
-                                ? const Color(0xFF0C831F).withOpacity(0.12)
-                                : const Color(0xFFF5F5F5),
-                            borderRadius: BorderRadius.circular(16),
-                          ),
+                          width: 64,
+                          height: 64,
                           child: ClipRRect(
-                            borderRadius: BorderRadius.circular(10),
+                            borderRadius: BorderRadius.circular(16),
                             child: Image.asset(cat.image, fit: BoxFit.cover),
                           ),
                         ),

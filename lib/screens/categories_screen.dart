@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
@@ -638,7 +638,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text('â‚¹${product['price']}',
+                                Text('₹${product['price']}',
                                     style: GoogleFonts.poppins(
                                         fontSize: 13, fontWeight: FontWeight.bold,
                                         color: const Color(0xFF0C831F))),

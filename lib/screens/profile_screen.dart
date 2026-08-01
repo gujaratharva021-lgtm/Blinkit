@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,7 +18,6 @@ import '../features/address_book/presentation/screens/address_list_screen.dart';
 import '../features/wishlist/presentation/screens/wishlist_screen.dart';
 import '../features/gst_details/presentation/screens/gst_list_screen.dart';
 import '../features/gift_cards/presentation/screens/gift_cards_screen.dart';
-import 'cart_screen.dart';
 import 'categories_screen.dart';
 
 const Color kGreen = Color(0xFF0C831F);
@@ -146,7 +145,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: 3,
+        currentIndex: 2,
         onTap: (index) {
           switch (index) {
             case 0:
@@ -157,10 +156,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   MaterialPageRoute(builder: (_) => const CategoriesScreen()));
               break;
             case 2:
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const CartScreen()));
-              break;
-            case 3:
               break;
           }
         },
@@ -173,7 +168,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.category), label: 'Categories'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),

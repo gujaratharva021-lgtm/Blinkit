@@ -21,6 +21,7 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _highlightsExpanded = true;
   bool _infoExpanded = true;
+  bool _isWishlisted = false;
 
   late final PageController _galleryController;
   int _galleryIndex = 0;
@@ -178,6 +179,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: Icon(Icons.arrow_back, color: Theme.of(context).colorScheme.onSurface),
                   ),
                 ),
+                actions: [
+                  GestureDetector(
+                    onTap: () => setState(() => _isWishlisted = !_isWishlisted),
+                    child: Container(
+                      margin: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.surface,
+                        shape: BoxShape.circle,
+                        boxShadow: [BoxShadow(
+                            color: Colors.grey.withOpacity(0.3), blurRadius: 8)],
+                      ),
+                      child: Icon(
+                        _isWishlisted ? Icons.favorite : Icons.favorite_border,
+                        color: _isWishlisted ? Colors.red : Theme.of(context).colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
                 flexibleSpace: FlexibleSpaceBar(
                   background: Container(
                     color: Theme.of(context).colorScheme.surface,
@@ -438,117 +457,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 8),
-
-                    // Reviews
-                    Container(
-                      color: Theme.of(context).colorScheme.surface,
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Row(
-                            children: [
-                              Text('Ratings & Reviews',
-                                  style: GoogleFonts.poppins(
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold)),
-                              const Spacer(),
-                              if (_reviews.isNotEmpty)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 8, vertical: 4),
-                                  decoration: BoxDecoration(
-                                    color: const Color(0xFF0C831F),
-                                    borderRadius: BorderRadius.circular(6),
-                                  ),
-                                  child: Row(
-                                    children: [
-                                      Text(_avgRating.toStringAsFixed(1),
-                                          style: GoogleFonts.poppins(
-                                              color: Colors.white,
-                                              fontSize: 12,
-                                              fontWeight: FontWeight.w600)),
-                                      const SizedBox(width: 2),
-                                      const Icon(Icons.star,
-                                          color: Colors.white, size: 12),
-                                    ],
-                                  ),
-                                ),
-                            ],
-                          ),
-                          Text('${_reviews.length} reviews',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 12, color: Colors.grey)),
-                          const SizedBox(height: 12),
-                          ..._reviews.map((r) => Padding(
-                                padding: const EdgeInsets.only(bottom: 14),
-                                child: Column(
-                                  crossAxisAlignment:
-                                      CrossAxisAlignment.start,
-                                  children: [
-                                    Row(
-                                      children: [
-                                        CircleAvatar(
-                                          radius: 14,
-                                          backgroundColor:
-                                              const Color(0xFFE8F5E9),
-                                          child: Text(
-                                            r.name.isNotEmpty
-                                                ? r.name[0]
-                                                : '?',
-                                            style: GoogleFonts.poppins(
-                                                color: const Color(0xFF0C831F),
-                                                fontWeight: FontWeight.bold),
-                                          ),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Expanded(
-                                          child: Text(r.name,
-                                              style: GoogleFonts.poppins(
-                                                  fontSize: 13,
-                                                  fontWeight:
-                                                      FontWeight.w600)),
-                                        ),
-                                        Row(
-                                          children: List.generate(
-                                            5,
-                                            (i) => Icon(
-                                              i < r.rating
-                                                  ? Icons.star
-                                                  : Icons.star_border,
-                                              size: 14,
-                                              color: const Color(0xFFFFA41C),
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 4),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 36),
-                                      child: Text(r.comment,
-                                          style: GoogleFonts.poppins(
-                                              fontSize: 12.5,
-                                              color: Colors.grey.shade700)),
-                                    ),
-                                    Padding(
-                                      padding:
-                                          const EdgeInsets.only(left: 36, top: 2),
-                                      child: Text(
-                                          '${r.daysAgo} day${r.daysAgo == 1 ? '' : 's'} ago',
-                                          style: GoogleFonts.poppins(
-                                              fontSize: 11,
-                                              color: Colors.grey)),
-                                    ),
-                                  ],
-                                ),
-                              )),
-                        ],
-                      ),
-                    ),
-
+                    
                     // Related Products
                     if (_relatedProducts.isNotEmpty) ...[
                       const SizedBox(height: 8),
@@ -605,7 +514,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500)),
                                     const SizedBox(height: 4),
-                                    Text('?${related['price']}',
+                                    Text('₹${related['price']}',
                                         style: GoogleFonts.poppins(
                                             fontSize: 13,
                                             fontWeight: FontWeight.bold)),

@@ -1,25 +1,25 @@
-/// Central registry of local asset image paths used across the app.
+﻿/// Central registry of local asset image paths used across the app.
 class AssetConstants {
   AssetConstants._();
 
   static const String _base = 'assets/categories';
 
-  static const String fruits = '$_base/fruits.png';
-  static const String beverages = '$_base/beverages.png';
-  static const String bakery = '$_base/bakery.png';
-  static const String biscuits = '$_base/biscuits.png';
-  static const String namkeen = '$_base/namkeen.png';
-  static const String wafers = '$_base/wafers.png';
-  static const String ketchup = '$_base/ketchup.png';
-  static const String shampoo = '$_base/shampoo.png';
-  static const String soap = '$_base/soap.png';
-  static const String personalCare = '$_base/personal_care.png';
-  static const String pickle = '$_base/pickle.png';
-  static const String pujaItems = '$_base/puja_items.png';
-  static const String toys = '$_base/toys.png';
-  static const String clothes = '$_base/clothes.png';
-  static const String iceCreams = '$_base/ice_creams.png';
-  static const String chocolate = '$_base/chocolate.png';
+  static const String fruits = 'assets/images/Fruits/Apple.png';
+  static const String beverages = 'assets/images/Beverages/Coco_cola.png';
+  static const String bakery = 'assets/images/Bakery/Britannia Fruit cake.png';
+  static const String biscuits = 'assets/images/Biscuits/50-50 Maska Chaska Biscuit.jpg';
+  static const String namkeen = 'assets/images/Namkeen/Bhujia.jpg';
+  static const String wafers = 'assets/images/Wafers/Banana Wafers.jpg';
+  static const String ketchup = 'assets/images/ketchup/Banana Ketchup.jpg';
+  static const String shampoo = 'assets/images/shampoo/Dove.png';
+  static const String soap = 'assets/images/Soap/Cinthol.jpg';
+  static const String personalCare = 'assets/images/personal use items/Dettol.png';
+  static const String pickle = 'assets/images/pickel/Amla Pickle.jpg';
+  static const String pujaItems = 'assets/images/puja items/Camphor Karpoor Round.jpg';
+  static const String toys = 'assets/images/toys items/Barbie Doll.png';
+  static const String clothes = 'assets/images/cloths items/Alfaq Tshirt.png';
+  static const String iceCreams = 'assets/images/Ice Creams/Amul Chocolate.jpg';
+  static const String chocolate = 'assets/images/Chocolate/Dairy_milk.png';
 
   // Grocery & Kitchen home-category images (category_nav module)
   static const String vegetablesFruits = '$_base/vegetables_fruits.png';

@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../constants/asset_constants.dart';
 import 'cart_screen.dart';
 import 'search_screen.dart';
 import 'categories_screen.dart';
@@ -838,7 +839,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return null;
   }
 
-  Widget _promoTile(String categoryId, String label, IconData icon, Color color) {
+  Widget _promoTile(String categoryId, String label, String imagePath, Color color) {
     return GestureDetector(
       onTap: () {
         final category = _findCategoryById(categoryId);
@@ -853,11 +854,17 @@ class _HomeScreenState extends State<HomeScreen> {
           Container(
             width: 64,
             height: 64,
+            padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.circular(14),
             ),
-            child: Icon(icon, color: color, size: 30),
+            child: Image.asset(
+              imagePath,
+              fit: BoxFit.contain,
+              errorBuilder: (context, error, stackTrace) =>
+                  Icon(Icons.image_not_supported, color: color, size: 30),
+            ),
           ),
           const SizedBox(height: 6),
           SizedBox(
@@ -923,10 +930,10 @@ class _HomeScreenState extends State<HomeScreen> {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              _promoTile('cat_veg_fruits', 'Fruits & Vegetables', Icons.eco, const Color(0xFF3AA655)),
-              _promoTile('cat_dairy_bread_eggs', 'Dairy, Bread & Eggs', Icons.egg_alt, const Color(0xFF2F8FD1)),
-              _promoTile('cat_chips_namkeen', 'Chips & Namkeen', Icons.fastfood, const Color(0xFFE0A72A)),
-              _promoTile('cat_cleaners_repellents', 'Cleaners & Repellents', Icons.cleaning_services, const Color(0xFF2F7FC1)),
+              _promoTile('cat_veg_fruits', 'Fruits & Vegetables', AssetConstants.vegetablesFruits, const Color(0xFF3AA655)),
+              _promoTile('cat_dairy_bread_eggs', 'Dairy, Bread & Eggs', AssetConstants.dairyBreadEggs, const Color(0xFF2F8FD1)),
+              _promoTile('cat_chips_namkeen', 'Chips & Namkeen', AssetConstants.chipsNamkeen, const Color(0xFFE0A72A)),
+              _promoTile('cat_cleaners_repellents', 'Cleaners & Repellents', AssetConstants.cleanersRepellents, const Color(0xFF2F7FC1)),
             ],
           ),
         ],
@@ -1020,41 +1027,31 @@ class _HomeScreenState extends State<HomeScreen> {
                             ),
                           ],
                         ),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 8),
-                          decoration: BoxDecoration(
-                            color: promo['textColor'] == Colors.white
-                                ? Colors.white
-                                : Colors.black,
-                            borderRadius: BorderRadius.circular(24),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (_) => const CategoriesScreen()),
+                            );
+                          },
+                          child: Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 16, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: promo['textColor'] == Colors.white
+                                  ? Colors.white
+                                  : Colors.black,
+                              borderRadius: BorderRadius.circular(24),
+                            ),
+                            child: Text('Shop now',
+                                style: GoogleFonts.poppins(
+                                    color: promo['textColor'] == Colors.white
+                                        ? Colors.black
+                                        : Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600)),
                           ),
-                          GestureDetector(
-  onTap: () {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (_) => const CategoriesScreen()),
-    );
-  },
-  child: Container(
-    padding: const EdgeInsets.symmetric(
-        horizontal: 16, vertical: 8),
-    decoration: BoxDecoration(
-      color: promo['textColor'] == Colors.white
-          ? Colors.white
-          : Colors.black,
-      borderRadius: BorderRadius.circular(24),
-    ),
-    child: Text('Shop now',
-        style: GoogleFonts.poppins(
-            color: promo['textColor'] == Colors.white
-                ? Colors.black
-                : Colors.white,
-            fontSize: 12,
-            fontWeight: FontWeight.w600)),
-  ),
-),
                         ),
                       ],
                     ),
@@ -1082,9 +1079,20 @@ class _HomeScreenState extends State<HomeScreen> {
               Text(title,
                   style: GoogleFonts.poppins(
                       fontSize: 16, fontWeight: FontWeight.bold)),
-              Text('See all',
-                  style: GoogleFonts.poppins(
-                      fontSize: 12, color: const Color(0xFF0C831F))),
+              GestureDetector(
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          CategoriesScreen(initialCategory: category),
+                    ),
+                  );
+                },
+                child: Text('See all',
+                    style: GoogleFonts.poppins(
+                        fontSize: 12, color: const Color(0xFF0C831F))),
+              ),
             ],
           ),
         ),

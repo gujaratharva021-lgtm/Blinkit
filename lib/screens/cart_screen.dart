@@ -3,6 +3,9 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import 'address_screen.dart';
+import 'home_screen.dart';
+import 'categories_screen.dart';
+import 'profile_screen.dart';
 
 const Color kBrandGreen = Color(0xFF0C831F);
 const Color kLightGreenBg = Color(0xFFEAF7EA);
@@ -460,6 +463,36 @@ class _CartScreenState extends State<CartScreen> {
               ),
             ),
           ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 0,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()));
+              break;
+            case 1:
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (_) => const CategoriesScreen()));
+              break;
+            case 2:
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()));
+              break;
+          }
+        },
+        selectedItemColor: const Color(0xFF0C831F),
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        selectedLabelStyle:
+            GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: GoogleFonts.poppins(fontSize: 11),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.category), label: 'Categories'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );

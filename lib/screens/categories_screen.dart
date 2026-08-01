@@ -6,6 +6,8 @@ import '../providers/cart_provider.dart';
 import '../constants/asset_constants.dart';
 import '../models/category.dart' as models;
 import 'product_detail_screen.dart';
+import 'home_screen.dart';
+import 'profile_screen.dart';
 
 class CategoriesScreen extends StatefulWidget {
   const CategoriesScreen({super.key});
@@ -684,6 +686,34 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
               },
             ),
           ),
+        ],
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: 1,
+        onTap: (index) {
+          switch (index) {
+            case 0:
+              Navigator.pushReplacement(context,
+                  MaterialPageRoute(builder: (_) => const HomeScreen()));
+              break;
+            case 1:
+              break;
+            case 2:
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const ProfileScreen()));
+              break;
+          }
+        },
+        selectedItemColor: const Color(0xFF0C831F),
+        unselectedItemColor: Colors.grey,
+        type: BottomNavigationBarType.fixed,
+        selectedLabelStyle:
+            GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600),
+        unselectedLabelStyle: GoogleFonts.poppins(fontSize: 11),
+        items: const [
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
+          BottomNavigationBarItem(icon: Icon(Icons.category), label: 'Categories'),
+          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
     );

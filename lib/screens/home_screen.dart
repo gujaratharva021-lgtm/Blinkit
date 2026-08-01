@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -524,6 +524,9 @@ class _HomeScreenState extends State<HomeScreen> {
             // ✅ Coupons & Offers — 3 sections ke baad
             _buildOffersSection(),
 
+            // ✅ Events this week — Offers ke baad
+            _buildEventsSection(),
+
             _buildProductSection('🍟 Snacks', 'Snacks'),
             _buildProductSection('🥤 Beverages', 'Beverages'),
             _buildProductSection('🥪 Biscuits', 'Biscuits'),
@@ -531,6 +534,10 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildProductSection('🥔 Wafers', 'Wafers'),
             _buildProductSection('🥤 Cold Drinks', 'Cold Drinks'),
             _buildProductSection('🍅 Ketchup', 'Ketchup'),
+
+            // ✅ Auto-sliding promo banner — Ketchup ke baad
+            _buildSlidingPromoSection(),
+
             _buildProductSection('🧴 Shampoo', 'Shampoo'),
             _buildProductSection('🧼 Soap', 'Soap'),
             _buildProductSection('💄 Personal Care', 'Personal Care'),
@@ -555,10 +562,6 @@ class _HomeScreenState extends State<HomeScreen> {
               break;
             case 2:
               Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const CartScreen()));
-              break;
-            case 3:
-              Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const ProfileScreen()));
               break;
           }
@@ -572,7 +575,6 @@ class _HomeScreenState extends State<HomeScreen> {
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Home'),
           BottomNavigationBarItem(icon: Icon(Icons.category), label: 'Categories'),
-          BottomNavigationBarItem(icon: Icon(Icons.shopping_cart), label: 'Cart'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
@@ -725,6 +727,108 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  // ✅ Events this week Section
+  Widget _buildEventsSection() {
+    final List<Map<String, dynamic>> events = [
+      {
+        'title': 'Saffola Oats Recipes',
+        'badge': 'ENDING SOON!',
+        'image': 'https://images.unsplash.com/photo-1517244683847-7456b63c5969?w=600',
+        'logo': 'https://images.unsplash.com/photo-1608500218807-8f9a5dfa2a6a?w=100',
+      },
+      {
+        'title': 'Dabur Hommade Rec...',
+        'badge': null,
+        'image': 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=600',
+      },
+      {
+        'title': 'Dark Cocoa Affair',
+        'badge': 'ENDING SOON!',
+        'image': 'https://images.unsplash.com/photo-1511381939415-e44015466834?w=600',
+      },
+    ];
+
+    Widget eventCard(Map<String, dynamic> event, {double height = 96}) {
+      return Container(
+        height: height,
+        margin: const EdgeInsets.only(bottom: 8),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(14),
+          image: DecorationImage(
+            image: CachedNetworkImageProvider(event['image']),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(
+                Colors.black.withOpacity(0.35), BlendMode.darken),
+          ),
+        ),
+        child: Stack(
+          children: [
+            if (event['badge'] != null)
+              Positioned(
+                top: 8,
+                left: 8,
+                child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Text(event['badge'],
+                      style: GoogleFonts.poppins(
+                          fontSize: 9,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black)),
+                ),
+              ),
+            Positioned(
+              left: 10,
+              right: 10,
+              bottom: 8,
+              child: Text(event['title'],
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: GoogleFonts.poppins(
+                      fontSize: 13,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)),
+            ),
+          ],
+        ),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Events this week',
+              style:
+                  GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 8),
+          IntrinsicHeight(
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Expanded(child: eventCard(events[0], height: 200)),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    children: [
+                      eventCard(events[1], height: 96),
+                      eventCard(events[2], height: 96),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   CategoryModel? _findCategoryById(String id) {
     for (final section in CategoryMockData.sections) {
       for (final cat in section.categories) {
@@ -826,6 +930,121 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
         ],
+      ),
+    );
+  }
+
+  // ✅ Auto-sliding Promo Banner Section
+  final List<Map<String, dynamic>> _slidingPromos = [
+    {
+      'title': 'Herbal Living',
+      'subtitle': 'Support your everyday wellness with herbs',
+      'image': 'https://images.unsplash.com/photo-1544787219-7f47ccb76574?w=800',
+      'bgColor': Color(0xFFF3ECE0),
+      'textColor': Colors.black,
+    },
+    {
+      'title': 'Dark Cocoa Affair',
+      'subtitle': 'Enjoy a bite of your favourite dark chocolate',
+      'image': 'https://images.unsplash.com/photo-1511381939415-e44015466834?w=800',
+      'bgColor': Color(0xFF241208),
+      'textColor': Colors.white,
+    },
+    {
+      'title': '1 year of CeraVe on Blinkit!',
+      'subtitle': 'Dermat recommended skincare routine',
+      'image': 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=800',
+      'bgColor': Color(0xFF9DA3A6),
+      'textColor': Colors.white,
+    },
+    {
+      'title': 'Up to 70% OFF on bags',
+      'subtitle': 'Get laptop bags, tote bags & more',
+      'image': 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=800',
+      'bgColor': Color(0xFFEDE3C8),
+      'textColor': Colors.black,
+    },
+  ];
+
+  Widget _buildSlidingPromoSection() {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: CarouselSlider(
+        options: CarouselOptions(
+          height: 180,
+          autoPlay: true,
+          enlargeCenterPage: true,
+          autoPlayInterval: const Duration(seconds: 3),
+          viewportFraction: 0.88,
+        ),
+        items: _slidingPromos.map((promo) {
+          return ClipRRect(
+            borderRadius: BorderRadius.circular(16),
+            child: Container(
+              color: promo['bgColor'],
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Positioned(
+                    right: 0,
+                    top: 0,
+                    bottom: 0,
+                    width: 220,
+                    child: CachedNetworkImage(
+                      imageUrl: promo['image'],
+                      fit: BoxFit.cover,
+                      errorWidget: (context, url, error) => const SizedBox(),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(18, 18, 18, 18),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(promo['title'],
+                                style: GoogleFonts.poppins(
+                                    color: promo['textColor'],
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 6),
+                            SizedBox(
+                              width: 170,
+                              child: Text(promo['subtitle'],
+                                  style: GoogleFonts.poppins(
+                                      color: promo['textColor'].withOpacity(0.75),
+                                      fontSize: 12)),
+                            ),
+                          ],
+                        ),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 16, vertical: 8),
+                          decoration: BoxDecoration(
+                            color: promo['textColor'] == Colors.white
+                                ? Colors.white
+                                : Colors.black,
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: Text('Shop now',
+                              style: GoogleFonts.poppins(
+                                  color: promo['textColor'] == Colors.white
+                                      ? Colors.black
+                                      : Colors.white,
+                                  fontSize: 12,
+                                  fontWeight: FontWeight.w600)),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }).toList(),
       ),
     );
   }

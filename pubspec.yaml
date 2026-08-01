@@ -36,6 +36,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/images/banners/  
     - assets/mock/addresses.json
     - assets/mock/wishlist.json
     - assets/mock/gst_details.json

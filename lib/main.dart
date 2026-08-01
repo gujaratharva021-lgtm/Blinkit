@@ -16,8 +16,6 @@ import 'screens/splash_screen.dart';
 import 'features/address_book/data/datasources/address_mock_datasource.dart';
 import 'features/address_book/data/repositories/address_repository_impl.dart';
 import 'features/address_book/presentation/providers/address_provider.dart';
-import 'features/wishlist/data/datasources/wishlist_mock_datasource.dart';
-import 'features/wishlist/data/repositories/wishlist_repository_impl.dart';
 import 'features/wishlist/presentation/providers/wishlist_provider.dart';
 import 'features/gst_details/data/datasources/gst_mock_datasource.dart';
 import 'features/gst_details/data/repositories/gst_repository_impl.dart';
@@ -59,13 +57,7 @@ class MyApp extends StatelessWidget {
             ),
           ),
         ),
-        ChangeNotifierProvider(
-          create: (_) => WishlistProvider(
-            repository: WishlistRepositoryImpl(
-              dataSource: WishlistMockDataSource(),
-            ),
-          ),
-        ),
+        ChangeNotifierProvider(create: (_) => WishlistProvider()),
         ChangeNotifierProvider(
           create: (_) => GstProvider(
             repository: GstRepositoryImpl(

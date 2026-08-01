@@ -371,87 +371,114 @@ class _HomeScreenState extends State<HomeScreen> {
     final cart = context.watch<CartProvider>();
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.surface,
-        elevation: 0,
-        iconTheme: IconThemeData(color: Theme.of(context).colorScheme.onSurface),
-        title: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                const Icon(Icons.bolt, color: Color(0xFF0C831F), size: 14),
-                Text('Delivery in 10 minutes',
-                    style: GoogleFonts.poppins(
-                        color: Theme.of(context).colorScheme.onSurface, fontSize: 11, fontWeight: FontWeight.w600)),
-              ],
-            ),
-            Row(
-              children: [
-                Icon(Icons.location_on, color: Theme.of(context).colorScheme.onSurface, size: 14),
-                Text('Mumbai, Maharashtra',
-                    style: GoogleFonts.poppins(
-                        color: Theme.of(context).colorScheme.onSurface, fontSize: 13, fontWeight: FontWeight.bold)),
-                Icon(Icons.keyboard_arrow_down, color: Theme.of(context).colorScheme.onSurface, size: 16),
-              ],
-            ),
-          ],
-        ),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.notifications_none_outlined,
-                color: Theme.of(context).colorScheme.onSurface),
-            onPressed: () => Navigator.push(
-                context, MaterialPageRoute(builder: (_) => const NotificationListScreen())),
-          ),
-          Stack(
-            children: [
-              IconButton(
-                icon: Icon(Icons.shopping_cart, color: Theme.of(context).colorScheme.onSurface),
-                onPressed: () => Navigator.push(
-                    context, MaterialPageRoute(builder: (_) => const CartScreen())),
-              ),
-              if (cart.cartCount > 0)
-                Positioned(
-                  right: 6,
-                  top: 6,
-                  child: Container(
-                    padding: const EdgeInsets.all(4),
-                    decoration: const BoxDecoration(
-                        color: Colors.red, shape: BoxShape.circle),
-                    child: Text('${cart.cartCount}',
-                        style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold)),
-                  ),
-                ),
-            ],
-          ),
-        ],
-      ),
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Search Bar
-            GestureDetector(
-              onTap: () => Navigator.push(
-                  context, MaterialPageRoute(builder: (_) => const SearchScreen())),
-              child: Container(
-                margin: const EdgeInsets.all(12),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                decoration: BoxDecoration(
-                  color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.search, color: Colors.grey),
-                    const SizedBox(width: 8),
-                    Text('Search groceries, snacks...',
-                        style: GoogleFonts.poppins(color: Colors.grey, fontSize: 14)),
+            // Header: delivery banner + location + search bar share one shade
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    Color(0xFFDCEF63),
+                    Color(0xFFEFF6D9),
+                    Color(0xFFFFFFFF),
                   ],
+                  stops: [0.0, 0.55, 1.0],
+                ),
+              ),
+              child: SafeArea(
+                bottom: false,
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 4, 8, 12),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Row(
+                                children: [
+                                  const Icon(Icons.bolt, color: Color(0xFF0C831F), size: 14),
+                                  Text('Delivery in 10 minutes',
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.black87, fontSize: 11, fontWeight: FontWeight.w600)),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  const Icon(Icons.location_on, color: Colors.black87, size: 14),
+                                  Text('Mumbai, Maharashtra',
+                                      style: GoogleFonts.poppins(
+                                          color: Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),
+                                  const Icon(Icons.keyboard_arrow_down, color: Colors.black87, size: 16),
+                                ],
+                              ),
+                            ],
+                          ),
+                          Row(
+                            children: [
+                              IconButton(
+                                icon: const Icon(Icons.notifications_none_outlined, color: Colors.black87),
+                                onPressed: () => Navigator.push(context,
+                                    MaterialPageRoute(builder: (_) => const NotificationListScreen())),
+                              ),
+                              Stack(
+                                children: [
+                                  IconButton(
+                                    icon: const Icon(Icons.shopping_cart, color: Colors.black87),
+                                    onPressed: () => Navigator.push(
+                                        context, MaterialPageRoute(builder: (_) => const CartScreen())),
+                                  ),
+                                  if (cart.cartCount > 0)
+                                    Positioned(
+                                      right: 6,
+                                      top: 6,
+                                      child: Container(
+                                        padding: const EdgeInsets.all(4),
+                                        decoration: const BoxDecoration(
+                                            color: Colors.red, shape: BoxShape.circle),
+                                        child: Text('${cart.cartCount}',
+                                            style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold)),
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      // Search Bar
+                      GestureDetector(
+                        onTap: () => Navigator.push(
+                            context, MaterialPageRoute(builder: (_) => const SearchScreen())),
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                          ),
+                          child: Row(
+                            children: [
+                              const Icon(Icons.search, color: Colors.grey),
+                              const SizedBox(width: 8),
+                              Text('Search groceries, snacks...',
+                                  style: GoogleFonts.poppins(color: Colors.grey, fontSize: 14)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
             ),
@@ -480,11 +507,15 @@ class _HomeScreenState extends State<HomeScreen> {
                             Container(color: banner['color']),
                       ),
                       Container(
-                        decoration: BoxDecoration(
-                          gradient: LinearGradient(colors: [
-                            banner['color'].withOpacity(0.8),
-                            Colors.transparent
-                          ]),
+                        decoration: const BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.bottomCenter,
+                            end: Alignment.topCenter,
+                            colors: [
+                              Colors.black54,
+                              Colors.transparent,
+                            ],
+                          ),
                         ),
                       ),
                       Padding(

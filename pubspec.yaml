@@ -1,4 +1,4 @@
-name: mepto_clone
+﻿name: mepto_clone
 description: A Zepto clone app
 
 publish_to: 'none'
@@ -38,7 +38,6 @@ flutter:
   assets:
     - assets/images/banners/  
     - assets/mock/addresses.json
-    - assets/mock/wishlist.json
     - assets/mock/gst_details.json
     - assets/mock/gift_cards.json
     - assets/images/

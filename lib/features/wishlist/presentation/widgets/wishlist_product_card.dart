@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../domain/entities/wishlist_item_entity.dart';
 
 class WishlistProductCard extends StatelessWidget {
@@ -33,18 +33,31 @@ class WishlistProductCard extends StatelessWidget {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(10),
-                    child: Image.network(
-                      item.imageUrl,
-                      width: 84,
-                      height: 84,
-                      fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => Container(
-                        width: 84,
-                        height: 84,
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        child: const Icon(Icons.image_not_supported_outlined),
-                      ),
-                    ),
+                    child: item.imageUrl.startsWith('assets/')
+                        ? Image.asset(
+                            item.imageUrl,
+                            width: 84,
+                            height: 84,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              width: 84,
+                              height: 84,
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: const Icon(Icons.image_not_supported_outlined),
+                            ),
+                          )
+                        : Image.network(
+                            item.imageUrl,
+                            width: 84,
+                            height: 84,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => Container(
+                              width: 84,
+                              height: 84,
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              child: const Icon(Icons.image_not_supported_outlined),
+                            ),
+                          ),
                   ),
                   if (!item.inStock)
                     Positioned.fill(
@@ -106,11 +119,11 @@ class WishlistProductCard extends StatelessWidget {
                     const SizedBox(height: 6),
                     Row(
                       children: [
-                        Text('?,?${item.price.toStringAsFixed(0)}',
+                        Text('\u20b9${item.price.toStringAsFixed(0)}',
                             style: theme.textTheme.titleMedium),
                         const SizedBox(width: 6),
                         Text(
-                          '?,?${item.mrp.toStringAsFixed(0)}',
+                          '\u20b9${item.mrp.toStringAsFixed(0)}',
                           style: theme.textTheme.bodyMedium?.copyWith(
                             decoration: TextDecoration.lineThrough,
                           ),

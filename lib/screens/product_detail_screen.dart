@@ -1,8 +1,10 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../features/wishlist/presentation/providers/wishlist_provider.dart';
+import '../features/wishlist/domain/entities/wishlist_item_entity.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -21,7 +23,22 @@ class ProductDetailScreen extends StatefulWidget {
 class _ProductDetailScreenState extends State<ProductDetailScreen> {
   bool _highlightsExpanded = true;
   bool _infoExpanded = true;
-  bool _isWishlisted = false;
+  WishlistItemEntity _toWishlistItem() {
+    final product = widget.product;
+    final price = (product['price'] as num).toDouble();
+    return WishlistItemEntity(
+      id: product['name'] as String,
+      productId: product['name'] as String,
+      name: product['name'] as String,
+      imageUrl: product['image'] as String,
+      price: price,
+      mrp: price,
+      discountPercent: 0,
+      rating: 0,
+      ratingCount: 0,
+      inStock: true,
+    );
+  }
 
   late final PageController _galleryController;
   int _galleryIndex = 0;
@@ -154,6 +171,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     final product = widget.product;
     final cart = context.watch<CartProvider>();
+    final wishlist = context.watch<WishlistProvider>();
+    final isWishlisted = wishlist.isWishlisted(product['name'] as String);
     final qty = cart.getQuantity(product['name']);
 
     return Scaffold(
@@ -181,7 +200,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                 ),
                 actions: [
                   GestureDetector(
-                    onTap: () => setState(() => _isWishlisted = !_isWishlisted),
+                    onTap: () =>
+                        context.read<WishlistProvider>().toggle(_toWishlistItem()),
                     child: Container(
                       margin: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
@@ -191,8 +211,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             color: Colors.grey.withOpacity(0.3), blurRadius: 8)],
                       ),
                       child: Icon(
-                        _isWishlisted ? Icons.favorite : Icons.favorite_border,
-                        color: _isWishlisted ? Colors.red : Theme.of(context).colorScheme.onSurface,
+                        isWishlisted ? Icons.favorite : Icons.favorite_border,
+                        color: isWishlisted ? Colors.red : Theme.of(context).colorScheme.onSurface,
                       ),
                     ),
                   ),
@@ -291,7 +311,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   color: const Color(0xFF0C831F),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Text('₹${product['price']}',
+                                child: Text('â‚¹${product['price']}',
                                     style: GoogleFonts.poppins(
                                         color: Colors.white,
                                         fontSize: 18,
@@ -299,7 +319,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                  'MRP ₹${(product['price'] * 1.3).toInt()}',
+                                  'MRP â‚¹${(product['price'] * 1.3).toInt()}',
                                   style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       color: Colors.grey,
@@ -307,7 +327,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       TextDecoration.lineThrough)),
                               const SizedBox(width: 8),
                               Text(
-                                  '₹${(product['price'] * 0.3).toInt()} OFF',
+                                  'â‚¹${(product['price'] * 0.3).toInt()} OFF',
                                   style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       color: Colors.green,
@@ -514,7 +534,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500)),
                                     const SizedBox(height: 4),
-                                    Text('₹${related['price']}',
+                                    Text('â‚¹${related['price']}',
                                         style: GoogleFonts.poppins(
                                             fontSize: 13,
                                             fontWeight: FontWeight.bold)),

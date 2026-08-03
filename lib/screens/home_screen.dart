@@ -585,18 +585,21 @@ class _HomeScreenState extends State<HomeScreen> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
-        onTap: (index) {
-          setState(() => _currentIndex = index);
+        onTap: (index) async {
           switch (index) {
             case 0:
+              setState(() => _currentIndex = 0);
               break;
             case 1:
-              Navigator.push(context,
+              await Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const CategoriesScreen()));
+              // We're back on Home (via tap-back or swipe-back) — re-select Home.
+              if (mounted) setState(() => _currentIndex = 0);
               break;
             case 2:
-              Navigator.push(context,
+              await Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const ProfileScreen()));
+              if (mounted) setState(() => _currentIndex = 0);
               break;
           }
         },

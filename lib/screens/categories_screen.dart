@@ -669,7 +669,14 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
         .toList();
     final cart = context.watch<CartProvider>();
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      },
+      child: Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.surface,
@@ -880,6 +887,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.category), label: 'Categories'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
+      ),
       ),
     );
   }

@@ -19,6 +19,7 @@ import '../features/wishlist/presentation/screens/wishlist_screen.dart';
 import '../features/gst_details/presentation/screens/gst_list_screen.dart';
 import '../features/gift_cards/presentation/screens/gift_cards_screen.dart';
 import 'categories_screen.dart';
+import 'home_screen.dart';
 
 const Color kGreen = Color(0xFF0C831F);
 
@@ -52,7 +53,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final settings = context.watch<SettingsProvider>();
     final scheme = Theme.of(context).colorScheme;
 
-    return Scaffold(
+    return PopScope(
+      canPop: false,
+      onPopInvoked: (didPop) {
+        if (didPop) return;
+        Navigator.pushReplacement(
+            context, MaterialPageRoute(builder: (_) => const HomeScreen()));
+      },
+      child: Scaffold(
       backgroundColor: scheme.surface,
       body: SafeArea(
         child: SingleChildScrollView(
@@ -170,6 +178,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.category), label: 'Categories'),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
+      ),
       ),
     );
   }

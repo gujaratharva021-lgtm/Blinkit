@@ -81,9 +81,43 @@ class _HomeCategorySectionsState extends State<HomeCategorySections> {
               ),
               itemBuilder: (context, index) {
                 final category = section.categories[index];
+                const categoryScreenMap = {
+                  'cat_veg_fruits': 'Fruits',
+                  'cat_atta_rice_dal': 'Atta, Rice & Dal',
+                  'cat_oil_ghee_masala': 'Oil, Ghee & Masala',
+                  'cat_dairy_bread_eggs': 'Dairy, Bread & Eggs',
+                  'cat_bakery_biscuits': 'Bakery',
+                  'cat_dryfruits_cereals': 'Dry Fruits & Cereals',
+                  'cat_kitchenware': 'Kitchenware & Appliances',
+                  'cat_chicken_meat_fish': 'Chicken & Meat',
+                  'cat_chips_namkeen': 'Namkeen',
+                  'cat_sweets_choco': 'Chocolate',
+                  'cat_drinks_juices': 'Beverages',
+                  'cat_tea_coffee': 'Tea, Coffee & Milk Drinks',
+                  'cat_instant_food': 'Instant Food',
+                  'cat_sauces_spreads': 'Ketchup',
+                  'cat_paan_corner': 'Paan Corner',
+                  'cat_ice_creams': 'Ice Creams',
+                  'cat_bath_body': 'Soap',
+                  'cat_hair': 'Shampoo',
+                  'cat_skin_face': 'Skin & Face',
+                  'cat_feminine_hygiene': 'Feminine Hygiene',
+                  'cat_baby_care': 'Baby Care',
+                  'cat_health_pharma': 'Health & Pharma',
+                  'cat_home_lifestyle': 'Home & Lifestyle',
+                  'cat_cleaners_repellents': 'Cleaners & Repellents',
+                  'cat_electronics': 'Electronics',
+                  'cat_stationery_games': 'Stationery & Games',
+                };
                 return CategoryTile(
                   category: category,
-                  onTap: () => CategoryNavRoutes.openCategory(context, category),
+                  onTap: () {
+                    final target = categoryScreenMap[category.id] ?? category.title;
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => CategoriesScreen(initialCategory: target)),
+                    );
+                  },
                 );
               },
             ),

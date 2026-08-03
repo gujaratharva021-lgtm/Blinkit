@@ -954,9 +954,18 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _promoTile(String categoryId, String label, String imagePath, Color color) {
     return GestureDetector(
       onTap: () {
-        final category = _findCategoryById(categoryId);
-        if (category != null) {
-          CategoryNavRoutes.openCategory(context, category);
+        const categoryScreenMap = {
+          'cat_veg_fruits': 'Fruits',
+          'cat_dairy_bread_eggs': 'Dairy, Bread & Eggs',
+          'cat_chips_namkeen': 'Namkeen',
+          'cat_cleaners_repellents': 'Cleaners & Repellents',
+        };
+        final target = categoryScreenMap[categoryId];
+        if (target != null) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (_) => CategoriesScreen(initialCategory: target)),
+          );
         }
       },
       behavior: HitTestBehavior.opaque,

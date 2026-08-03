@@ -494,7 +494,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       {'name': 'Black and Grey Tshirts', 'price': 299, 'unit': '1 pc', 'category': 'Clothes', 'image': 'assets/images/cloths items/Black and Grey Tshirts.png'},
       {'name': 'Blue and red Tshirt', 'price': 399, 'unit': '1 pc', 'category': 'Clothes', 'image': 'assets/images/cloths items/Blue and red Tshirt.png'},
     ],
-  };
     'Atta, Rice & Dal': [
       {'name': 'Aashirvaad Atta', 'price': 280, 'unit': '5kg', 'category': 'Atta, Rice & Dal', 'image': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300'},
       {'name': 'India Gate Basmati Rice', 'price': 320, 'unit': '5kg', 'category': 'Atta, Rice & Dal', 'image': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300'},
@@ -614,6 +613,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       {'name': 'Colour Pencils', 'price': 90, 'unit': '1 set', 'category': 'Stationery & Games', 'image': 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?w=300'},
       {'name': 'Sketch Book', 'price': 80, 'unit': '1 pc', 'category': 'Stationery & Games', 'image': 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?w=300'},
     ],
+  };
 
   Widget _buildCategoryIcon(String imagePath) {
     if (imagePath.startsWith('http')) {

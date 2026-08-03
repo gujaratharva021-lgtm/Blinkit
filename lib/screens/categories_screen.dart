@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
@@ -49,6 +49,23 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
     models.Category(name: 'Clothes', image: AssetConstants.clothes),
     models.Category(name: 'Ice Creams', image: AssetConstants.iceCreams),
     models.Category(name: 'Chocolate', image: AssetConstants.chocolate),
+    models.Category(name: 'Atta, Rice & Dal', image: 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300'),
+    models.Category(name: 'Oil, Ghee & Masala', image: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300'),
+    models.Category(name: 'Dairy, Bread & Eggs', image: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300'),
+    models.Category(name: 'Dry Fruits & Cereals', image: 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=300'),
+    models.Category(name: 'Kitchenware & Appliances', image: 'https://images.unsplash.com/photo-1584990347449-a5d9f800a783?w=300'),
+    models.Category(name: 'Chicken & Meat', image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=300'),
+    models.Category(name: 'Tea, Coffee & Milk Drinks', image: 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300'),
+    models.Category(name: 'Instant Food', image: 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=300'),
+    models.Category(name: 'Paan Corner', image: 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=300'),
+    models.Category(name: 'Skin & Face', image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=300'),
+    models.Category(name: 'Feminine Hygiene', image: 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=300'),
+    models.Category(name: 'Baby Care', image: 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=300'),
+    models.Category(name: 'Health & Pharma', image: 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=300'),
+    models.Category(name: 'Home & Lifestyle', image: 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=300'),
+    models.Category(name: 'Cleaners & Repellents', image: 'https://images.unsplash.com/photo-1610557892470-55d587e3d0f4?w=300'),
+    models.Category(name: 'Electronics', image: 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300'),
+    models.Category(name: 'Stationery & Games', image: 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?w=300'),
   ];
 
   final Map<String, List<Map<String, dynamic>>> _categoryProducts = {
@@ -478,6 +495,147 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
       {'name': 'Blue and red Tshirt', 'price': 399, 'unit': '1 pc', 'category': 'Clothes', 'image': 'assets/images/cloths items/Blue and red Tshirt.png'},
     ],
   };
+    'Atta, Rice & Dal': [
+      {'name': 'Aashirvaad Atta', 'price': 280, 'unit': '5kg', 'category': 'Atta, Rice & Dal', 'image': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300'},
+      {'name': 'India Gate Basmati Rice', 'price': 320, 'unit': '5kg', 'category': 'Atta, Rice & Dal', 'image': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300'},
+      {'name': 'Toor Dal', 'price': 140, 'unit': '1kg', 'category': 'Atta, Rice & Dal', 'image': 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=300'},
+      {'name': 'Moong Dal', 'price': 130, 'unit': '1kg', 'category': 'Atta, Rice & Dal', 'image': 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=300'},
+      {'name': 'Sugar', 'price': 45, 'unit': '1kg', 'category': 'Atta, Rice & Dal', 'image': 'https://images.unsplash.com/photo-1610725664285-7c57e6eab34e?w=300'},
+    ],
+    'Oil, Ghee & Masala': [
+      {'name': 'Fortune Sunflower Oil', 'price': 180, 'unit': '1L', 'category': 'Oil, Ghee & Masala', 'image': 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300'},
+      {'name': 'Saffola Oil', 'price': 210, 'unit': '1L', 'category': 'Oil, Ghee & Masala', 'image': 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300'},
+      {'name': 'Amul Ghee', 'price': 250, 'unit': '500ml', 'category': 'Oil, Ghee & Masala', 'image': 'https://images.unsplash.com/photo-1626074353765-517a681e40be?w=300'},
+      {'name': 'Garam Masala', 'price': 60, 'unit': '100g', 'category': 'Oil, Ghee & Masala', 'image': 'https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=300'},
+      {'name': 'Turmeric Powder', 'price': 40, 'unit': '200g', 'category': 'Oil, Ghee & Masala', 'image': 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=300'},
+    ],
+    'Dairy, Bread & Eggs': [
+      {'name': 'Amul Milk', 'price': 60, 'unit': '1L', 'category': 'Dairy, Bread & Eggs', 'image': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=300'},
+      {'name': 'Britannia Bread', 'price': 45, 'unit': '400g', 'category': 'Dairy, Bread & Eggs', 'image': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300'},
+      {'name': 'Eggs', 'price': 70, 'unit': '6 pcs', 'category': 'Dairy, Bread & Eggs', 'image': 'https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?w=300'},
+      {'name': 'Amul Butter', 'price': 55, 'unit': '100g', 'category': 'Dairy, Bread & Eggs', 'image': 'https://images.unsplash.com/photo-1589985270826-4b7bb135bc9d?w=300'},
+      {'name': 'Amul Cheese Slices', 'price': 120, 'unit': '10 pcs', 'category': 'Dairy, Bread & Eggs', 'image': 'https://images.unsplash.com/photo-1589881133595-a3c085cb731d?w=300'},
+    ],
+    'Dry Fruits & Cereals': [
+      {'name': 'Almonds', 'price': 220, 'unit': '250g', 'category': 'Dry Fruits & Cereals', 'image': 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=300'},
+      {'name': 'Cashews', 'price': 250, 'unit': '250g', 'category': 'Dry Fruits & Cereals', 'image': 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=300'},
+      {'name': 'Raisins', 'price': 90, 'unit': '250g', 'category': 'Dry Fruits & Cereals', 'image': 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=300'},
+      {'name': 'Kelloggs Corn Flakes', 'price': 210, 'unit': '475g', 'category': 'Dry Fruits & Cereals', 'image': 'https://images.unsplash.com/photo-1517686748843-bb360cee8f0f?w=300'},
+      {'name': 'Muesli', 'price': 250, 'unit': '400g', 'category': 'Dry Fruits & Cereals', 'image': 'https://images.unsplash.com/photo-1517686748843-bb360cee8f0f?w=300'},
+    ],
+    'Kitchenware & Appliances': [
+      {'name': 'Non-stick Tawa', 'price': 450, 'unit': '1 pc', 'category': 'Kitchenware & Appliances', 'image': 'https://images.unsplash.com/photo-1584990347449-a5d9f800a783?w=300'},
+      {'name': 'Steel Container Set', 'price': 350, 'unit': '1 set', 'category': 'Kitchenware & Appliances', 'image': 'https://images.unsplash.com/photo-1584990347449-a5d9f800a783?w=300'},
+      {'name': 'Mixer Grinder', 'price': 2500, 'unit': '1 pc', 'category': 'Kitchenware & Appliances', 'image': 'https://images.unsplash.com/photo-1585515320310-259814833e62?w=300'},
+      {'name': 'Water Bottle', 'price': 199, 'unit': '1 pc', 'category': 'Kitchenware & Appliances', 'image': 'https://images.unsplash.com/photo-1602143407151-7111542de6e8?w=300'},
+      {'name': 'Pressure Cooker', 'price': 1200, 'unit': '1 pc', 'category': 'Kitchenware & Appliances', 'image': 'https://images.unsplash.com/photo-1584990347449-a5d9f800a783?w=300'},
+    ],
+    'Chicken & Meat': [
+      {'name': 'Chicken Breast', 'price': 250, 'unit': '500g', 'category': 'Chicken & Meat', 'image': 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=300'},
+      {'name': 'Chicken Curry Cut', 'price': 220, 'unit': '500g', 'category': 'Chicken & Meat', 'image': 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=300'},
+      {'name': 'Mutton Curry Cut', 'price': 600, 'unit': '500g', 'category': 'Chicken & Meat', 'image': 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?w=300'},
+      {'name': 'Fish Fillet', 'price': 350, 'unit': '500g', 'category': 'Chicken & Meat', 'image': 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=300'},
+      {'name': 'Prawns', 'price': 400, 'unit': '500g', 'category': 'Chicken & Meat', 'image': 'https://images.unsplash.com/photo-1544943910-4c1dc44aab44?w=300'},
+    ],
+    'Tea, Coffee & Milk Drinks': [
+      {'name': 'Tata Tea', 'price': 140, 'unit': '500g', 'category': 'Tea, Coffee & Milk Drinks', 'image': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300'},
+      {'name': 'Nescafe Coffee', 'price': 180, 'unit': '100g', 'category': 'Tea, Coffee & Milk Drinks', 'image': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300'},
+      {'name': 'Bournvita', 'price': 220, 'unit': '500g', 'category': 'Tea, Coffee & Milk Drinks', 'image': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300'},
+      {'name': 'Green Tea Bags', 'price': 150, 'unit': '25 bags', 'category': 'Tea, Coffee & Milk Drinks', 'image': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300'},
+      {'name': 'Horlicks', 'price': 210, 'unit': '500g', 'category': 'Tea, Coffee & Milk Drinks', 'image': 'https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=300'},
+    ],
+    'Instant Food': [
+      {'name': 'Maggi Noodles', 'price': 60, 'unit': '4 pack', 'category': 'Instant Food', 'image': 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=300'},
+      {'name': 'Yippee Noodles', 'price': 55, 'unit': '4 pack', 'category': 'Instant Food', 'image': 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=300'},
+      {'name': 'Instant Pasta', 'price': 90, 'unit': '1 pack', 'category': 'Instant Food', 'image': 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=300'},
+      {'name': 'Ready to Eat Rajma', 'price': 120, 'unit': '1 pack', 'category': 'Instant Food', 'image': 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=300'},
+      {'name': 'Instant Soup', 'price': 45, 'unit': '1 pack', 'category': 'Instant Food', 'image': 'https://images.unsplash.com/photo-1612929633738-8fe44f7ec841?w=300'},
+    ],
+    'Paan Corner': [
+      {'name': 'Rajnigandha', 'price': 10, 'unit': '1 pack', 'category': 'Paan Corner', 'image': 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=300'},
+      {'name': 'Mint Mouth Freshener', 'price': 20, 'unit': '1 pack', 'category': 'Paan Corner', 'image': 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=300'},
+      {'name': 'Supari Mix', 'price': 30, 'unit': '100g', 'category': 'Paan Corner', 'image': 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=300'},
+      {'name': 'Digestive Mints', 'price': 15, 'unit': '1 pack', 'category': 'Paan Corner', 'image': 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=300'},
+      {'name': 'Elaichi Pack', 'price': 40, 'unit': '50g', 'category': 'Paan Corner', 'image': 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=300'},
+    ],
+    'Skin & Face': [
+      {'name': 'Face Wash', 'price': 150, 'unit': '100ml', 'category': 'Skin & Face', 'image': 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=300'},
+      {'name': 'Moisturizer', 'price': 180, 'unit': '100ml', 'category': 'Skin & Face', 'image': 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=300'},
+      {'name': 'Sunscreen', 'price': 250, 'unit': '50ml', 'category': 'Skin & Face', 'image': 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=300'},
+      {'name': 'Face Mask Sheet', 'price': 60, 'unit': '1 pc', 'category': 'Skin & Face', 'image': 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=300'},
+      {'name': 'Face Serum', 'price': 350, 'unit': '30ml', 'category': 'Skin & Face', 'image': 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=300'},
+    ],
+    'Feminine Hygiene': [
+      {'name': 'Sanitary Pads', 'price': 120, 'unit': '1 pack', 'category': 'Feminine Hygiene', 'image': 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=300'},
+      {'name': 'Tampons', 'price': 150, 'unit': '1 pack', 'category': 'Feminine Hygiene', 'image': 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=300'},
+      {'name': 'Intimate Wash', 'price': 180, 'unit': '150ml', 'category': 'Feminine Hygiene', 'image': 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=300'},
+      {'name': 'Menstrual Cup', 'price': 400, 'unit': '1 pc', 'category': 'Feminine Hygiene', 'image': 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=300'},
+      {'name': 'Panty Liners', 'price': 90, 'unit': '1 pack', 'category': 'Feminine Hygiene', 'image': 'https://images.unsplash.com/photo-1584515979956-d9f6e5d09982?w=300'},
+    ],
+    'Baby Care': [
+      {'name': 'Pampers Diapers', 'price': 450, 'unit': '1 pack', 'category': 'Baby Care', 'image': 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=300'},
+      {'name': 'Baby Food', 'price': 180, 'unit': '200g', 'category': 'Baby Care', 'image': 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=300'},
+      {'name': 'Baby Wipes', 'price': 120, 'unit': '1 pack', 'category': 'Baby Care', 'image': 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=300'},
+      {'name': 'Baby Lotion', 'price': 150, 'unit': '200ml', 'category': 'Baby Care', 'image': 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=300'},
+      {'name': 'Baby Shampoo', 'price': 140, 'unit': '200ml', 'category': 'Baby Care', 'image': 'https://images.unsplash.com/photo-1522771930-78848d9293e8?w=300'},
+    ],
+    'Health & Pharma': [
+      {'name': 'Paracetamol Strip', 'price': 25, 'unit': '1 strip', 'category': 'Health & Pharma', 'image': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=300'},
+      {'name': 'First Aid Kit', 'price': 250, 'unit': '1 kit', 'category': 'Health & Pharma', 'image': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=300'},
+      {'name': 'Protein Powder', 'price': 900, 'unit': '500g', 'category': 'Health & Pharma', 'image': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=300'},
+      {'name': 'Multivitamin Tablets', 'price': 300, 'unit': '30 tabs', 'category': 'Health & Pharma', 'image': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=300'},
+      {'name': 'Hand Sanitizer', 'price': 80, 'unit': '200ml', 'category': 'Health & Pharma', 'image': 'https://images.unsplash.com/photo-1584308666744-24d5c474f2ae?w=300'},
+    ],
+    'Home & Lifestyle': [
+      {'name': 'Bed Sheet Set', 'price': 899, 'unit': '1 set', 'category': 'Home & Lifestyle', 'image': 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=300'},
+      {'name': 'Cushion Cover', 'price': 250, 'unit': '2 pcs', 'category': 'Home & Lifestyle', 'image': 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=300'},
+      {'name': 'Wall Clock', 'price': 450, 'unit': '1 pc', 'category': 'Home & Lifestyle', 'image': 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=300'},
+      {'name': 'Indoor Plant Pot', 'price': 199, 'unit': '1 pc', 'category': 'Home & Lifestyle', 'image': 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=300'},
+      {'name': 'Storage Basket', 'price': 300, 'unit': '1 pc', 'category': 'Home & Lifestyle', 'image': 'https://images.unsplash.com/photo-1583847268964-b28dc8f51f92?w=300'},
+    ],
+    'Cleaners & Repellents': [
+      {'name': 'Harpic Toilet Cleaner', 'price': 90, 'unit': '500ml', 'category': 'Cleaners & Repellents', 'image': 'https://images.unsplash.com/photo-1610557892470-55d587e3d0f4?w=300'},
+      {'name': 'Surf Excel Detergent', 'price': 220, 'unit': '1kg', 'category': 'Cleaners & Repellents', 'image': 'https://images.unsplash.com/photo-1610557892470-55d587e3d0f4?w=300'},
+      {'name': 'Vim Dishwash Gel', 'price': 80, 'unit': '500ml', 'category': 'Cleaners & Repellents', 'image': 'https://images.unsplash.com/photo-1610557892470-55d587e3d0f4?w=300'},
+      {'name': 'Good Knight Mosquito Repellent', 'price': 60, 'unit': '1 pack', 'category': 'Cleaners & Repellents', 'image': 'https://images.unsplash.com/photo-1610557892470-55d587e3d0f4?w=300'},
+      {'name': 'Floor Cleaner', 'price': 150, 'unit': '1L', 'category': 'Cleaners & Repellents', 'image': 'https://images.unsplash.com/photo-1610557892470-55d587e3d0f4?w=300'},
+    ],
+    'Electronics': [
+      {'name': 'Wired Earphones', 'price': 299, 'unit': '1 pc', 'category': 'Electronics', 'image': 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300'},
+      {'name': 'USB Cable', 'price': 199, 'unit': '1 pc', 'category': 'Electronics', 'image': 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300'},
+      {'name': 'Power Bank', 'price': 999, 'unit': '1 pc', 'category': 'Electronics', 'image': 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300'},
+      {'name': 'AA Batteries', 'price': 99, 'unit': '4 pcs', 'category': 'Electronics', 'image': 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300'},
+      {'name': 'LED Bulb', 'price': 120, 'unit': '1 pc', 'category': 'Electronics', 'image': 'https://images.unsplash.com/photo-1498049794561-7780e7231661?w=300'},
+    ],
+    'Stationery & Games': [
+      {'name': 'Notebook Pack', 'price': 150, 'unit': '5 pcs', 'category': 'Stationery & Games', 'image': 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?w=300'},
+      {'name': 'Ball Pens', 'price': 50, 'unit': '10 pcs', 'category': 'Stationery & Games', 'image': 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?w=300'},
+      {'name': 'Playing Cards', 'price': 40, 'unit': '1 pack', 'category': 'Stationery & Games', 'image': 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?w=300'},
+      {'name': 'Colour Pencils', 'price': 90, 'unit': '1 set', 'category': 'Stationery & Games', 'image': 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?w=300'},
+      {'name': 'Sketch Book', 'price': 80, 'unit': '1 pc', 'category': 'Stationery & Games', 'image': 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?w=300'},
+    ],
+
+  Widget _buildCategoryIcon(String imagePath) {
+    if (imagePath.startsWith('http')) {
+      return CachedNetworkImage(
+        imageUrl: imagePath,
+        fit: BoxFit.cover,
+        placeholder: (_, __) => Container(color: Colors.grey[200]),
+        errorWidget: (_, __, ___) => Container(
+          color: Colors.grey[200],
+          child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 20),
+        ),
+      );
+    }
+    return Image.asset(
+      imagePath,
+      fit: BoxFit.cover,
+      errorBuilder: (_, __, ___) => Container(
+        color: Colors.grey[200],
+        child: const Icon(Icons.image_not_supported, color: Colors.grey, size: 20),
+      ),
+    );
+  }
 
   Widget _buildProductImage(String imagePath) {
     if (imagePath.startsWith('assets/')) {
@@ -553,7 +711,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
                           height: 64,
                           child: ClipRRect(
                             borderRadius: BorderRadius.circular(16),
-                            child: Image.asset(cat.image, fit: BoxFit.cover),
+                            child: _buildCategoryIcon(cat.image),
                           ),
                         ),
                         const SizedBox(height: 4),

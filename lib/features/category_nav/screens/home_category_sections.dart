@@ -5,6 +5,7 @@ import '../../../widgets/state_views.dart';
 import '../models/category_models.dart';
 import '../providers/category_nav_provider.dart';
 import '../routes/category_nav_routes.dart';
+import '../../../screens/categories_screen.dart';
 import '../widgets/category_tile.dart';
 
 /// Drop-in widget for the GoFresh home screen: renders "Grocery &

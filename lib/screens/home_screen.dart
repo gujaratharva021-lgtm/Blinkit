@@ -384,9 +384,11 @@ class _HomeScreenState extends State<HomeScreen> {
                   colors: [
                     Color(0xFF1B5E20),
                     Color(0xFF1B5E20),
+                    Color(0xFF7CB342),
+                    Color(0xFFC5E1A5),
                     Color(0xFFFFFFFF),
                   ],
-                  stops: [0.0, 0.55, 1.0],
+                  stops: [0.0, 0.55, 0.75, 0.9, 1.0],
                 ),
               ),
               child: SafeArea(
@@ -763,20 +765,22 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildEventsSection() {
     final List<Map<String, dynamic>> events = [
       {
-        'title': 'Saffola Oats Recipes',
-        'badge': 'ENDING SOON!',
-        'image': 'https://images.unsplash.com/photo-1517244683847-7456b63c5969?w=600',
-        'logo': 'https://images.unsplash.com/photo-1608500218807-8f9a5dfa2a6a?w=100',
-      },
-      {
-        'title': 'Dabur Hommade Rec...',
+        'title': 'Healthy Breakfast',
+        'subtitle': 'Start your day right',
         'badge': null,
-        'image': 'https://images.unsplash.com/photo-1615485500704-8e990f9900f7?w=600',
+        'image': 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=600',
       },
       {
-        'title': 'Dark Cocoa Affair',
-        'badge': 'ENDING SOON!',
-        'image': 'https://images.unsplash.com/photo-1511381939415-e44015466834?w=600',
+        'title': 'Dry Fruits Sale',
+        'subtitle': 'Up to 30% OFF',
+        'badge': 'SALE',
+        'image': 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=600',
+      },
+      {
+        'title': 'Bakery Fresh',
+        'subtitle': 'Baked daily',
+        'badge': null,
+        'image': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600',
       },
     ];
 
@@ -784,17 +788,30 @@ class _HomeScreenState extends State<HomeScreen> {
       return Container(
         height: height,
         margin: const EdgeInsets.only(bottom: 8),
+        clipBehavior: Clip.antiAlias,
         decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(14),
-          image: DecorationImage(
-            image: CachedNetworkImageProvider(event['image']),
-            fit: BoxFit.cover,
-            colorFilter: ColorFilter.mode(
-                Colors.black.withOpacity(0.35), BlendMode.darken),
-          ),
+          borderRadius: BorderRadius.circular(16),
         ),
         child: Stack(
+          fit: StackFit.expand,
           children: [
+            CachedNetworkImage(
+              imageUrl: event['image'],
+              fit: BoxFit.cover,
+              placeholder: (_, __) => Container(color: Colors.grey[200]),
+              errorWidget: (_, __, ___) => Container(color: Colors.grey[300]),
+            ),
+            // Dark gradient overlay so white text stays readable over any photo
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [Colors.transparent, Colors.black87],
+                  stops: [0.4, 1.0],
+                ),
+              ),
+            ),
             if (event['badge'] != null)
               Positioned(
                 top: 8,
@@ -817,13 +834,27 @@ class _HomeScreenState extends State<HomeScreen> {
               left: 10,
               right: 10,
               bottom: 8,
-              child: Text(event['title'],
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: GoogleFonts.poppins(
-                      fontSize: 13,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(event['title'],
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: GoogleFonts.poppins(
+                          fontSize: 13,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white)),
+                  if (event['subtitle'] != null)
+                    Text(event['subtitle'],
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                        style: GoogleFonts.poppins(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.w500,
+                            color: Colors.white70)),
+                ],
+              ),
             ),
           ],
         ),
@@ -1281,6 +1312,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-
-
-

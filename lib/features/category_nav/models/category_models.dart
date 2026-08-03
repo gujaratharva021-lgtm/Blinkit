@@ -47,6 +47,10 @@ class ProductModel {
   final String deliveryTime;
   final bool inStock;
 
+  /// Local asset path (e.g. `assets/images/products/chicken1.png`).
+  /// Null/empty falls back to the icon-based [CategoryPlaceholderImage].
+  final String? image;
+
   const ProductModel({
     required this.id,
     required this.name,
@@ -64,6 +68,7 @@ class ProductModel {
     required this.nutrition,
     required this.deliveryTime,
     this.inStock = true,
+    this.image,
   });
 
   int get discountPercent =>

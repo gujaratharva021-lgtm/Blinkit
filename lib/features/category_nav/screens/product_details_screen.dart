@@ -161,12 +161,28 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
             onPageChanged: (i) => setState(() => _page = i),
             itemCount: 3,
             itemBuilder: (context, index) => Center(
-              child: CategoryPlaceholderImage(
-                icon: product.icon,
-                color: product.color,
-                size: 160,
-                borderRadius: 24,
-              ),
+              child: (product.image != null && product.image!.isNotEmpty)
+                  ? ClipRRect(
+                      borderRadius: BorderRadius.circular(24),
+                      child: Image.asset(
+                        product.image!,
+                        width: 160,
+                        height: 160,
+                        fit: BoxFit.cover,
+                        errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
+                          icon: product.icon,
+                          color: product.color,
+                          size: 160,
+                          borderRadius: 24,
+                        ),
+                      ),
+                    )
+                  : CategoryPlaceholderImage(
+                      icon: product.icon,
+                      color: product.color,
+                      size: 160,
+                      borderRadius: 24,
+                    ),
             ),
           ),
           Positioned(

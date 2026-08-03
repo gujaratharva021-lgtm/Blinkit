@@ -1,9 +1,9 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../../../constants/asset_constants.dart';
 import '../models/category_models.dart';
 
 /// Static mock dataset for the home category-navigation module.
-/// No backend/API calls — [CategoryRepository] reads from this file and
+/// No backend/API calls â€” [CategoryRepository] reads from this file and
 /// wraps it in Futures to simulate network latency.
 class CategoryMockData {
   CategoryMockData._();
@@ -196,10 +196,115 @@ class CategoryMockData {
     'Carbohydrates: 18 g',
   ];
 
+  static const String _p = 'assets/images/products';
+
+  static const Map<String, List<String>> _categoryImagePool = {
+    'cat_oil_ghee_masala': [
+      '$_p/oil.png',
+      '$_p/saffola.png',
+      '$_p/fortune.png',
+      '$_p/daldaghee.png',
+      '$_p/goverdhanghee.png',
+      '$_p/garammasala.png',
+      '$_p/kalimirch.png',
+      '$_p/mdhmasala.png',
+      '$_p/masala1.png',
+      '$_p/masala2.png',
+    ],
+    'cat_dairy_bread_eggs': ['$_p/egg1.png', '$_p/egg2.png'],
+    'cat_bakery_biscuits': [
+      '$_p/biscuit1.png',
+      '$_p/biscuit2.png',
+      '$_p/biscuit3.png',
+      '$_p/cake1.png',
+      '$_p/cake2.png',
+      '$_p/cake3.png',
+      '$_p/cookie1.png',
+      '$_p/cookie2.png',
+      '$_p/cookie3.png',
+    ],
+    'cat_dryfruits_cereals': [
+      '$_p/dryfruit1.png',
+      '$_p/dryfruit2.png',
+      '$_p/dryfruit3.png',
+      '$_p/dryfruit4.png',
+      '$_p/dryfruit5.png',
+      '$_p/dryfruit6.png',
+      '$_p/dryfruit7.png',
+      '$_p/dryfruit8.png',
+    ],
+    'cat_kitchenware': [
+      '$_p/cookware1.png',
+      '$_p/cookware2.png',
+      '$_p/cookware3.png',
+      '$_p/appliance1.png',
+      '$_p/appliance2.png',
+      '$_p/appliance3.png',
+      '$_p/container1.png',
+      '$_p/container2.png',
+      '$_p/container3.png',
+      '$_p/bottle1.png',
+      '$_p/bottle2.png',
+      '$_p/bottle3.png',
+    ],
+    'cat_chicken_meat_fish': [
+      '$_p/chicken1.png',
+      '$_p/chicken2.png',
+      '$_p/chicken3.png',
+      '$_p/mutton1.png',
+      '$_p/mutton2.png',
+      '$_p/mutton3.png',
+      '$_p/fish1.png',
+      '$_p/seafood1.png',
+    ],
+    'cat_chips_namkeen': ['$_p/namkeen.png'],
+    'cat_sauces_spreads': ['$_p/pickle.png'],
+    'cat_veg_fruits': [
+      '$_p/vegetable1.png',
+      '$_p/vegetable2.png',
+      '$_p/vegetable3.png',
+      '$_p/fruits1.png',
+      '$_p/fruits2.png',
+      '$_p/fruits3.png',
+      '$_p/exoticfruits1.png',
+      '$_p/exoticfruits2.png',
+      '$_p/exoticfruits3.png',
+      '$_p/organic1.png',
+      '$_p/organic2.png',
+      '$_p/organic3.png',
+    ],
+    'cat_atta_rice_dal': [
+      '$_p/aata1.png',
+      '$_p/aata2.png',
+      '$_p/aata3.png',
+      '$_p/rice1.png',
+      '$_p/rice2.png',
+      '$_p/rice3.png',
+      '$_p/daal1.png',
+      '$_p/daal2.png',
+      '$_p/daal3.png',
+      '$_p/sugar1.png',
+      '$_p/sugar2.png',
+      '$_p/sugar3.png',
+    ],
+    'cat_health_pharma': [
+      '$_p/firstaid1.png',
+      '$_p/firstaid2.png',
+      '$_p/firstaid3.png',
+      '$_p/medi2.png',
+      '$_p/medi3.png',
+      '$_p/protein1.png',
+      '$_p/protein2.png',
+      '$_p/protein3.png',
+    ],
+  };
+
+
   /// Generates a handful of realistic-looking products per subcategory
   /// so every category/subcategory has something to show in the grid.
   static List<ProductModel> _productsFor(CategoryModel category) {
     final products = <ProductModel>[];
+    final pool = _categoryImagePool[category.id];
     for (var i = 0; i < category.subCategories.length; i++) {
       final sub = category.subCategories[i];
       for (var j = 0; j < 3; j++) {
@@ -225,6 +330,7 @@ class CategoryMockData {
           nutrition: _nutrition,
           deliveryTime: index.isEven ? '8 mins' : '15 mins',
           inStock: index % 11 != 0,
+          image: (pool != null && pool.isNotEmpty) ? pool[index % pool.length] : null,
         ));
       }
     }

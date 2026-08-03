@@ -382,8 +382,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Color(0xFFDCEF63),
-                    Color(0xFFEFF6D9),
+                    Color(0xFF1B5E20),
+                    Color(0xFF1B5E20),
                     Color(0xFFFFFFFF),
                   ],
                   stops: [0.0, 0.55, 1.0],
@@ -404,19 +404,19 @@ class _HomeScreenState extends State<HomeScreen> {
                             children: [
                               Row(
                                 children: [
-                                  const Icon(Icons.bolt, color: Color(0xFF0C831F), size: 14),
+                                  const Icon(Icons.bolt, color: Colors.white, size: 14),
                                   Text('Delivery in 10 minutes',
                                       style: GoogleFonts.poppins(
-                                          color: Colors.black87, fontSize: 11, fontWeight: FontWeight.w600)),
+                                          color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
                                 ],
                               ),
                               Row(
                                 children: [
-                                  const Icon(Icons.location_on, color: Colors.black87, size: 14),
+                                  const Icon(Icons.location_on, color: Colors.white, size: 14),
                                   Text('Mumbai, Maharashtra',
                                       style: GoogleFonts.poppins(
-                                          color: Colors.black87, fontSize: 13, fontWeight: FontWeight.bold)),
-                                  const Icon(Icons.keyboard_arrow_down, color: Colors.black87, size: 16),
+                                          color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                                  const Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 16),
                                 ],
                               ),
                             ],
@@ -424,14 +424,14 @@ class _HomeScreenState extends State<HomeScreen> {
                           Row(
                             children: [
                               IconButton(
-                                icon: const Icon(Icons.notifications_none_outlined, color: Colors.black87),
+                                icon: const Icon(Icons.notifications_none_outlined, color: Colors.white),
                                 onPressed: () => Navigator.push(context,
                                     MaterialPageRoute(builder: (_) => const NotificationListScreen())),
                               ),
                               Stack(
                                 children: [
                                   IconButton(
-                                    icon: const Icon(Icons.shopping_cart, color: Colors.black87),
+                                    icon: const Icon(Icons.shopping_cart, color: Colors.white),
                                     onPressed: () => Navigator.push(
                                         context, MaterialPageRoute(builder: (_) => const CartScreen())),
                                   ),

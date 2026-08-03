@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/cart_provider.dart';
@@ -33,12 +33,28 @@ class ProductCard extends StatelessWidget {
             Stack(
               children: [
                 Center(
-                  child: CategoryPlaceholderImage(
-                    icon: product.icon,
-                    color: product.color,
-                    size: 72,
-                    borderRadius: 12,
-                  ),
+                  child: (product.image != null && product.image!.isNotEmpty)
+                      ? ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: Image.asset(
+                            product.image!,
+                            width: 72,
+                            height: 72,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
+                              icon: product.icon,
+                              color: product.color,
+                              size: 72,
+                              borderRadius: 12,
+                            ),
+                          ),
+                        )
+                      : CategoryPlaceholderImage(
+                          icon: product.icon,
+                          color: product.color,
+                          size: 72,
+                          borderRadius: 12,
+                        ),
                 ),
                 if (product.discountPercent > 0)
                   Positioned(
@@ -144,7 +160,7 @@ class _AddButton extends StatelessWidget {
     if (qty == 0) {
       return GestureDetector(
         onTap: () => cart.addToCart(
-            product.name, product.price.round(), product.weight, 'placeholder:${product.id}'),
+            product.name, product.price.round(), product.weight, (product.image ?? (product.image ?? 'placeholder:${product.id}'))),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
@@ -171,7 +187,7 @@ class _AddButton extends StatelessWidget {
           _StepperButton(
               icon: Icons.add,
               onTap: () => cart.addToCart(
-                  product.name, product.price.round(), product.weight, 'placeholder:${product.id}')),
+                  product.name, product.price.round(), product.weight, (product.image ?? (product.image ?? 'placeholder:${product.id}')))),
         ],
       ),
     );

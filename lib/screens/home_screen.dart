@@ -699,57 +699,107 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ✅ Coupons & Offers Section
+  // Coupons & Offers Section
   Widget _buildOffersSection() {
     final List<Map<String, dynamic>> offers = [
-      {'amount': '₹50 OFF', 'min': 'above ₹599', 'color': const Color(0xFF4CAF50)},
-      {'amount': '₹100 OFF', 'min': 'above ₹1199', 'color': const Color(0xFF4CAF50)},
-      {'amount': '₹150 OFF', 'min': 'above ₹1799', 'color': const Color(0xFF4CAF50)},
-      {'amount': '₹200 OFF', 'min': 'above ₹2399', 'color': const Color(0xFF4CAF50)},
+      {
+        'icon': Icons.local_shipping_rounded,
+        'badge': 'HOT',
+        'badgeColor': const Color(0xFFE53935),
+        'bgColor': const Color(0xFFE8F5E9),
+        'iconColor': const Color(0xFF43A047),
+        'title': 'FREE DELIVERY',
+        'subtitle': 'Above Rs.199',
+      },
+      {
+        'icon': Icons.account_balance_wallet_rounded,
+        'badge': 'NEW',
+        'badgeColor': const Color(0xFF1E88E5),
+        'bgColor': const Color(0xFFE3F2FD),
+        'iconColor': const Color(0xFF1E88E5),
+        'title': '10% CASHBACK',
+        'subtitle': 'UPI Payment',
+      },
+      {
+        'icon': Icons.card_giftcard_rounded,
+        'badge': 'BEST',
+        'badgeColor': const Color(0xFFFB8C00),
+        'bgColor': const Color(0xFFFFF3E0),
+        'iconColor': const Color(0xFFFB8C00),
+        'title': 'Rs.100 OFF',
+        'subtitle': 'Above Rs.999',
+      },
+      {
+        'icon': Icons.local_offer_rounded,
+        'badge': 'SALE',
+        'badgeColor': const Color(0xFF8E24AA),
+        'bgColor': const Color(0xFFF3E5F5),
+        'iconColor': const Color(0xFF8E24AA),
+        'title': 'Rs.200 OFF',
+        'subtitle': 'Above Rs.1999',
+      },
     ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Padding(
           padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-          child: Text('�� Coupons & Offers',
+          child: Text('Coupons & Offers',
               style: GoogleFonts.poppins(
                   fontSize: 16, fontWeight: FontWeight.bold)),
         ),
         SizedBox(
-          height: 105,
+          height: 130,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12),
             itemCount: offers.length,
-            itemBuilder: (context, index) {
-              final offer = offers[index];
+            itemBuilder: (context, i) {
+              final offer = offers[i];
               return Container(
-                width: 130,
+                width: 140,
                 margin: const EdgeInsets.only(right: 10),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: offer['color'].withOpacity(0.08),
-                  borderRadius: BorderRadius.circular(14),
-                  border: Border.all(
-                      color: offer['color'].withOpacity(0.5), width: 1.2),
+                  color: offer['bgColor'],
+                  borderRadius: BorderRadius.circular(16),
                 ),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Stack(
                   children: [
-                    Icon(Icons.local_offer_rounded,
-                        color: offer['color'], size: 22),
-                    const SizedBox(height: 4),
-                    Text('FLAT',
-                        style: GoogleFonts.poppins(
-                            fontSize: 10, color: Colors.grey[600])),
-                    Text(offer['amount'],
-                        style: GoogleFonts.poppins(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Theme.of(context).colorScheme.onSurface)),
-                    Text(offer['min'],
-                        style: GoogleFonts.poppins(
-                            fontSize: 10, color: Colors.grey)),
+                    Positioned(
+                      top: 0,
+                      right: 0,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 8, vertical: 3),
+                        decoration: BoxDecoration(
+                          color: offer['badgeColor'],
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Text(offer['badge'],
+                            style: GoogleFonts.poppins(
+                                fontSize: 9,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white)),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        Icon(offer['icon'], color: offer['iconColor'], size: 26),
+                        const Spacer(),
+                        Text(offer['title'],
+                            style: GoogleFonts.poppins(
+                                fontSize: 12.5,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black87)),
+                        const SizedBox(height: 2),
+                        Text(offer['subtitle'],
+                            style: GoogleFonts.poppins(
+                                fontSize: 10.5, color: Colors.black54)),
+                      ],
+                    ),
                   ],
                 ),
               );

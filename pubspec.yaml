@@ -37,6 +37,7 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/products/
+    - assets/events/
     - assets/images/banners/  
     - assets/mock/addresses.json
     - assets/mock/gst_details.json

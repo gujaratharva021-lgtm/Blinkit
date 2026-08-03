@@ -388,7 +388,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     Color(0xFFC5E1A5),
                     Color(0xFFFFFFFF),
                   ],
-                  stops: [0.0, 0.55, 0.75, 0.9, 1.0],
+                  stops: [0.0, 0.22, 0.45, 0.7, 1.0],
                 ),
               ),
               child: SafeArea(
@@ -768,25 +768,25 @@ class _HomeScreenState extends State<HomeScreen> {
         'title': 'Mango Festival',
         'subtitle': 'Most awaited festival is on!',
         'badge': null,
-        'image': 'assets/events/mango_festival.jpg',
+        'image': 'assets/events/mango_festival.png',
       },
       {
         'title': 'Monsoon Bites',
         'subtitle': 'Hot pakoda, chai & more',
         'badge': null,
-        'image': 'assets/events/monsoon_bites.jpg',
+        'image': 'assets/events/monsoon_bites.png',
       },
       {
         'title': 'Healthy Breakfast',
         'subtitle': 'Start your day right',
         'badge': null,
-        'image': 'assets/events/healthy_breakfast.jpg',
+        'image': 'assets/events/healthy_breakfast.png',
       },
       {
         'title': 'Summer Drinks',
         'subtitle': '50% OFF, order now',
         'badge': 'SALE',
-        'image': 'assets/events/summer_drinks.jpg',
+        'image': 'assets/events/summer_drinks.png',
       },
     ];
 

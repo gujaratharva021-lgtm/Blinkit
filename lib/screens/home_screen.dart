@@ -765,26 +765,33 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget _buildEventsSection() {
     final List<Map<String, dynamic>> events = [
       {
+        'title': 'Mango Festival',
+        'subtitle': 'Most awaited festival is on!',
+        'badge': null,
+        'image': 'assets/events/mango_festival.jpg',
+      },
+      {
+        'title': 'Monsoon Bites',
+        'subtitle': 'Hot pakoda, chai & more',
+        'badge': null,
+        'image': 'assets/events/monsoon_bites.jpg',
+      },
+      {
         'title': 'Healthy Breakfast',
         'subtitle': 'Start your day right',
         'badge': null,
-        'image': 'https://images.unsplash.com/photo-1517673132405-a56a62b18caf?w=600',
+        'image': 'assets/events/healthy_breakfast.jpg',
       },
       {
-        'title': 'Dry Fruits Sale',
-        'subtitle': 'Up to 30% OFF',
+        'title': 'Summer Drinks',
+        'subtitle': '50% OFF, order now',
         'badge': 'SALE',
-        'image': 'https://images.unsplash.com/photo-1508061253366-f7da158b6d46?w=600',
-      },
-      {
-        'title': 'Bakery Fresh',
-        'subtitle': 'Baked daily',
-        'badge': null,
-        'image': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600',
+        'image': 'assets/events/summer_drinks.jpg',
       },
     ];
 
-    Widget eventCard(Map<String, dynamic> event, {double height = 96}) {
+    Widget eventCard(Map<String, dynamic> event,
+        {double height = 96, double titleSize = 13, double subtitleSize = 10.5}) {
       return Container(
         height: height,
         margin: const EdgeInsets.only(bottom: 8),
@@ -795,11 +802,10 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Stack(
           fit: StackFit.expand,
           children: [
-            CachedNetworkImage(
-              imageUrl: event['image'],
+            Image.asset(
+              event['image'],
               fit: BoxFit.cover,
-              placeholder: (_, __) => Container(color: Colors.grey[200]),
-              errorWidget: (_, __, ___) => Container(color: Colors.grey[300]),
+              errorBuilder: (_, __, ___) => Container(color: Colors.grey[300]),
             ),
             // Dark gradient overlay so white text stays readable over any photo
             Container(
@@ -842,7 +848,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
                       style: GoogleFonts.poppins(
-                          fontSize: 13,
+                          fontSize: titleSize,
                           fontWeight: FontWeight.bold,
                           color: Colors.white)),
                   if (event['subtitle'] != null)
@@ -850,7 +856,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         maxLines: 1,
                         overflow: TextOverflow.ellipsis,
                         style: GoogleFonts.poppins(
-                            fontSize: 10.5,
+                            fontSize: subtitleSize,
                             fontWeight: FontWeight.w500,
                             color: Colors.white70)),
                 ],
@@ -870,22 +876,16 @@ class _HomeScreenState extends State<HomeScreen> {
               style:
                   GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
           const SizedBox(height: 8),
-          IntrinsicHeight(
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Expanded(child: eventCard(events[0], height: 200)),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Column(
-                    children: [
-                      eventCard(events[1], height: 96),
-                      eventCard(events[2], height: 96),
-                    ],
-                  ),
-                ),
-              ],
-            ),
+          eventCard(events[0], height: 140, titleSize: 16, subtitleSize: 11.5),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(child: eventCard(events[1], height: 120)),
+              const SizedBox(width: 8),
+              Expanded(child: eventCard(events[2], height: 120)),
+              const SizedBox(width: 8),
+              Expanded(child: eventCard(events[3], height: 120)),
+            ],
           ),
         ],
       ),

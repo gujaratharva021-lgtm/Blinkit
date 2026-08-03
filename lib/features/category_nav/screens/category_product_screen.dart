@@ -73,7 +73,20 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
             icon: const Icon(Icons.arrow_back),
             onPressed: () => Navigator.pop(context),
           ),
-          CategoryPlaceholderImage(icon: category.icon, color: category.color, size: 44, borderRadius: 12),
+          ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: (category.image != null && category.image!.isNotEmpty)
+                ? Image.asset(
+                    category.image!,
+                    width: 44,
+                    height: 44,
+                    fit: BoxFit.cover,
+                    errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
+                        icon: category.icon, color: category.color, size: 44, borderRadius: 12),
+                  )
+                : CategoryPlaceholderImage(
+                    icon: category.icon, color: category.color, size: 44, borderRadius: 12),
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Text(category.title,
@@ -117,7 +130,7 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: 0.58,
+            childAspectRatio: 0.72,
           ),
           itemBuilder: (context, index) {
             final product = shown[index];
@@ -141,3 +154,4 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
     );
   }
 }
+

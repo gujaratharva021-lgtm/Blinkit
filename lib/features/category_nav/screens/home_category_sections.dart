@@ -86,7 +86,7 @@ class _HomeCategorySectionsState extends State<HomeCategorySections> {
                   'cat_atta_rice_dal': 'Atta, Rice & Dal',
                   'cat_oil_ghee_masala': 'Oil, Ghee & Masala',
                   'cat_dairy_bread_eggs': 'Dairy, Bread & Eggs',
-                  'cat_bakery_biscuits': 'Biscuits',
+                  'cat_bakery_biscuits': 'Bakery',
                   'cat_dryfruits_cereals': 'Dry Fruits & Cereals',
                   'cat_kitchenware': 'Kitchenware & Appliances',
                   'cat_chicken_meat_fish': 'Chicken & Meat',

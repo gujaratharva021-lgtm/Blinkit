@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../widgets/state_views.dart';
@@ -117,7 +117,7 @@ class _CategoryProductScreenState extends State<CategoryProductScreen> {
             crossAxisCount: 2,
             mainAxisSpacing: 12,
             crossAxisSpacing: 12,
-            childAspectRatio: 0.62,
+            childAspectRatio: 0.58,
           ),
           itemBuilder: (context, index) {
             final product = shown[index];

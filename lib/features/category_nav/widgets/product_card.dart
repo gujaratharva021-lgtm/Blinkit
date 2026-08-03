@@ -26,40 +26,37 @@ class ProductCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(14),
           border: Border.all(color: scheme.outlineVariant.withOpacity(0.4)),
         ),
-        padding: const EdgeInsets.all(10),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Stack(
               children: [
-                Center(
+                ClipRRect(
+                  borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
                   child: (product.image != null && product.image!.isNotEmpty)
-                      ? ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Image.asset(
-                            product.image!,
-                            width: 72,
-                            height: 72,
-                            fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
-                              icon: product.icon,
-                              color: product.color,
-                              size: 72,
-                              borderRadius: 12,
-                            ),
+                      ? Image.asset(
+                          product.image!,
+                          width: double.infinity,
+                          height: 100,
+                          fit: BoxFit.contain,
+                          errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
+                            icon: product.icon,
+                            color: product.color,
+                            size: 100,
+                            borderRadius: 0,
                           ),
                         )
                       : CategoryPlaceholderImage(
                           icon: product.icon,
                           color: product.color,
-                          size: 72,
-                          borderRadius: 12,
+                          size: 100,
+                          borderRadius: 0,
                         ),
                 ),
                 if (product.discountPercent > 0)
                   Positioned(
-                    top: 0,
-                    left: 0,
+                    top: 6,
+                    left: 6,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
@@ -73,8 +70,8 @@ class ProductCard extends StatelessWidget {
                   ),
                 if (!product.inStock)
                   Positioned(
-                    right: 0,
-                    top: 0,
+                    right: 6,
+                    top: 6,
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
@@ -88,7 +85,11 @@ class ProductCard extends StatelessWidget {
                   ),
               ],
             ),
-            const SizedBox(height: 8),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(10, 8, 10, 10),
+              child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
             Row(
               children: [
                 Icon(Icons.star, size: 12, color: Colors.amber[700]),
@@ -127,6 +128,9 @@ class ProductCard extends StatelessWidget {
                 ),
                 _AddButton(product: product, qty: qty),
               ],
+            ),
+            ],
+              ),
             ),
           ],
         ),

@@ -40,13 +40,13 @@ class CategoryTile extends StatelessWidget {
                       size: tileSize * 0.55,
                       borderRadius: 18,
                     ),
-              const SizedBox(height: 6),
+              const SizedBox(height: 4),
               Text(
                 category.title,
                 textAlign: TextAlign.center,
                 maxLines: 2,
                 overflow: TextOverflow.ellipsis,
-                style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600, height: 1.2),
+                style: GoogleFonts.poppins(fontSize: 11, fontWeight: FontWeight.w600, height: 1.1),
               ),
             ],
           );

@@ -76,7 +76,7 @@ class _HomeCategorySectionsState extends State<HomeCategorySections> {
                 crossAxisCount: section.title == 'Beauty & Personal Care' ? 3 : 4,
                 mainAxisSpacing: section.title == 'Beauty & Personal Care' ? 12 : 10,
                 crossAxisSpacing: 8,
-                childAspectRatio: section.title == 'Beauty & Personal Care' ? 0.85 : 0.72,
+                childAspectRatio: section.title == 'Beauty & Personal Care' ? 0.85 : 0.68,
               ),
               itemBuilder: (context, index) {
                 final category = section.categories[index];

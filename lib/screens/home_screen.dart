@@ -38,13 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
     }
   }
 
-  final List<Map<String, dynamic>> _banners = [
-    {'title': 'Dairy Products', 'subtitle': 'Pure & fresh daily', 'color': Color(0xFF2196F3), 'image': 'https://images.unsplash.com/photo-1550583724-b2692b85b150?w=600'},
-    {'title': 'Fresh Fruits', 'subtitle': 'Handpicked for you', 'color': Color(0xFFFF9800), 'image': 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=600'},
-    {'title': 'Snacks & Drinks', 'subtitle': 'Your favourite brands', 'color': Color(0xFF0C831F), 'image': 'https://images.unsplash.com/photo-1621939514649-280e2ee25f60?w=600'},
-    {'title': 'Bakery Fresh', 'subtitle': 'Baked fresh every day', 'color': Color(0xFF795548), 'image': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600'},
-  ];
-
   final List<Map<String, dynamic>> _products = [
     // --- Fruits ---
     {'name': 'Apple', 'price': 120, 'unit': '4 pcs', 'category': 'Fruits', 'image': 'assets/images/Fruits/Apple.png'},
@@ -485,62 +478,18 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            // Banner Carousel
-            CarouselSlider(
-              options: CarouselOptions(
-                height: 160,
-                autoPlay: true,
-                enlargeCenterPage: true,
-                autoPlayInterval: const Duration(seconds: 3),
-                viewportFraction: 0.92,
+            // Promo Banner
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(16),
+                child: Image.asset(
+                  'assets/images/banners/promo_banner.png',
+                  width: double.infinity,
+                  height: 160,
+                  fit: BoxFit.cover,
+                ),
               ),
-              items: _banners.map((banner) {
-                return ClipRRect(
-                  borderRadius: BorderRadius.circular(16),
-                  child: Stack(
-                    fit: StackFit.expand,
-                    children: [
-                      CachedNetworkImage(
-                        imageUrl: banner['image'],
-                        fit: BoxFit.cover,
-                        placeholder: (context, url) =>
-                            Container(color: banner['color']),
-                        errorWidget: (context, url, error) =>
-                            Container(color: banner['color']),
-                      ),
-                      Container(
-                        decoration: const BoxDecoration(
-                          gradient: LinearGradient(
-                            begin: Alignment.bottomCenter,
-                            end: Alignment.topCenter,
-                            colors: [
-                              Colors.black54,
-                              Colors.transparent,
-                            ],
-                          ),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          children: [
-                            Text(banner['title'],
-                                style: GoogleFonts.poppins(
-                                    color: Colors.white,
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.bold)),
-                            Text(banner['subtitle'],
-                                style: GoogleFonts.poppins(
-                                    color: Colors.white70, fontSize: 12)),
-                          ],
-                        ),
-                      ),
-                    ],
-                  ),
-                );
-              }).toList(),
             ),
 
             const SizedBox(height: 16),

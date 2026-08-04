@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'core/theme/theme_provider.dart';
 import 'core/theme/app_theme.dart';
@@ -6,6 +6,7 @@ import 'providers/profile_provider.dart';
 import 'providers/settings_provider.dart';
 import 'providers/referral_provider.dart';
 import 'providers/cart_provider.dart';
+import 'providers/product_provider.dart';
 import 'providers/order_provider.dart';
 import 'providers/wallet_provider.dart';
 import 'providers/support_provider.dart';
@@ -39,7 +40,8 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => CartProvider()),
+        ChangeNotifierProvider(create: (_) => CartProvider()..loadCart()),
+        ChangeNotifierProvider(create: (_) => ProductProvider()..loadProducts()),
         ChangeNotifierProvider.value(value: themeProvider),
         ChangeNotifierProvider(create: (_) => ProfileProvider()..load()),
         ChangeNotifierProvider(create: (_) => SettingsProvider()..load()),

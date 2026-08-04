@@ -1,7 +1,8 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../services/api_service.dart';
 import 'address_screen.dart';
 import 'home_screen.dart';
 import 'categories_screen.dart';
@@ -36,7 +37,6 @@ class _CouponInfo {
 }
 
 class _CartScreenState extends State<CartScreen> {
-  bool _isLoading = false;
   static const int deliveryFee = 25;
   static const int platformFee = 5;
   static const double freeDeliveryThreshold = 299;
@@ -49,21 +49,21 @@ class _CartScreenState extends State<CartScreen> {
   static const List<_CouponInfo> _availableCoupons = [
     _CouponInfo(
       code: 'SAVE50',
-      description: 'Flat ₹50 off on orders above ₹200',
+      description: 'Flat off on orders above 200',
       isPercent: false,
       value: 50,
       minCartValue: 200,
     ),
     _CouponInfo(
       code: 'SAVE100',
-      description: 'Flat ₹100 off on orders above ₹500',
+      description: 'Flat off on orders above 500',
       isPercent: false,
       value: 100,
       minCartValue: 500,
     ),
     _CouponInfo(
       code: 'WELCOME10',
-      description: '10% off up to ₹50 on your order',
+      description: '10% off up to 50 on your order',
       isPercent: true,
       value: 10,
       maxDiscount: 50,
@@ -100,7 +100,7 @@ class _CartScreenState extends State<CartScreen> {
     if (cartTotal < coupon.minCartValue) {
       setState(() {
         _couponError =
-            'Add items worth ₹${coupon.minCartValue.toStringAsFixed(0)} to use this coupon';
+            'Add items worth ${coupon.minCartValue.toStringAsFixed(0)} to use this coupon';
         _appliedCouponCode = null;
         _discount = 0;
       });
@@ -122,7 +122,7 @@ class _CartScreenState extends State<CartScreen> {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(
-            'Coupon ${coupon.code} applied! You saved ₹${discount.toStringAsFixed(0)}'),
+            'Coupon ${coupon.code} applied! You saved ${discount.toStringAsFixed(0)}'),
         backgroundColor: kBrandGreen,
         duration: const Duration(seconds: 2),
       ),
@@ -139,6 +139,11 @@ class _CartScreenState extends State<CartScreen> {
   }
 
   Widget _buildCartImage(String imagePath) {
+    if (imagePath.isEmpty) {
+      return Container(
+          width: 60, height: 60, color: kLightGreenBg,
+          child: const Icon(Icons.image_not_supported, color: kBrandGreen));
+    }
     if (imagePath.startsWith('assets/')) {
       return Image.asset(imagePath, width: 60, height: 60, fit: BoxFit.cover,
           errorBuilder: (_, __, ___) => Container(
@@ -170,13 +175,21 @@ class _CartScreenState extends State<CartScreen> {
     );
   }
 
+  String _imageUrl(String? raw) {
+    if (raw == null || raw.isEmpty) return '';
+    if (raw.startsWith('http')) return raw;
+    final host = ApiService.baseUrl.replaceAll('/api/v1', '');
+    return '$host$raw';
+  }
+
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
-    final total = cart.cartTotal + deliveryFee + platformFee;
-    final remaining = freeDeliveryThreshold - cart.cartTotal;
+    final cartTotal = cart.cartTotal.round();
+    final total = cartTotal + deliveryFee + platformFee;
+    final remaining = freeDeliveryThreshold - cartTotal;
     final unlocked = remaining <= 0;
-    final preDiscountTotal = unlocked ? cart.cartTotal + platformFee : total;
+    final preDiscountTotal = unlocked ? cartTotal + platformFee : total;
     final grandTotal = (preDiscountTotal - _discount).clamp(0, double.infinity).round();
 
     return Scaffold(
@@ -188,7 +201,7 @@ class _CartScreenState extends State<CartScreen> {
         title: Text('My Cart (${cart.cartCount} items)',
             style: GoogleFonts.poppins(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
       ),
-      body: cart.cartItems.isEmpty
+      body: cart.items.isEmpty
           ? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -233,7 +246,7 @@ class _CartScreenState extends State<CartScreen> {
                     if (!unlocked) ...[
                       const SizedBox(height: 4),
                       Text(
-                        'Add items worth ₹${remaining.toStringAsFixed(0)} more to unlock FREE delivery',
+                        'Add items worth ${remaining.toStringAsFixed(0)} more to unlock FREE delivery',
                         style: GoogleFonts.poppins(fontSize: 11, color: Colors.grey[700]),
                       ),
                     ],
@@ -241,60 +254,69 @@ class _CartScreenState extends State<CartScreen> {
                 ),
               ),
               const SizedBox(height: 12),
-              ...cart.cartItems.values.map((item) => Padding(
-                padding: const EdgeInsets.only(bottom: 12),
-                child: Row(
-                  children: [
-                    ClipRRect(
-                      borderRadius: BorderRadius.circular(10),
-                      child: _buildCartImage(item.image),
-                    ),
-                    const SizedBox(width: 12),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(item.name, maxLines: 2, overflow: TextOverflow.ellipsis,
-                              style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
-                          Text(item.unit, style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey)),
-                        ],
+              ...cart.items.map((item) {
+                final product = item['product'] ?? {};
+                final productId = item['product_id'];
+                final name = (product['name'] ?? '').toString();
+                final price = (product['price'] is num) ? (product['price'] as num).round() : 0;
+                final unit = (product['description'] ?? '').toString();
+                final image = _imageUrl(product['image_url']?.toString());
+                final quantity = item['quantity'] ?? 1;
+
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 12),
+                  child: Row(
+                    children: [
+                      ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: _buildCartImage(image),
                       ),
-                    ),
-                    Text('₹${item.price}', style: GoogleFonts.poppins(
-                        fontSize: 14, fontWeight: FontWeight.bold)),
-                    const SizedBox(width: 12),
-                    Container(
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: kBrandGreen,
-                        borderRadius: BorderRadius.circular(8),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(name, maxLines: 2, overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
+                            Text(unit, style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey)),
+                          ],
+                        ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          InkWell(
-                            onTap: () => context.read<CartProvider>().removeFromCart(item.name),
-                            child: const SizedBox(width: 28, height: 32,
-                                child: Icon(Icons.remove, color: Colors.white, size: 16)),
-                          ),
-                          SizedBox(
-                            width: 24,
-                            child: Text('${item.quantity}', textAlign: TextAlign.center,
-                                style: GoogleFonts.poppins(
-                                    color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
-                          ),
-                          InkWell(
-                            onTap: () => context.read<CartProvider>()
-                                .addToCart(item.name, item.price, item.unit, item.image),
-                            child: const SizedBox(width: 28, height: 32,
-                                child: Icon(Icons.add, color: Colors.white, size: 16)),
-                          ),
-                        ],
+                      Text('$price', style: GoogleFonts.poppins(
+                          fontSize: 14, fontWeight: FontWeight.bold)),
+                      const SizedBox(width: 12),
+                      Container(
+                        height: 32,
+                        decoration: BoxDecoration(
+                          color: kBrandGreen,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            InkWell(
+                              onTap: () => context.read<CartProvider>().decrement(productId),
+                              child: const SizedBox(width: 28, height: 32,
+                                  child: Icon(Icons.remove, color: Colors.white, size: 16)),
+                            ),
+                            SizedBox(
+                              width: 24,
+                              child: Text('$quantity', textAlign: TextAlign.center,
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                            ),
+                            InkWell(
+                              onTap: () => context.read<CartProvider>().increment(productId),
+                              child: const SizedBox(width: 28, height: 32,
+                                  child: Icon(Icons.add, color: Colors.white, size: 16)),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ],
-                ),
-              )),
+                    ],
+                  ),
+                );
+              }),
               const Divider(height: 24),
               Text('Apply Coupon', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14)),
               const SizedBox(height: 10),
@@ -324,7 +346,7 @@ class _CartScreenState extends State<CartScreen> {
                             borderSide: const BorderSide(color: kBrandGreen),
                           ),
                         ),
-                        onSubmitted: (_) => _applyCoupon(cart.cartTotal.toDouble()),
+                        onSubmitted: (_) => _applyCoupon(cartTotal.toDouble()),
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -333,7 +355,7 @@ class _CartScreenState extends State<CartScreen> {
                       borderRadius: BorderRadius.circular(10),
                       child: InkWell(
                         borderRadius: BorderRadius.circular(10),
-                        onTap: () => _applyCoupon(cart.cartTotal.toDouble()),
+                        onTap: () => _applyCoupon(cartTotal.toDouble()),
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 13),
                           child: Text('Apply',
@@ -356,7 +378,7 @@ class _CartScreenState extends State<CartScreen> {
                   children: _availableCoupons.map((c) => InkWell(
                     onTap: () {
                       _couponController.text = c.code;
-                      _applyCoupon(cart.cartTotal.toDouble());
+                      _applyCoupon(cartTotal.toDouble());
                     },
                     child: Container(
                       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
@@ -385,7 +407,7 @@ class _CartScreenState extends State<CartScreen> {
                       const SizedBox(width: 8),
                       Expanded(
                         child: Text(
-                            "'$_appliedCouponCode' applied \u2014 you saved ₹${_discount.toStringAsFixed(0)}",
+                            "'$_appliedCouponCode' applied - you saved ${_discount.toStringAsFixed(0)}",
                             style: GoogleFonts.poppins(
                                 fontSize: 12, fontWeight: FontWeight.w600, color: kBrandGreen)),
                       ),
@@ -401,13 +423,13 @@ class _CartScreenState extends State<CartScreen> {
               const Divider(height: 24),
               Text('Bill details', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14)),
               const SizedBox(height: 10),
-              _billRow('Item Total', '₹${cart.cartTotal}'),
-              _billRow('Delivery Fee', unlocked ? 'FREE' : '₹$deliveryFee'),
-              _billRow('Platform Fee', '₹$platformFee'),
+              _billRow('Item Total', '$cartTotal'),
+              _billRow('Delivery Fee', unlocked ? 'FREE' : '$deliveryFee'),
+              _billRow('Platform Fee', '$platformFee'),
               if (_discount > 0)
-                _billRow('Coupon Discount', '-₹${_discount.toStringAsFixed(0)}'),
+                _billRow('Coupon Discount', '-${_discount.toStringAsFixed(0)}'),
               const Divider(),
-              _billRow('Grand Total', '₹$grandTotal', isBold: true),
+              _billRow('Grand Total', '$grandTotal', isBold: true),
             ],
           ),
           Align(
@@ -420,11 +442,14 @@ class _CartScreenState extends State<CartScreen> {
                   borderRadius: BorderRadius.circular(12),
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
-                    onTap: _isLoading ? null : () {
-                      final items = cart.cartItems.values.map((item) => {
-                        'name': item.name,
-                        'price': item.price,
-                        'quantity': item.quantity,
+                    onTap: () {
+                      final items = cart.items.map((item) {
+                        final product = item['product'] ?? {};
+                        return {
+                          'name': product['name'],
+                          'price': product['price'],
+                          'quantity': item['quantity'],
+                        };
                       }).toList();
                       Navigator.push(
                         context,
@@ -438,12 +463,10 @@ class _CartScreenState extends State<CartScreen> {
                     },
                     child: Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 16),
-                      child: _isLoading
-                          ? const Center(child: CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                          : Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Text('₹$grandTotal',
+                          Text('$grandTotal',
                               style: GoogleFonts.poppins(
                                   color: Colors.white, fontWeight: FontWeight.bold, fontSize: 15)),
                           Row(

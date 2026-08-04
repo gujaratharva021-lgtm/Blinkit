@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -26,6 +26,7 @@ class _AddressScreenState extends State<AddressScreen> {
   int _selectedAddress = 0;
   late Razorpay _razorpay;
   bool _isLoading = false;
+  int? _currentOrderId;
 
   List<Map<String, dynamic>> _addresses = [];
 
@@ -45,7 +46,6 @@ class _AddressScreenState extends State<AddressScreen> {
     super.dispose();
   }
 
-  // ✅ Load addresses from SharedPreferences
   Future<void> _loadAddresses() async {
     final prefs = await SharedPreferences.getInstance();
     final String? data = prefs.getString('saved_addresses');
@@ -59,7 +59,6 @@ class _AddressScreenState extends State<AddressScreen> {
         }).toList();
       });
     } else {
-      // Default addresses pehli baar
       setState(() {
         _addresses = [
           {
@@ -84,12 +83,11 @@ class _AddressScreenState extends State<AddressScreen> {
     }
   }
 
-  // ✅ Save addresses to SharedPreferences
   Future<void> _saveAddresses() async {
     final prefs = await SharedPreferences.getInstance();
     final List<Map<String, dynamic>> toSave = _addresses.map((e) {
       final map = Map<String, dynamic>.from(e);
-      map.remove('icon'); // IconData serialize nahi hoti
+      map.remove('icon');
       return map;
     }).toList();
     await prefs.setString('saved_addresses', jsonEncode(toSave));
@@ -103,19 +101,68 @@ class _AddressScreenState extends State<AddressScreen> {
     }
   }
 
-  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
-    final selected = _addresses[_selectedAddress];
-    final fullAddress = '${selected['address']}, ${selected['city']}';
+  // Creates (or re-creates) this local address as a real backend Address
+  // row so checkout has an address_id to work with. Stores the returned
+  // id back onto the local entry.
+  Future<int?> _syncAddressToBackend(int index) async {
+    final addr = _addresses[index];
+    final phoneDigits =
+        (addr['phone'] ?? '').toString().replaceAll(RegExp(r'[^0-9]'), '');
+    final phone10 = phoneDigits.length >= 10
+        ? phoneDigits.substring(phoneDigits.length - 10)
+        : phoneDigits.padLeft(10, '0');
+
+    final cityRaw = (addr['city'] ?? '').toString();
+    final parts = cityRaw.split(',');
+    String city = parts.isNotEmpty ? parts[0].trim() : cityRaw;
+    String state = parts.length > 1
+        ? parts[1].replaceAll(RegExp(r'[0-9]'), '').trim()
+        : '';
+    final pinMatch = RegExp(r'(\d{6})').firstMatch(cityRaw);
+    String pincode = pinMatch != null ? pinMatch.group(1)! : '000000';
+
     try {
-      await ApiService.directPlaceOrder(fullAddress, widget.items);
+      final result = await ApiService.createAddress({
+        'label': addr['type'] ?? 'Home',
+        'full_name': addr['name'] ?? '',
+        'phone': phone10,
+        'line1': addr['address'] ?? '',
+        'line2': '',
+        'city': city.isEmpty ? 'NA' : city,
+        'state': state.isEmpty ? 'NA' : state,
+        'pincode': pincode,
+        'is_default': index == 0,
+      });
+      final id = result['id'];
+      if (id != null) {
+        setState(() {
+          _addresses[index]['backend_id'] = id;
+        });
+        _saveAddresses();
+      }
+      return id;
+    } catch (e) {
+      return null;
+    }
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    try {
+      if (_currentOrderId == null) throw Exception('Missing order reference');
+      await ApiService.verifyPayment(
+        orderId: _currentOrderId!,
+        razorpayOrderId: response.orderId ?? '',
+        razorpayPaymentId: response.paymentId ?? '',
+        razorpaySignature: response.signature ?? '',
+      );
       if (mounted) {
-        context.read<CartProvider>().placeOrder();
+        await context.read<CartProvider>().loadCart();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (_) => const OrderScreen()),
         );
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Payment Successful! Order Placed 🎉',
+          content: Text('Payment Successful! Order Placed \u{1F389}',
               style: GoogleFonts.poppins()),
           backgroundColor: Colors.green,
           behavior: SnackBarBehavior.floating,
@@ -153,12 +200,25 @@ class _AddressScreenState extends State<AddressScreen> {
   void _startPayment() async {
     setState(() => _isLoading = true);
     try {
-      final orderData = await ApiService.createPaymentOrder(widget.totalAmount);
+      int? addressId = _addresses[_selectedAddress]['backend_id'];
+      addressId ??= await _syncAddressToBackend(_selectedAddress);
+      if (addressId == null) {
+        throw Exception('Could not save address');
+      }
+
+      final order =
+          await ApiService.checkout(addressId: addressId, paymentMethod: 'online');
+      if (order['id'] == null) {
+        throw Exception(order['error']?.toString() ?? 'Checkout failed');
+      }
+      _currentOrderId = order['id'];
+
+      final orderData = await ApiService.createPaymentOrder(_currentOrderId!);
       var options = {
         'key': orderData['key_id'],
-        'amount': widget.totalAmount * 100,
+        'amount': orderData['amount'],
         'name': 'Mepto',
-        'order_id': orderData['order_id'],
+        'order_id': orderData['razorpay_order_id'],
         'description': 'Grocery Order',
         'prefill': {
           'contact': '9999999999',
@@ -178,7 +238,6 @@ class _AddressScreenState extends State<AddressScreen> {
     setState(() => _isLoading = false);
   }
 
-  // ✅ Add & Edit — ek hi sheet, index pass karo edit ke liye
   void _showAddressSheet({int? editIndex}) {
     final existing = editIndex != null ? _addresses[editIndex] : null;
 
@@ -219,7 +278,6 @@ class _AddressScreenState extends State<AddressScreen> {
                           fontSize: 18, fontWeight: FontWeight.bold)),
                   const SizedBox(height: 16),
 
-                  // Type selector
                   Row(
                     children: ['Home', 'Office', 'Other'].map((type) {
                       final isSelected = selectedType == type;
@@ -286,22 +344,23 @@ class _AddressScreenState extends State<AddressScreen> {
 
                         setState(() {
                           if (editIndex != null) {
-                            // ✅ Edit mode
                             _addresses[editIndex] = newAddress;
                           } else {
-                            // ✅ Add mode
                             _addresses.add(newAddress);
                           }
                         });
 
-                        _saveAddresses(); // persist
+                        _saveAddresses();
+                        final syncIndex =
+                            editIndex ?? _addresses.length - 1;
+                        _syncAddressToBackend(syncIndex);
                         Navigator.pop(context);
 
                         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                           content: Text(
                               editIndex != null
-                                  ? 'Address updated! ✅'
-                                  : 'Address saved! ✅',
+                                  ? 'Address updated! \u2705'
+                                  : 'Address saved! \u2705',
                               style: GoogleFonts.poppins()),
                           backgroundColor: Colors.green,
                           behavior: SnackBarBehavior.floating,
@@ -464,7 +523,6 @@ class _AddressScreenState extends State<AddressScreen> {
                         const SizedBox(height: 8),
                         Row(
                           children: [
-                            // ✅ Edit button — ab kaam karega
                             GestureDetector(
                               onTap: () => _showAddressSheet(editIndex: index),
                               child: Text('Edit',
@@ -482,7 +540,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                     _selectedAddress = 0;
                                   }
                                 });
-                                _saveAddresses(); // persist delete bhi
+                                _saveAddresses();
                               },
                               child: Text('Delete',
                                   style: GoogleFonts.poppins(
@@ -520,7 +578,7 @@ class _AddressScreenState extends State<AddressScreen> {
           child: _isLoading
               ? const CircularProgressIndicator(
               color: Colors.white, strokeWidth: 2)
-              : Text('Pay ₹${widget.totalAmount}',
+              : Text('Pay \u20b9${widget.totalAmount}',
               style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 15,

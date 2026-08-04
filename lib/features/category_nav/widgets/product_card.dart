@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/cart_provider.dart';
@@ -15,7 +15,7 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
-    final qty = cart.getQuantity(product.name);
+    final qty = cart.getQuantityByProductId(int.tryParse(product.id) ?? -1);
     final scheme = Theme.of(context).colorScheme;
 
     return GestureDetector(
@@ -163,8 +163,7 @@ class _AddButton extends StatelessWidget {
 
     if (qty == 0) {
       return GestureDetector(
-        onTap: () => cart.addToCart(
-            product.name, product.price.round(), product.weight, (product.image ?? (product.image ?? 'placeholder:${product.id}'))),
+        onTap: () => cart.increment(int.tryParse(product.id) ?? -1),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
@@ -182,7 +181,7 @@ class _AddButton extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _StepperButton(icon: Icons.remove, onTap: () => cart.removeFromCart(product.name)),
+          _StepperButton(icon: Icons.remove, onTap: () => cart.decrement(int.tryParse(product.id) ?? -1)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Text('$qty',
@@ -190,8 +189,7 @@ class _AddButton extends StatelessWidget {
           ),
           _StepperButton(
               icon: Icons.add,
-              onTap: () => cart.addToCart(
-                  product.name, product.price.round(), product.weight, (product.image ?? (product.image ?? 'placeholder:${product.id}')))),
+              onTap: () => cart.increment(int.tryParse(product.id) ?? -1)),
         ],
       ),
     );

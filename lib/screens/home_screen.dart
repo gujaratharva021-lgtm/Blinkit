@@ -483,11 +483,13 @@ class _HomeScreenState extends State<HomeScreen> {
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(16),
-                child: Image.asset(
-                  'assets/images/banners/promo_banner.png',
-                  width: double.infinity,
-                  height: 160,
-                  fit: BoxFit.cover,
+                child: AspectRatio(
+                  aspectRatio: 1672 / 941,
+                  child: Image.asset(
+                    'assets/images/banners/promo_banner.png',
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               ),
             ),

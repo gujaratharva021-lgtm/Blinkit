@@ -692,7 +692,7 @@ class _SearchScreenState extends State<SearchScreen> {
       itemCount: _filtered.length,
       itemBuilder: (context, index) {
         final product = _filtered[index];
-        final qty = cart.getQuantity(product['name']);
+        final qty = cart.getQuantityByProductId(product['id']);
         return Container(
           decoration: BoxDecoration(
               color: Colors.white,
@@ -726,9 +726,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 color: const Color(0xFF0C831F))),
                         qty == 0
                             ? GestureDetector(
-                          onTap: () => context.read<CartProvider>().addToCart(
-                              product['name'], product['price'],
-                              product['unit'], product['image']),
+                          onTap: () => context.read<CartProvider>().increment(product['id']),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
@@ -742,7 +740,7 @@ class _SearchScreenState extends State<SearchScreen> {
                             : Row(
                           children: [
                             GestureDetector(
-                              onTap: () => context.read<CartProvider>().removeFromCart(product['name']),
+                              onTap: () => context.read<CartProvider>().decrement(product['id']),
                               child: Container(
                                   width: 24, height: 24,
                                   decoration: BoxDecoration(
@@ -755,9 +753,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 child: Text('$qty',
                                     style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
                             GestureDetector(
-                              onTap: () => context.read<CartProvider>().addToCart(
-                                  product['name'], product['price'],
-                                  product['unit'], product['image']),
+                              onTap: () => context.read<CartProvider>().increment(product['id']),
                               child: Container(
                                   width: 24, height: 24,
                                   decoration: BoxDecoration(

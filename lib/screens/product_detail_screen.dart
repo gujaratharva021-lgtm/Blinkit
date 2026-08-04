@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
@@ -173,7 +173,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     final cart = context.watch<CartProvider>();
     final wishlist = context.watch<WishlistProvider>();
     final isWishlisted = wishlist.isWishlisted(product['name'] as String);
-    final qty = cart.getQuantity(product['name']);
+    final qty = cart.getQuantityByProductId(product['id']);
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -311,7 +311,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   color: const Color(0xFF0C831F),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Text('₹${product['price']}',
+                                child: Text('?${product['price']}',
                                     style: GoogleFonts.poppins(
                                         color: Colors.white,
                                         fontSize: 18,
@@ -319,7 +319,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                  'MRP ₹${(product['price'] * 1.3).toInt()}',
+                                  'MRP ?${(product['price'] * 1.3).toInt()}',
                                   style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       color: Colors.grey,
@@ -327,7 +327,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       TextDecoration.lineThrough)),
                               const SizedBox(width: 8),
                               Text(
-                                  '₹${(product['price'] * 0.3).toInt()} OFF',
+                                  '?${(product['price'] * 0.3).toInt()} OFF',
                                   style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       color: Colors.green,
@@ -534,7 +534,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500)),
                                     const SizedBox(height: 4),
-                                    Text('₹${related['price']}',
+                                    Text('?${related['price']}',
                                         style: GoogleFonts.poppins(
                                             fontSize: 13,
                                             fontWeight: FontWeight.bold)),
@@ -600,11 +600,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: qty == 0
                         ? ElevatedButton(
                       onPressed: () =>
-                          context.read<CartProvider>().addToCart(
-                              product['name'],
-                              product['price'],
-                              product['unit'],
-                              product['image']),
+                          context.read<CartProvider>().increment(product['id']),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0C831F),
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -629,7 +625,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           GestureDetector(
                             onTap: () => context
                                 .read<CartProvider>()
-                                .removeFromCart(product['name']),
+                                .decrement(product['id']),
                             child: const Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 20),
@@ -644,11 +640,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   fontWeight: FontWeight.bold)),
                           GestureDetector(
                             onTap: () =>
-                                context.read<CartProvider>().addToCart(
-                                    product['name'],
-                                    product['price'],
-                                    product['unit'],
-                                    product['image']),
+                                context.read<CartProvider>().increment(product['id']),
                             child: const Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 20),

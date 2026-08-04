@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://13.233.160.70:8081/api/v1';
+  static const String baseUrl = 'http://192.168.1.12:8081/api/v1';
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -93,17 +93,27 @@ class ApiService {
   static Future<Map<String, dynamic>> addToCart(int productId, int quantity) async {
     final headers = await getHeaders();
     final response = await http.post(
-      Uri.parse('$baseUrl/cart/add'),
+      Uri.parse('$baseUrl/cart'),
       headers: headers,
       body: jsonEncode({'product_id': productId, 'quantity': quantity}),
     );
     return jsonDecode(response.body);
   }
 
-  static Future<Map<String, dynamic>> removeFromCart(int productId) async {
+  static Future<Map<String, dynamic>> updateCartItem(int itemId, int quantity) async {
+    final headers = await getHeaders();
+    final response = await http.put(
+      Uri.parse('$baseUrl/cart/$itemId'),
+      headers: headers,
+      body: jsonEncode({'quantity': quantity}),
+    );
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> removeCartItem(int itemId) async {
     final headers = await getHeaders();
     final response = await http.delete(
-      Uri.parse('$baseUrl/cart/remove/$productId'),
+      Uri.parse('$baseUrl/cart/$itemId'),
       headers: headers,
     );
     return jsonDecode(response.body);
@@ -129,31 +139,49 @@ class ApiService {
     return data['orders'] ?? [];
   }
 
-  static Future<Map<String, dynamic>> createPaymentOrder(int amount) async {
+  static Future<Map<String, dynamic>> createAddress(Map<String, dynamic> address) async {
     final headers = await getHeaders();
     final response = await http.post(
-      Uri.parse('$baseUrl/payment/create-order'),
+      Uri.parse('$baseUrl/addresses'),
       headers: headers,
-      body: jsonEncode({'amount': amount}),
+      body: jsonEncode(address),
+    );
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> checkout({required int addressId, String paymentMethod = 'online'}) async {
+    final headers = await getHeaders();
+    final response = await http.post(
+      Uri.parse('$baseUrl/orders/checkout'),
+      headers: headers,
+      body: jsonEncode({'address_id': addressId, 'payment_method': paymentMethod}),
+    );
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> createPaymentOrder(int orderId) async {
+    final headers = await getHeaders();
+    final response = await http.post(
+      Uri.parse('$baseUrl/orders/$orderId/payment'),
+      headers: headers,
     );
     return jsonDecode(response.body);
   }
 
   static Future<Map<String, dynamic>> verifyPayment({
+    required int orderId,
     required String razorpayOrderId,
     required String razorpayPaymentId,
     required String razorpaySignature,
-    required String address,
   }) async {
     final headers = await getHeaders();
     final response = await http.post(
-      Uri.parse('$baseUrl/payment/verify'),
+      Uri.parse('$baseUrl/orders/$orderId/payment/verify'),
       headers: headers,
       body: jsonEncode({
         'razorpay_order_id': razorpayOrderId,
         'razorpay_payment_id': razorpayPaymentId,
         'razorpay_signature': razorpaySignature,
-        'address': address,
       }),
     );
     return jsonDecode(response.body);

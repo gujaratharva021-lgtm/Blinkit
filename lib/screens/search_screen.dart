@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
+import '../providers/product_provider.dart';
 
 enum SortOption { relevance, priceLowHigh, priceHighLow, nameAZ }
 
@@ -32,11 +33,13 @@ class _SearchScreenState extends State<SearchScreen> {
   final TextEditingController _controller = TextEditingController();
   String _query = '';
 
+  List<Map<String, dynamic>> get _allProducts => context.watch<ProductProvider>().products;
+
   static const _bg = Color(0xFF121212);
   static const _card = Color(0xFF1E1E1E);
   static const _card2 = Color(0xFF2C2C2C);
 
-  final List<Map<String, dynamic>> _allProducts = [
+  final List<Map<String, dynamic>> _mockProducts = [
     {'name': 'Hot Wheels', 'price': 299, 'unit': '1 pc', 'image': 'assets/images/toys items/Hot Wheels.jpg'},
     {'name': 'Barbie Doll', 'price': 599, 'unit': '1 pc', 'image': 'assets/images/toys items/Barbie Doll.png'},
     {'name': 'Building Blocks', 'price': 799, 'unit': '1 set', 'image': 'assets/images/toys items/Building Blocks.png'},
@@ -720,13 +723,13 @@ class _SearchScreenState extends State<SearchScreen> {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Text('₹${product['price']}',
+                        Text('â‚¹${product['price']}',
                             style: GoogleFonts.poppins(
                                 fontSize: 14, fontWeight: FontWeight.bold,
                                 color: const Color(0xFF0C831F))),
                         qty == 0
                             ? GestureDetector(
-                          onTap: () => context.read<CartProvider>().increment(product['id']),
+                          onTap: () => context.read<CartProvider>().increment(product['id'], productData: product),
                           child: Container(
                             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                             decoration: BoxDecoration(
@@ -753,7 +756,7 @@ class _SearchScreenState extends State<SearchScreen> {
                                 child: Text('$qty',
                                     style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.bold, color: Colors.black87))),
                             GestureDetector(
-                              onTap: () => context.read<CartProvider>().increment(product['id']),
+                              onTap: () => context.read<CartProvider>().increment(product['id'], productData: product),
                               child: Container(
                                   width: 24, height: 24,
                                   decoration: BoxDecoration(

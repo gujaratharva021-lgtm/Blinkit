@@ -18,6 +18,7 @@ import 'notifications/notification_list_screen.dart';
 import '../features/category_nav/data/category_mock_data.dart';
 import '../features/category_nav/models/category_models.dart';
 import '../features/category_nav/routes/category_nav_routes.dart';
+import '../features/category_nav/widgets/product_card.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool showWishlistIntro;
@@ -33,6 +34,9 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) context.read<ProductProvider>().loadProducts();
+    });
     if (widget.showWishlistIntro) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) showWishlistIntro(context);
@@ -107,7 +111,6 @@ class _HomeScreenState extends State<HomeScreen> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Header: delivery banner + location + search bar share one shade
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -191,7 +194,6 @@ class _HomeScreenState extends State<HomeScreen> {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      // Search Bar
                       GestureDetector(
                         onTap: () => Navigator.push(
                             context, MaterialPageRoute(builder: (_) => const SearchScreen())),
@@ -217,7 +219,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
 
-            // Promo Banner
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 12),
               child: ClipRRect(
@@ -235,40 +236,37 @@ class _HomeScreenState extends State<HomeScreen> {
 
             const SizedBox(height: 16),
 
-            // New Blinkit/Instamart-style category navigation
             const HomeCategorySections(),
 
             _buildPromoBanner(),
 
-            // Product Sections — Offers 3 sections ke baad
-            _buildProductSection('?? Fresh Fruits', 'Fruits'),
-            _buildProductSection('?? Ice Creams', 'Ice Creams'),
-            _buildProductSection('?? Chocolate', 'Chocolate'),
+            _buildProductSection('Fresh Fruits', 'Fruits'),
+            _buildProductSection('Ice Creams', 'Ice Creams'),
+            _buildProductSection('Chocolate', 'Chocolate'),
 
-            // ? Coupons & Offers — 3 sections ke baad
             _buildOffersSection(),
 
-            // ? Events this week — Offers ke baad
             _buildEventsSection(),
 
-            _buildProductSection('?? Snacks', 'Snacks'),
-            _buildProductSection('?? Beverages', 'Beverages'),
-            _buildProductSection('?? Biscuits', 'Biscuits'),
-            _buildProductSection('?? Namkeen', 'Namkeen'),
-            _buildProductSection('?? Wafers', 'Wafers'),
-            _buildProductSection('?? Cold Drinks', 'Cold Drinks'),
-            _buildProductSection('?? Ketchup', 'Ketchup'),
+            _buildProductSection('Snacks', 'Snacks'),
+            _buildProductSection('Beverages', 'Beverages'),
+            _buildProductSection('Biscuits', 'Biscuits'),
+            _buildProductSection('Namkeen', 'Namkeen'),
+            _buildProductSection('Wafers', 'Wafers'),
+            _buildProductSection('Cold Drinks', 'Cold Drinks'),
+            _buildProductSection('Ketchup', 'Ketchup'),
 
-            // ? Auto-sliding promo banner — Ketchup ke baad
             _buildSlidingPromoSection(),
 
-            _buildProductSection('?? Shampoo', 'Shampoo'),
-            _buildProductSection('?? Soap', 'Soap'),
-            _buildProductSection('?? Personal Care', 'Personal Care'),
-            _buildProductSection('?? Pickle', 'Pickle'),
-            _buildProductSection('?? Puja Items', 'Puja Items'),
-            _buildProductSection('?? Toys', 'Toys'),
-            _buildProductSection('?? Clothes', 'Clothes'),
+            _buildFeaturedProductsGrid(),
+
+            _buildProductSection('Shampoo', 'Shampoo'),
+            _buildProductSection('Soap', 'Soap'),
+            _buildProductSection('Personal Care', 'Personal Care'),
+            _buildProductSection('Pickle', 'Pickle'),
+            _buildProductSection('Puja Items', 'Puja Items'),
+            _buildProductSection('Toys', 'Toys'),
+            _buildProductSection('Clothes', 'Clothes'),
             const SizedBox(height: 80),
           ],
         ),
@@ -283,7 +281,6 @@ class _HomeScreenState extends State<HomeScreen> {
             case 1:
               await Navigator.push(context,
                   MaterialPageRoute(builder: (_) => const CategoriesScreen()));
-              // We're back on Home (via tap-back or swipe-back) — re-select Home.
               if (mounted) setState(() => _currentIndex = 0);
               break;
             case 2:
@@ -362,16 +359,17 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Small overlapping circular thumbnails of items currently in the cart,
-  // shown on the "View cart" pill.
   Widget _buildCartThumbnails(CartProvider cart) {
-    final items = cart.items.take(2).toList();
+    final images = [
+      ...cart.items.map((item) => _cartImageUrl(item)),
+      ...cart.localCartItems.map((item) => (item['image'] ?? '').toString()),
+    ].take(2).toList();
     return SizedBox(
-      width: items.length > 1 ? 54 : 40,
+      width: images.length > 1 ? 54 : 40,
       height: 40,
       child: Stack(
         children: [
-          for (int i = 0; i < items.length; i++)
+          for (int i = 0; i < images.length; i++)
             Positioned(
               left: i * 22.0,
               child: Container(
@@ -383,7 +381,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   border: Border.all(color: Colors.white, width: 2),
                 ),
                 child: ClipOval(
-                  child: _buildImage(_cartImageUrl(items[i]), height: 40),
+                  child: _buildImage(images[i], height: 40),
                 ),
               ),
             ),
@@ -392,7 +390,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Coupons & Offers Section
   Widget _buildOffersSection() {
     final List<Map<String, dynamic>> offers = [
       {
@@ -504,7 +501,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ? Events this week Section
   Widget _buildEventsSection() {
     final List<Map<String, dynamic>> events = [
       {
@@ -550,7 +546,6 @@ class _HomeScreenState extends State<HomeScreen> {
               fit: BoxFit.cover,
               errorBuilder: (_, __, ___) => Container(color: Colors.grey[300]),
             ),
-            // Dark gradient overlay so white text stays readable over any photo
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -755,7 +750,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // ? Auto-sliding Promo Banner Section
   final List<Map<String, dynamic>> _slidingPromos = [
     {
       'title': 'Herbal Living',
@@ -879,6 +873,112 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  Widget _buildFeaturedProductsGrid() {
+    final products = context.watch<ProductProvider>().products;
+    if (products.isEmpty) return const SizedBox();
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Recommended for you',
+              style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 10),
+          GridView.builder(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            itemCount: products.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 3,
+              childAspectRatio: 0.46,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+            ),
+            itemBuilder: (context, index) {
+              final product = products[index];
+              final cart = context.watch<CartProvider>();
+              final qty = cart.getQuantityByProductId(product['id']);
+              return GestureDetector(
+                onTap: () => Navigator.push(context, MaterialPageRoute(builder: (_) => ProductDetailScreen(product: product, allProducts: products))),
+
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Theme.of(context).colorScheme.surface,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: Colors.grey.shade200),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      ClipRRect(
+                        borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
+                        child: _buildImage(product['image'], height: 90),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(6),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(product['name'] ?? '', maxLines: 2, overflow: TextOverflow.ellipsis,
+                                style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.w600)),
+                            const SizedBox(height: 4),
+                            Text('\u20b9${product['price']}',
+                                style: GoogleFonts.poppins(fontSize: 12, fontWeight: FontWeight.bold)),
+                            const SizedBox(height: 6),
+                            qty == 0
+                                ? GestureDetector(
+                                    onTap: () => context.read<CartProvider>().increment(product['id'], productData: product),
+                                    child: Container(
+                                      width: double.infinity,
+                                      alignment: Alignment.center,
+                                      padding: const EdgeInsets.symmetric(vertical: 4),
+                                      decoration: BoxDecoration(
+                                          color: const Color(0xFF0C831F),
+                                          borderRadius: BorderRadius.circular(6)),
+                                      child: Text('ADD',
+                                          style: GoogleFonts.poppins(color: Colors.white, fontSize: 11, fontWeight: FontWeight.bold)),
+                                    ),
+                                  )
+                                : Container(
+                                    decoration: BoxDecoration(
+                                        color: const Color(0xFF0C831F),
+                                        borderRadius: BorderRadius.circular(6)),
+                                    child: Row(
+                                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                      children: [
+                                        GestureDetector(
+                                          onTap: () => context.read<CartProvider>().decrement(product['id']),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(4),
+                                            child: Icon(Icons.remove, color: Colors.white, size: 14),
+                                          ),
+                                        ),
+                                        Text('$qty',
+                                            style: GoogleFonts.poppins(color: Colors.white, fontWeight: FontWeight.bold, fontSize: 12)),
+                                        GestureDetector(
+                                          onTap: () => context.read<CartProvider>().increment(product['id'], productData: product),
+                                          child: const Padding(
+                                            padding: EdgeInsets.all(4),
+                                            child: Icon(Icons.add, color: Colors.white, size: 14),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              );
+            },
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildProductSection(String title, String category) {
     final allProducts = context.watch<ProductProvider>().products;
     final items = allProducts.where((p) => p['category'] == category).toList();
@@ -912,7 +1012,7 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ),
         SizedBox(
-          height: 230,
+          height: 250,
           child: ListView.builder(
             scrollDirection: Axis.horizontal,
             padding: const EdgeInsets.symmetric(horizontal: 12),
@@ -961,22 +1061,24 @@ class _HomeScreenState extends State<HomeScreen> {
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis),
                             Text(product['unit'],
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
                                 style: GoogleFonts.poppins(
                                     fontSize: 11, color: Colors.grey)),
                             const SizedBox(height: 6),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                Text('?${product['price']}',
+                                Text('Rs.${product['price']}',
                                     style: GoogleFonts.poppins(
                                         fontSize: 14,
                                         fontWeight: FontWeight.bold,
                                         color: const Color(0xFF0C831F))),
                                 qty == 0
                                     ? GestureDetector(
-                                  onTap: () => context
-                                      .read<CartProvider>()
-                                      .increment(product['id']),
+                                  onTap: () {
+                                  context.read<CartProvider>().increment(product['id'], productData: product);
+                                },
                                   child: Container(
                                     padding: const EdgeInsets.symmetric(
                                         horizontal: 12, vertical: 4),
@@ -1023,7 +1125,7 @@ class _HomeScreenState extends State<HomeScreen> {
                                     GestureDetector(
                                       onTap: () => context
                                           .read<CartProvider>()
-                                          .increment(product['id']),
+                                          .increment(product['id'], productData: product),
                                       child: Container(
                                           width: 26,
                                           height: 26,
@@ -1056,3 +1158,4 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
+

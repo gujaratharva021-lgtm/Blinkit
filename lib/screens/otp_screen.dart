@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import '../services/api_service.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -16,8 +17,8 @@ class OtpScreen extends StatefulWidget {
 }
 
 class _OtpScreenState extends State<OtpScreen> {
-  final List<TextEditingController> _controllers = List.generate(4, (_) => TextEditingController());
-  final List<FocusNode> _focusNodes = List.generate(4, (_) => FocusNode());
+  final List<TextEditingController> _controllers = List.generate(6, (_) => TextEditingController());
+  final List<FocusNode> _focusNodes = List.generate(6, (_) => FocusNode());
   Timer? _timer;
   int _secondsLeft = 30;
   bool _isVerifying = false;
@@ -60,31 +61,46 @@ class _OtpScreenState extends State<OtpScreen> {
 
   // MOCK: any 4 digits logs the user in. Replace with real API call later.
   Future<void> _verify() async {
-    if (_otp.length != 4) return;
+    if (_otp.length != 6) return;
     setState(() => _isVerifying = true);
-    await Future.delayed(const Duration(milliseconds: 600));
-
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('token', 'mock_token');
-    await prefs.setString('user_phone', widget.phone);
-
-    if (mounted) {
-      Navigator.pushAndRemoveUntil(
-        context,
-        MaterialPageRoute(builder: (_) => const HomeScreen(showWishlistIntro: true)),
-        (route) => false,
-      );
+    try {
+      final data = await ApiService.verifyOTP(widget.phone, _otp);
+      if (data['token'] != null) {
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('user_phone', widget.phone);
+        if (mounted) {
+          Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (_) => const HomeScreen(showWishlistIntro: true)),
+            (route) => false,
+          );
+        }
+      } else {
+        setState(() => _isVerifying = false);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(data['error']?.toString() ?? 'OTP verify fail hua')),
+          );
+        }
+      }
+    } catch (e) {
+      setState(() => _isVerifying = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
     }
   }
 
   void _onDigitChanged(int index, String value) {
-    if (value.isNotEmpty && index < 3) {
+    if (value.isNotEmpty && index < 5) {
       _focusNodes[index + 1].requestFocus();
     }
     if (value.isEmpty && index > 0) {
       _focusNodes[index - 1].requestFocus();
     }
-    if (_otp.length == 4) {
+    if (_otp.length == 6) {
       FocusScope.of(context).unfocus();
       _verify();
     }
@@ -127,12 +143,12 @@ class _OtpScreenState extends State<OtpScreen> {
                 const SizedBox(height: 28),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: List.generate(4, (i) {
+                  children: List.generate(6, (i) {
                     return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 6),
+                      padding: const EdgeInsets.symmetric(horizontal: 4),
                       child: SizedBox(
-                        width: 56,
-                        height: 60,
+                        width: 46,
+                        height: 56,
                         child: TextField(
                           controller: _controllers[i],
                           focusNode: _focusNodes[i],
@@ -140,7 +156,7 @@ class _OtpScreenState extends State<OtpScreen> {
                           keyboardType: TextInputType.number,
                           maxLength: 1,
                           inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                          style: GoogleFonts.poppins(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: GoogleFonts.poppins(fontSize: 22, fontWeight: FontWeight.bold),
                           decoration: InputDecoration(
                             counterText: '',
                             filled: true,

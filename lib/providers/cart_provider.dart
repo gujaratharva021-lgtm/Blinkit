@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 
 class CartProvider extends ChangeNotifier {
@@ -7,10 +7,38 @@ class CartProvider extends ChangeNotifier {
   double _totalAmount = 0;
   bool _isLoading = false;
 
+  final Map<String, int> _localQuantities = {};
+  final Map<String, Map<String, dynamic>> _localProductData = {};
+
   List<dynamic> get items => _items;
-  int get cartCount => _totalItems;
-  double get cartTotal => _totalAmount;
   bool get isLoading => _isLoading;
+
+  int get cartCount =>
+      _totalItems + _localQuantities.values.fold(0, (a, b) => a + b);
+
+  double get cartTotal {
+    double localTotal = 0;
+    _localQuantities.forEach((id, qty) {
+      final price = (_localProductData[id]?['price'] as num?)?.toDouble() ?? 0;
+      localTotal += price * qty;
+    });
+    return _totalAmount + localTotal;
+  }
+
+  List<Map<String, dynamic>> get localCartItems {
+    return _localQuantities.entries.map((e) {
+      final data = _localProductData[e.key] ?? {};
+      return {
+        'id': e.key,
+        'name': data['name'] ?? '',
+        'brand': data['brand'] ?? '',
+        'weight': data['weight'] ?? '',
+        'price': data['price'] ?? 0,
+        'image': data['image'],
+        'quantity': e.value,
+      };
+    }).toList();
+  }
 
   int? getCartItemId(int productId) {
     for (final item in _items) {
@@ -19,9 +47,15 @@ class CartProvider extends ChangeNotifier {
     return null;
   }
 
-  int getQuantityByProductId(int productId) {
+  int getQuantityByProductId(dynamic productId) {
+    int? realId = productId is int
+        ? productId
+        : (productId is String ? int.tryParse(productId) : null);
+    if (realId == null) {
+      return _localQuantities[productId.toString()] ?? 0;
+    }
     for (final item in _items) {
-      if (item['product_id'] == productId) return item['quantity'];
+      if (item['product_id'] == realId) return item['quantity'];
     }
     return 0;
   }
@@ -41,26 +75,62 @@ class CartProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<void> addProduct(int productId, {int quantity = 1}) async {
+  Future<void> addProduct(dynamic productId,
+      {int quantity = 1, Map<String, dynamic>? productData}) async {
+    int? realId = productId is int
+        ? productId
+        : (productId is String ? int.tryParse(productId) : null);
+
+    if (realId == null) {
+      final key = productId.toString();
+      if (productData != null) {
+        _localProductData[key] = productData;
+      }
+      _localQuantities[key] = (_localQuantities[key] ?? 0) + quantity;
+      notifyListeners();
+      return;
+    }
+    if (realId <= 0) {
+      throw Exception('Yeh product abhi cart mein add nahi ho sakta (invalid product id).');
+    }
     try {
-      final data = await ApiService.addToCart(productId, quantity);
+      debugPrint('addProduct >>> calling API for id=$realId');
+      final data = await ApiService.addToCart(realId, quantity);
+      debugPrint('addProduct >>> SUCCESS response=$data');
       _items = data['items'] ?? [];
       _totalItems = data['total_items'] ?? 0;
       _totalAmount = (data['total_amount'] ?? 0).toDouble();
       notifyListeners();
     } catch (e) {
-      debugPrint('addProduct error: $e');
+      debugPrint('addProduct >>> ERROR: $e');
+      throw Exception('Add to cart fail hua: $e');
     }
   }
 
-  Future<void> increment(int productId) async {
-    await addProduct(productId, quantity: 1);
+  Future<void> increment(dynamic productId, {Map<String, dynamic>? productData}) async {
+    await addProduct(productId, quantity: 1, productData: productData);
   }
 
-  Future<void> decrement(int productId) async {
-    final itemId = getCartItemId(productId);
+  Future<void> decrement(dynamic productId) async {
+    int? realId = productId is int
+        ? productId
+        : (productId is String ? int.tryParse(productId) : null);
+
+    if (realId == null) {
+      final key = productId.toString();
+      final current = _localQuantities[key] ?? 0;
+      if (current <= 1) {
+        _localQuantities.remove(key);
+        _localProductData.remove(key);
+      } else {
+        _localQuantities[key] = current - 1;
+      }
+      notifyListeners();
+      return;
+    }
+    final itemId = getCartItemId(realId);
     if (itemId == null) return;
-    final currentQty = getQuantityByProductId(productId);
+    final currentQty = getQuantityByProductId(realId);
     try {
       Map<String, dynamic> data;
       if (currentQty <= 1) {
@@ -74,11 +144,23 @@ class CartProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       debugPrint('decrement error: $e');
+      throw Exception('Update fail hua: $e');
     }
   }
 
-  Future<void> removeItemByProductId(int productId) async {
-    final itemId = getCartItemId(productId);
+  Future<void> removeItemByProductId(dynamic productId) async {
+    int? realId = productId is int
+        ? productId
+        : (productId is String ? int.tryParse(productId) : null);
+
+    if (realId == null) {
+      final key = productId.toString();
+      _localQuantities.remove(key);
+      _localProductData.remove(key);
+      notifyListeners();
+      return;
+    }
+    final itemId = getCartItemId(realId);
     if (itemId == null) return;
     try {
       final data = await ApiService.removeCartItem(itemId);
@@ -95,6 +177,8 @@ class CartProvider extends ChangeNotifier {
     _items = [];
     _totalItems = 0;
     _totalAmount = 0;
+    _localQuantities.clear();
+    _localProductData.clear();
     notifyListeners();
   }
 }

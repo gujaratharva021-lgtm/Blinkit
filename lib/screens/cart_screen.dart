@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
@@ -182,6 +182,73 @@ class _CartScreenState extends State<CartScreen> {
     return '$host$raw';
   }
 
+  Widget _localItemRow(Map<String, dynamic> item) {
+    final id = item['id'] as String;
+    final name = (item['name'] ?? '').toString();
+    final unit = [item['brand'], item['weight']]
+        .where((e) => e != null && e.toString().isNotEmpty)
+        .join(' \u2022 ');
+    final price = ((item['price'] as num?) ?? 0).round();
+    final rawImage = (item['image'] ?? '').toString();
+    final image = rawImage.startsWith('assets/') ? rawImage : _imageUrl(rawImage);
+    final quantity = item['quantity'] ?? 1;
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Row(
+        children: [
+          ClipRRect(
+            borderRadius: BorderRadius.circular(10),
+            child: _buildCartImage(image),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(name, maxLines: 2, overflow: TextOverflow.ellipsis,
+                    style: GoogleFonts.poppins(fontSize: 14, fontWeight: FontWeight.w600)),
+                if (unit.isNotEmpty)
+                  Text(unit, style: GoogleFonts.poppins(fontSize: 12, color: Colors.grey)),
+              ],
+            ),
+          ),
+          Text('$price', style: GoogleFonts.poppins(
+              fontSize: 14, fontWeight: FontWeight.bold)),
+          const SizedBox(width: 12),
+          Container(
+            height: 32,
+            decoration: BoxDecoration(
+              color: kBrandGreen,
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                InkWell(
+                  onTap: () => context.read<CartProvider>().decrement(id),
+                  child: const SizedBox(width: 28, height: 32,
+                      child: Icon(Icons.remove, color: Colors.white, size: 16)),
+                ),
+                SizedBox(
+                  width: 24,
+                  child: Text('$quantity', textAlign: TextAlign.center,
+                      style: GoogleFonts.poppins(
+                          color: Colors.white, fontWeight: FontWeight.bold, fontSize: 13)),
+                ),
+                InkWell(
+                  onTap: () => context.read<CartProvider>().increment(id),
+                  child: const SizedBox(width: 28, height: 32,
+                      child: Icon(Icons.add, color: Colors.white, size: 16)),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
@@ -191,6 +258,7 @@ class _CartScreenState extends State<CartScreen> {
     final unlocked = remaining <= 0;
     final preDiscountTotal = unlocked ? cartTotal + platformFee : total;
     final grandTotal = (preDiscountTotal - _discount).clamp(0, double.infinity).round();
+    final isCartEmpty = cart.items.isEmpty && cart.localCartItems.isEmpty;
 
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -201,7 +269,7 @@ class _CartScreenState extends State<CartScreen> {
         title: Text('My Cart (${cart.cartCount} items)',
             style: GoogleFonts.poppins(color: Colors.black87, fontWeight: FontWeight.bold, fontSize: 16)),
       ),
-      body: cart.items.isEmpty
+      body: isCartEmpty
           ? Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
@@ -317,6 +385,7 @@ class _CartScreenState extends State<CartScreen> {
                   ),
                 );
               }),
+              ...cart.localCartItems.map((item) => _localItemRow(item)),
               const Divider(height: 24),
               Text('Apply Coupon', style: GoogleFonts.poppins(fontWeight: FontWeight.w700, fontSize: 14)),
               const SizedBox(height: 10),
@@ -443,14 +512,21 @@ class _CartScreenState extends State<CartScreen> {
                   child: InkWell(
                     borderRadius: BorderRadius.circular(12),
                     onTap: () {
-                      final items = cart.items.map((item) {
-                        final product = item['product'] ?? {};
-                        return {
-                          'name': product['name'],
-                          'price': product['price'],
-                          'quantity': item['quantity'],
-                        };
-                      }).toList();
+                      final items = [
+                        ...cart.items.map((item) {
+                          final product = item['product'] ?? {};
+                          return {
+                            'name': product['name'],
+                            'price': product['price'],
+                            'quantity': item['quantity'],
+                          };
+                        }),
+                        ...cart.localCartItems.map((item) => {
+                              'name': item['name'],
+                              'price': item['price'],
+                              'quantity': item['quantity'],
+                            }),
+                      ];
                       Navigator.push(
                         context,
                         MaterialPageRoute(

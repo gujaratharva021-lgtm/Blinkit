@@ -1,15 +1,37 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
-import '../providers/cart_provider.dart';
+import '../providers/order_provider.dart';
+import '../models/order_model.dart';
 import 'order_status_screen.dart';
 
-class OrderScreen extends StatelessWidget {
+class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
 
   @override
+  State<OrderScreen> createState() => _OrderScreenState();
+}
+
+class _OrderScreenState extends State<OrderScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final provider = context.read<OrderProvider>();
+      provider.loadOrders(OrderStatus.active, refresh: true);
+      provider.loadOrders(OrderStatus.delivered, refresh: true);
+      provider.loadOrders(OrderStatus.cancelled, refresh: true);
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final orders = context.watch<CartProvider>().orders;
+    final orderProvider = context.watch<OrderProvider>();
+    final orders = [
+      ...orderProvider.ordersFor(OrderStatus.active),
+      ...orderProvider.ordersFor(OrderStatus.delivered),
+      ...orderProvider.ordersFor(OrderStatus.cancelled),
+    ]..sort((a, b) => b.date.compareTo(a.date));
 
     return Scaffold(
       backgroundColor: Colors.white,
@@ -70,7 +92,6 @@ class OrderScreen extends StatelessWidget {
             ),
             child: Column(
               children: [
-                // Order Header
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
@@ -87,11 +108,12 @@ class OrderScreen extends StatelessWidget {
                         crossAxisAlignment:
                         CrossAxisAlignment.start,
                         children: [
-                          Text('Order #${order.orderId}',
+                          Text('Order #${order.id}',
                               style: GoogleFonts.poppins(
                                   fontSize: 13,
                                   fontWeight: FontWeight.bold)),
-                          Text(order.date,
+                          Text(
+                              '${order.date.day}/${order.date.month}/${order.date.year}',
                               style: GoogleFonts.poppins(
                                   fontSize: 11,
                                   color: Colors.grey)),
@@ -105,7 +127,7 @@ class OrderScreen extends StatelessWidget {
                           borderRadius:
                           BorderRadius.circular(20),
                         ),
-                        child: Text(order.status,
+                        child: Text(order.statusLabel,
                             style: GoogleFonts.poppins(
                                 fontSize: 12,
                                 fontWeight: FontWeight.bold,
@@ -114,8 +136,6 @@ class OrderScreen extends StatelessWidget {
                     ],
                   ),
                 ),
-
-                // Order Items
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -165,7 +185,7 @@ class OrderScreen extends StatelessWidget {
                               style: GoogleFonts.poppins(
                                   fontSize: 13,
                                   color: Colors.grey)),
-                          Text('₹${order.totalAmount}',
+                          Text('\u20B9${order.grandTotal}',
                               style: GoogleFonts.poppins(
                                   fontSize: 15,
                                   fontWeight: FontWeight.bold,
@@ -176,7 +196,6 @@ class OrderScreen extends StatelessWidget {
                       const SizedBox(height: 12),
                       Row(
                         children: [
-                          // Help Button
                           Expanded(
                             child: OutlinedButton(
                               onPressed: () {
@@ -207,16 +226,13 @@ class OrderScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          // Track Button
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () => Navigator.push(
                                 context,
                                 MaterialPageRoute(
                                   builder: (_) => OrderStatusScreen(
-                                    orderId: order.orderId,
-                                    totalAmount: order.totalAmount.toDouble(),
-                                    items: order.items,
+                                    order: order,
                                   ),
                                 ),
                               ),
@@ -234,28 +250,17 @@ class OrderScreen extends StatelessWidget {
                             ),
                           ),
                           const SizedBox(width: 8),
-                          // Reorder Button
                           Expanded(
                             child: ElevatedButton(
                               onPressed: () {
-                                for (var item in order.items) {
-                                  context
-                                      .read<CartProvider>()
-                                      .addToCart(
-                                      item.name,
-                                      item.price,
-                                      item.unit,
-                                      item.image);
-                                }
-                                Navigator.pop(context);
                                 ScaffoldMessenger.of(context)
                                     .showSnackBar(
                                   SnackBar(
                                     content: Text(
-                                        'Items added to cart! 🛒',
+                                        'Reorder coming soon!',
                                         style:
                                         GoogleFonts.poppins()),
-                                    backgroundColor: Colors.green,
+                                    backgroundColor: Colors.orange,
                                     behavior:
                                     SnackBarBehavior.floating,
                                   ),

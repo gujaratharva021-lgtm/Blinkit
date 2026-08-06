@@ -600,7 +600,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                     child: qty == 0
                         ? ElevatedButton(
                       onPressed: () =>
-                          context.read<CartProvider>().increment(product['id']),
+                          context.read<CartProvider>().increment(product['id'], productData: product),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: const Color(0xFF0C831F),
                         padding: const EdgeInsets.symmetric(vertical: 16),
@@ -640,7 +640,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   fontWeight: FontWeight.bold)),
                           GestureDetector(
                             onTap: () =>
-                                context.read<CartProvider>().increment(product['id']),
+                                context.read<CartProvider>().increment(product['id'], productData: product),
                             child: const Padding(
                               padding: EdgeInsets.symmetric(
                                   horizontal: 20),

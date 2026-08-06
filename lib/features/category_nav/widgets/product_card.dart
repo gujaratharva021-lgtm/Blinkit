@@ -6,6 +6,15 @@ import '../../../widgets/state_views.dart' show kGreen;
 import '../models/category_models.dart';
 import 'category_placeholder_image.dart';
 
+Map<String, dynamic> productCartData(ProductModel p) => {
+      'id': p.id,
+      'name': p.name,
+      'brand': p.brand,
+      'weight': p.weight,
+      'price': p.price,
+      'image': p.image,
+    };
+
 class ProductCard extends StatelessWidget {
   final ProductModel product;
   final VoidCallback onTap;
@@ -15,7 +24,7 @@ class ProductCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = context.watch<CartProvider>();
-    final qty = cart.getQuantityByProductId(int.tryParse(product.id) ?? -1);
+    final qty = cart.getQuantityByProductId(product.id);
     final scheme = Theme.of(context).colorScheme;
 
     return GestureDetector(
@@ -34,18 +43,31 @@ class ProductCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
                   child: (product.image != null && product.image!.isNotEmpty)
-                      ? Image.asset(
-                          product.image!,
-                          width: double.infinity,
-                          height: 100,
-                          fit: BoxFit.contain,
-                          errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
-                            icon: product.icon,
-                            color: product.color,
-                            size: 100,
-                            borderRadius: 0,
-                          ),
-                        )
+                      ? (product.image!.startsWith('http')
+                          ? Image.network(
+                              product.image!,
+                              width: double.infinity,
+                              height: 100,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
+                                icon: product.icon,
+                                color: product.color,
+                                size: 100,
+                                borderRadius: 0,
+                              ),
+                            )
+                          : Image.asset(
+                              product.image!,
+                              width: double.infinity,
+                              height: 100,
+                              fit: BoxFit.contain,
+                              errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
+                                icon: product.icon,
+                                color: product.color,
+                                size: 100,
+                                borderRadius: 0,
+                              ),
+                            ))
                       : CategoryPlaceholderImage(
                           icon: product.icon,
                           color: product.color,
@@ -163,7 +185,7 @@ class _AddButton extends StatelessWidget {
 
     if (qty == 0) {
       return GestureDetector(
-        onTap: () => cart.increment(int.tryParse(product.id) ?? -1),
+        onTap: () => cart.increment(product.id, productData: productCartData(product)),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 6),
           decoration: BoxDecoration(
@@ -181,7 +203,7 @@ class _AddButton extends StatelessWidget {
       child: Row(
         mainAxisSize: MainAxisSize.min,
         children: [
-          _StepperButton(icon: Icons.remove, onTap: () => cart.decrement(int.tryParse(product.id) ?? -1)),
+          _StepperButton(icon: Icons.remove, onTap: () => cart.decrement(product.id)),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 6),
             child: Text('$qty',
@@ -189,7 +211,7 @@ class _AddButton extends StatelessWidget {
           ),
           _StepperButton(
               icon: Icons.add,
-              onTap: () => cart.increment(int.tryParse(product.id) ?? -1)),
+              onTap: () => cart.increment(product.id, productData: productCartData(product))),
         ],
       ),
     );
@@ -212,3 +234,4 @@ class _StepperButton extends StatelessWidget {
     );
   }
 }
+

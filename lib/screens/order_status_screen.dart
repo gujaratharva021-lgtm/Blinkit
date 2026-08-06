@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../providers/cart_provider.dart';
+import 'package:razorpay_flutter/razorpay_flutter.dart';
+import 'package:url_launcher/url_launcher.dart';
+import '../models/order_model.dart';
+import '../services/api_service.dart';
 
 class OrderStatusScreen extends StatefulWidget {
-  final String orderId;
-  final double totalAmount;
-  final List<CartItem> items;
+  final Order order;
 
   const OrderStatusScreen({
     super.key,
-    required this.orderId,
-    required this.totalAmount,
-    required this.items,
+    required this.order,
   });
 
   @override
@@ -24,6 +23,12 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
   late Animation<double> _pulseAnimation;
   int _minutes = 10;
 
+  late Razorpay _razorpay;
+  bool _isPaying = false;
+
+  Map<String, dynamic>? _tracking;
+  bool _isLoadingTracking = true;
+
   @override
   void initState() {
     super.initState();
@@ -35,6 +40,29 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
       CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
     );
     Future.delayed(const Duration(seconds: 1), _countdown);
+
+    _razorpay = Razorpay();
+    _razorpay.on(Razorpay.EVENT_PAYMENT_SUCCESS, _handlePaymentSuccess);
+    _razorpay.on(Razorpay.EVENT_PAYMENT_ERROR, _handlePaymentError);
+    _razorpay.on(Razorpay.EVENT_EXTERNAL_WALLET, _handleExternalWallet);
+
+    _loadTracking();
+  }
+
+  Future<void> _loadTracking() async {
+    setState(() => _isLoadingTracking = true);
+    try {
+      final orderId = int.tryParse(widget.order.id);
+      if (orderId == null) throw Exception('Invalid order id');
+      final data = await ApiService.getOrderTracking(orderId);
+      setState(() {
+        _tracking = data['tracking'] as Map<String, dynamic>?;
+      });
+    } catch (e) {
+      setState(() => _tracking = null);
+    } finally {
+      if (mounted) setState(() => _isLoadingTracking = false);
+    }
   }
 
   void _countdown() {
@@ -45,14 +73,128 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
     }
   }
 
+  Future<void> _callDeliveryPartner() async {
+    final phone = _tracking?['phone']?.toString();
+    if (phone == null || phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Phone number not available', style: GoogleFonts.poppins()),
+        backgroundColor: Colors.red,
+        behavior: SnackBarBehavior.floating,
+      ));
+      return;
+    }
+    final uri = Uri(scheme: 'tel', path: phone);
+    if (await canLaunchUrl(uri)) {
+      await launchUrl(uri);
+    } else {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Could not start call', style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    }
+  }
+
+  void _handlePaymentSuccess(PaymentSuccessResponse response) async {
+    try {
+      final orderId = int.tryParse(widget.order.id);
+      if (orderId == null) throw Exception('Invalid order id');
+      await ApiService.verifyPayment(
+        orderId: orderId,
+        razorpayOrderId: response.orderId ?? '',
+        razorpayPaymentId: response.paymentId ?? '',
+        razorpaySignature: response.signature ?? '',
+      );
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Payment Successful! \u{1F389}', style: GoogleFonts.poppins()),
+          backgroundColor: Colors.green,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error confirming payment', style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    } finally {
+      if (mounted) setState(() => _isPaying = false);
+    }
+  }
+
+  void _handlePaymentError(PaymentFailureResponse response) {
+    if (mounted) setState(() => _isPaying = false);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('Payment Failed: ${response.message}', style: GoogleFonts.poppins()),
+      backgroundColor: Colors.red,
+      behavior: SnackBarBehavior.floating,
+    ));
+  }
+
+  void _handleExternalWallet(ExternalWalletResponse response) {
+    if (mounted) setState(() => _isPaying = false);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+      content: Text('External Wallet: ${response.walletName}', style: GoogleFonts.poppins()),
+      backgroundColor: Colors.blue,
+      behavior: SnackBarBehavior.floating,
+    ));
+  }
+
+  Future<void> _startPayNow() async {
+    setState(() => _isPaying = true);
+    try {
+      final orderId = int.tryParse(widget.order.id);
+      if (orderId == null) throw Exception('Invalid order id');
+
+      final orderData = await ApiService.createPaymentOrder(orderId);
+      if (orderData['key_id'] == null || orderData['razorpay_order_id'] == null) {
+        throw Exception(orderData['error']?.toString() ?? 'Could not start payment');
+      }
+
+      var options = {
+        'key': orderData['key_id'],
+        'amount': orderData['amount'],
+        'name': 'Mepto',
+        'order_id': orderData['razorpay_order_id'],
+        'description': 'Order #${widget.order.id}',
+        'prefill': {
+          'contact': '9999999999',
+          'email': 'test@mepto.com',
+        },
+        'method': {'upi': true, 'card': true, 'netbanking': true, 'wallet': true},
+        'theme': {'color': '#D4A574'},
+      };
+      _razorpay.open(options);
+    } catch (e) {
+      setState(() => _isPaying = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error initiating payment', style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    }
+  }
+
   @override
   void dispose() {
     _pulseController.dispose();
+    _razorpay.clear();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final order = widget.order;
+    final partnerName = _tracking?['delivery_partner_name']?.toString();
+    final hasPartner = _tracking != null && partnerName != null && partnerName.isNotEmpty;
+
     return Scaffold(
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
@@ -78,7 +220,6 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            // Main Status Card
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(20),
@@ -118,7 +259,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                             color: const Color(0xFF2196F3),
                             borderRadius: BorderRadius.circular(20),
                           ),
-                          child: Text('⚡ Early',
+                          child: Text('Early',
                               style: GoogleFonts.poppins(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -128,12 +269,9 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                     ],
                   ),
                   const SizedBox(height: 12),
-                  Text('Your order is on the way!',
+                  Text(order.statusLabel,
                       style: GoogleFonts.poppins(
                           fontSize: 16, fontWeight: FontWeight.bold)),
-                  Text('Woah, that was fast 🚀',
-                      style: GoogleFonts.poppins(
-                          fontSize: 13, color: const Color(0xFF2196F3))),
                   const SizedBox(height: 16),
                   _buildProgressSteps(),
                 ],
@@ -142,7 +280,6 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
 
             const SizedBox(height: 16),
 
-            // ✅ Actual Items Card
             Container(
               width: double.infinity,
               padding: const EdgeInsets.all(16),
@@ -172,10 +309,10 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Text('${widget.items.length} Item(s)',
+                          Text('${order.items.length} Item(s)',
                               style: GoogleFonts.poppins(
                                   fontWeight: FontWeight.bold, fontSize: 13)),
-                          Text('Order #${widget.orderId}',
+                          Text('Order #${order.id}',
                               style: GoogleFonts.poppins(
                                   fontSize: 11, color: Colors.grey)),
                         ],
@@ -183,8 +320,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                     ],
                   ),
                   const Divider(height: 20),
-                  // ✅ Actual item list
-                  ...widget.items.map((item) => Padding(
+                  ...order.items.map((item) => Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
                       children: [
@@ -227,7 +363,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                             Text('x${item.quantity}',
                                 style: GoogleFonts.poppins(
                                     fontSize: 12, color: Colors.grey)),
-                            Text('₹${item.price * item.quantity}',
+                            Text('\u20B9${item.price * item.quantity}',
                                 style: GoogleFonts.poppins(
                                     fontSize: 13,
                                     fontWeight: FontWeight.bold,
@@ -243,25 +379,24 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
 
             const SizedBox(height: 16),
 
-            // Delivery Message
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: const Color(0xFFFFF8E1),
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: const Color(0xFFFFE082)),
+            if (hasPartner)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFFFF8E1),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: const Color(0xFFFFE082)),
+                ),
+                child: Text(
+                  'Your delivery partner is on the way with your order',
+                  style: GoogleFonts.poppins(
+                      fontSize: 13, color: Colors.brown[700]),
+                ),
               ),
-              child: Text(
-                'I have arrived at the gate and will be on your doorstep soon',
-                style: GoogleFonts.poppins(
-                    fontSize: 13, color: Colors.brown[700]),
-              ),
-            ),
 
-            const SizedBox(height: 16),
+            if (hasPartner) const SizedBox(height: 16),
 
-            // ✅ Delivery Partner Card — dynamic name future ke liye ready
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -272,95 +407,116 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                       color: Colors.grey.withOpacity(0.08), blurRadius: 8)
                 ],
               ),
-              child: Row(
-                children: [
-                  CircleAvatar(
-                    radius: 24,
-                    backgroundColor:
-                    const Color(0xFF0C831F).withOpacity(0.2),
-                    child: const Icon(Icons.delivery_dining,
-                        color: Color(0xFF0C831F), size: 28),
-                  ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+              child: _isLoadingTracking
+                  ? Row(
                       children: [
-                        Text('Delivery Partner',
-                            style: GoogleFonts.poppins(
-                                fontSize: 11, color: Colors.grey)),
-                        Text('Vivek Kumar',
-                            style: GoogleFonts.poppins(
-                                fontSize: 14,
-                                fontWeight: FontWeight.bold)),
+                        const SizedBox(
+                            width: 20,
+                            height: 20,
+                            child: CircularProgressIndicator(strokeWidth: 2)),
+                        const SizedBox(width: 12),
+                        Text('Loading delivery partner...',
+                            style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey)),
+                      ],
+                    )
+                  : !hasPartner
+                      ? Text('No delivery partner assigned yet.',
+                          style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey))
+                      : Row(
+                          children: [
+                            CircleAvatar(
+                              radius: 24,
+                              backgroundColor:
+                              const Color(0xFF0C831F).withOpacity(0.2),
+                              child: const Icon(Icons.delivery_dining,
+                                  color: Color(0xFF0C831F), size: 28),
+                            ),
+                            const SizedBox(width: 12),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text('Delivery Partner',
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 11, color: Colors.grey)),
+                                  Text(partnerName!,
+                                      style: GoogleFonts.poppins(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold)),
+                                ],
+                              ),
+                            ),
+                            IconButton(
+                              onPressed: _callDeliveryPartner,
+                              icon: const Icon(Icons.phone, color: Color(0xFF0C831F)),
+                            ),
+                          ],
+                        ),
+            ),
+
+            const SizedBox(height: 16),
+
+            if (order.paymentMethod == 'online' && order.paymentStatus == 'pending')
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(color: Colors.pink.withOpacity(0.3)),
+                ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                        'You can pay online now while we deliver your order',
+                        style: GoogleFonts.poppins(
+                            fontSize: 13, color: Colors.grey[700])),
+                    const SizedBox(height: 12),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('To Pay:',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 12, color: Colors.grey)),
+                            Text(
+                                '\u20B9${order.grandTotal}',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold)),
+                          ],
+                        ),
+                        ElevatedButton(
+                          onPressed: _isPaying ? null : _startPayNow,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.pink,
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12)),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 24, vertical: 12),
+                          ),
+                          child: _isPaying
+                              ? const SizedBox(
+                                  width: 18,
+                                  height: 18,
+                                  child: CircularProgressIndicator(
+                                      strokeWidth: 2, color: Colors.white),
+                                )
+                              : Text('Pay Online',
+                                  style: GoogleFonts.poppins(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold)),
+                        ),
                       ],
                     ),
-                  ),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.phone, color: Color(0xFF0C831F)),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
 
-            const SizedBox(height: 16),
+            if (order.paymentMethod == 'online' && order.paymentStatus == 'pending') const SizedBox(height: 16),
 
-            // Pay Online Card
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: Colors.pink.withOpacity(0.3)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                      'You can pay online now while we deliver your order',
-                      style: GoogleFonts.poppins(
-                          fontSize: 13, color: Colors.grey[700])),
-                  const SizedBox(height: 12),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('To Pay:',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 12, color: Colors.grey)),
-                          Text(
-                              '₹${widget.totalAmount.toStringAsFixed(0)}',
-                              style: GoogleFonts.poppins(
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold)),
-                        ],
-                      ),
-                      ElevatedButton(
-                        onPressed: () {},
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.pink,
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(12)),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 24, vertical: 12),
-                        ),
-                        child: Text('Pay Online →',
-                            style: GoogleFonts.poppins(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold)),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
-            ),
-
-            const SizedBox(height: 16),
-
-            // Need Help
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
@@ -395,8 +551,8 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
   }
 
   Widget _buildProgressSteps() {
-    final steps = ['Order Placed', 'Preparing', 'On the Way', 'Delivered'];
-    const currentStep = 2;
+    final steps = widget.order.timeline;
+    final currentStep = steps.lastIndexWhere((s) => s.completed);
 
     return Row(
       children: List.generate(steps.length, (index) {
@@ -423,7 +579,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                       ),
                     ),
                     const SizedBox(height: 4),
-                    Text(steps[index],
+                    Text(steps[index].title,
                         style: GoogleFonts.poppins(
                             fontSize: 9,
                             color: isCompleted

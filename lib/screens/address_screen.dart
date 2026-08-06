@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -27,6 +27,7 @@ class _AddressScreenState extends State<AddressScreen> {
   late Razorpay _razorpay;
   bool _isLoading = false;
   int? _currentOrderId;
+  String _paymentMethod = 'online'; // 'online' or 'cod'
 
   List<Map<String, dynamic>> _addresses = [];
 
@@ -197,7 +198,10 @@ class _AddressScreenState extends State<AddressScreen> {
     ));
   }
 
-  void _startPayment() async {
+  // Places the order with the currently selected address + payment method.
+  // For 'cod' this is the whole flow (no Razorpay). For 'online' this
+  // creates the order then opens Razorpay checkout.
+  void _placeOrder() async {
     setState(() => _isLoading = true);
     try {
       int? addressId = _addresses[_selectedAddress]['backend_id'];
@@ -206,13 +210,35 @@ class _AddressScreenState extends State<AddressScreen> {
         throw Exception('Could not save address');
       }
 
-      final order =
-          await ApiService.checkout(addressId: addressId, paymentMethod: 'online');
+      final order = await ApiService.checkout(
+        addressId: addressId,
+        paymentMethod: _paymentMethod,
+      );
       if (order['id'] == null) {
         throw Exception(order['error']?.toString() ?? 'Checkout failed');
       }
       _currentOrderId = order['id'];
 
+      if (_paymentMethod == 'cod') {
+        // COD: order is placed directly, nothing more to pay right now.
+        if (mounted) {
+          await context.read<CartProvider>().loadCart();
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (_) => const OrderScreen()),
+          );
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text('Order Placed! Pay on delivery \u{1F4E6}',
+                style: GoogleFonts.poppins()),
+            backgroundColor: Colors.green,
+            behavior: SnackBarBehavior.floating,
+          ));
+        }
+        setState(() => _isLoading = false);
+        return;
+      }
+
+      // Online: continue to Razorpay.
       final orderData = await ApiService.createPaymentOrder(_currentOrderId!);
       var options = {
         'key': orderData['key_id'],
@@ -230,7 +256,7 @@ class _AddressScreenState extends State<AddressScreen> {
       _razorpay.open(options);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error initiating payment', style: GoogleFonts.poppins()),
+        content: Text('Error placing order', style: GoogleFonts.poppins()),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
       ));
@@ -420,6 +446,93 @@ class _AddressScreenState extends State<AddressScreen> {
     );
   }
 
+  Widget _buildPaymentMethodPicker() {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(color: Colors.grey.withOpacity(0.08), blurRadius: 8)
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text('Payment Method',
+              style: GoogleFonts.poppins(
+                  fontSize: 14, fontWeight: FontWeight.bold)),
+          const SizedBox(height: 12),
+          _buildPaymentOption(
+            value: 'online',
+            title: 'Pay Online',
+            subtitle: 'UPI, Card, Netbanking, Wallet',
+            icon: Icons.credit_card,
+          ),
+          const SizedBox(height: 8),
+          _buildPaymentOption(
+            value: 'cod',
+            title: 'Cash on Delivery',
+            subtitle: 'Pay when your order arrives',
+            icon: Icons.payments_outlined,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPaymentOption({
+    required String value,
+    required String title,
+    required String subtitle,
+    required IconData icon,
+  }) {
+    final isSelected = _paymentMethod == value;
+    return GestureDetector(
+      onTap: () => setState(() => _paymentMethod = value),
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isSelected
+              ? const Color(0xFF0C831F).withOpacity(0.08)
+              : Colors.grey[50],
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: isSelected ? const Color(0xFF0C831F) : Colors.grey.shade300,
+            width: isSelected ? 2 : 1,
+          ),
+        ),
+        child: Row(
+          children: [
+            Icon(icon,
+                color: isSelected ? const Color(0xFF0C831F) : Colors.grey,
+                size: 22),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title,
+                      style: GoogleFonts.poppins(
+                          fontSize: 13, fontWeight: FontWeight.w600)),
+                  Text(subtitle,
+                      style: GoogleFonts.poppins(
+                          fontSize: 11, color: Colors.grey)),
+                ],
+              ),
+            ),
+            Icon(
+              isSelected ? Icons.radio_button_checked : Icons.radio_button_off,
+              color: isSelected ? const Color(0xFF0C831F) : Colors.grey,
+              size: 20,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -447,8 +560,11 @@ class _AddressScreenState extends State<AddressScreen> {
       )
           : ListView.builder(
         padding: const EdgeInsets.fromLTRB(16, 16, 16, 100),
-        itemCount: _addresses.length,
+        itemCount: _addresses.length + 1,
         itemBuilder: (context, index) {
+          if (index == _addresses.length) {
+            return _buildPaymentMethodPicker();
+          }
           final address = _addresses[index];
           final isSelected = _selectedAddress == index;
           return GestureDetector(
@@ -568,7 +684,7 @@ class _AddressScreenState extends State<AddressScreen> {
           ],
         ),
         child: ElevatedButton(
-          onPressed: _isLoading || _addresses.isEmpty ? null : _startPayment,
+          onPressed: _isLoading || _addresses.isEmpty ? null : _placeOrder,
           style: ElevatedButton.styleFrom(
             backgroundColor: const Color(0xFF0C831F),
             padding: const EdgeInsets.symmetric(vertical: 16),
@@ -578,7 +694,10 @@ class _AddressScreenState extends State<AddressScreen> {
           child: _isLoading
               ? const CircularProgressIndicator(
               color: Colors.white, strokeWidth: 2)
-              : Text('Pay \u20b9${widget.totalAmount}',
+              : Text(
+              _paymentMethod == 'cod'
+                  ? 'Place Order \u2022 \u20b9${widget.totalAmount}'
+                  : 'Pay \u20b9${widget.totalAmount}',
               style: GoogleFonts.poppins(
                   color: Colors.white,
                   fontSize: 15,

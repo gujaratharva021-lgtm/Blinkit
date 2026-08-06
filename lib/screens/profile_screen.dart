@@ -11,6 +11,7 @@ import 'notifications/notification_list_screen.dart';
 import 'settings/account_privacy_screen.dart';
 import 'share/share_app_screen.dart';
 import 'orders/order_list_screen.dart';
+import 'order_screen.dart';
 import 'wallet/wallet_screen.dart';
 import 'support/support_home_screen.dart';
 import 'about/about_us_screen.dart';
@@ -255,7 +256,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           Expanded(
             child: _quickAction(Icons.shopping_bag_outlined, 'Your orders', () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (_) => const OrderListScreen()));
+                  MaterialPageRoute(builder: (_) => const OrderScreen()));
             }, scheme),
           ),
           const SizedBox(width: 10),

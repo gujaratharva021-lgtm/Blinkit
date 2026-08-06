@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -98,7 +98,14 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                 children: [
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
-                    child: Image.asset(item.image,
+                    child: item.image.startsWith('http')
+                        ? Image.network(item.image,
+                            width: 48,
+                            height: 48,
+                            fit: BoxFit.cover,
+                            errorBuilder: (_, __, ___) =>
+                                Container(width: 48, height: 48, color: scheme.surfaceContainerHighest))
+                        : Image.asset(item.image,
                         width: 48,
                         height: 48,
                         fit: BoxFit.cover,

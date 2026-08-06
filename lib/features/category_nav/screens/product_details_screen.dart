@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/cart_provider.dart';
@@ -7,6 +7,7 @@ import '../models/category_models.dart';
 import '../providers/category_nav_provider.dart';
 import '../routes/category_nav_routes.dart';
 import '../widgets/category_placeholder_image.dart';
+import '../widgets/product_card.dart';
 import '../widgets/product_card.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -38,7 +39,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
   Widget build(BuildContext context) {
     final product = widget.product;
     final cart = context.watch<CartProvider>();
-    final qty = cart.getQuantityByProductId(int.tryParse(product.id) ?? -1);
+    final qty = cart.getQuantityByProductId(product.id);
 
     return Scaffold(
       body: SafeArea(
@@ -260,7 +261,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               child: OutlinedButton(
                 onPressed: !product.inStock
                     ? null
-                    : () => cart.increment(int.tryParse(product.id) ?? -1),
+                    : () => cart.increment(product.id, productData: productCartData(product)),
                 style: OutlinedButton.styleFrom(
                     padding: const EdgeInsets.symmetric(vertical: 14),
                     side: const BorderSide(color: kGreen)),
@@ -274,7 +275,7 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                 onPressed: !product.inStock
                     ? null
                     : () {
-                        cart.increment(int.tryParse(product.id) ?? -1);
+                        cart.increment(product.id, productData: productCartData(product));
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(content: Text('Proceeding to checkout...')),
                         );

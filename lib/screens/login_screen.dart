@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
+import '../services/api_service.dart';
 import 'otp_screen.dart';
 import 'home_screen.dart';
 
@@ -26,12 +27,36 @@ class _LoginScreenState extends State<LoginScreen> {
     super.dispose();
   }
 
-  void _continue() {
-    if (!_isValid) return;
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (_) => OtpScreen(phone: _phoneController.text)),
-    );
+  bool _isSending = false;
+
+  void _continue() async {
+    if (!_isValid || _isSending) return;
+    setState(() => _isSending = true);
+    try {
+      final data = await ApiService.sendOTP(_phoneController.text);
+      setState(() => _isSending = false);
+      if (data['error'] != null) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(data['error'].toString())),
+          );
+        }
+        return;
+      }
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => OtpScreen(phone: _phoneController.text)),
+        );
+      }
+    } catch (e) {
+      setState(() => _isSending = false);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error sending OTP: $e')),
+        );
+      }
+    }
   }
 
   void _skipLogin() {

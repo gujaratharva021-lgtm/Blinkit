@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = 'http://192.168.1.12:8081/api/v1';
+  static const String baseUrl = 'http://192.168.1.18:8081/api/v1';
 
   static Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
@@ -64,11 +64,20 @@ class ApiService {
 
   static Future<List<dynamic>> getProducts({String? category}) async {
     final headers = await getHeaders();
-    String url = '$baseUrl/products/';
-    if (category != null) url += '?category=$category';
-    final response = await http.get(Uri.parse(url), headers: headers);
-    final data = jsonDecode(response.body);
-    return data['products'] ?? [];
+    List<dynamic> all = [];
+    int page = 1;
+    while (true) {
+      String url = '$baseUrl/products/?limit=100&page=$page';
+      if (category != null) url += '&category=$category';
+      final response = await http.get(Uri.parse(url), headers: headers);
+      final data = jsonDecode(response.body);
+      final List<dynamic> items = data['products'] ?? [];
+      all.addAll(items);
+      final totalPages = (data['total_pages'] ?? 1) as int;
+      if (page >= totalPages || items.isEmpty) break;
+      page++;
+    }
+    return all;
   }
 
   static Future<List<dynamic>> searchProducts(String query) async {
@@ -129,10 +138,10 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
-  static Future<List<dynamic>> getOrders() async {
+  static Future<List<dynamic>> getOrders({int page = 1, int limit = 100}) async {
     final headers = await getHeaders();
     final response = await http.get(
-      Uri.parse('$baseUrl/orders'),
+      Uri.parse('$baseUrl/orders?page=$page&limit=$limit'),
       headers: headers,
     );
     final data = jsonDecode(response.body);
@@ -194,6 +203,15 @@ class ApiService {
       Uri.parse('$baseUrl/orders/direct'),
       headers: headers,
       body: jsonEncode({'address': address, 'items': items}),
+    );
+    return jsonDecode(response.body);
+  }
+
+  static Future<Map<String, dynamic>> getOrderTracking(int orderId) async {
+    final headers = await getHeaders();
+    final response = await http.get(
+      Uri.parse('$baseUrl/orders/$orderId/tracking'),
+      headers: headers,
     );
     return jsonDecode(response.body);
   }

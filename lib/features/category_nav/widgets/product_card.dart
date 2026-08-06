@@ -49,6 +49,8 @@ class ProductCard extends StatelessWidget {
                               width: double.infinity,
                               height: 100,
                               fit: BoxFit.contain,
+                              cacheWidth: 240,
+                              filterQuality: FilterQuality.low,
                               errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
                                 icon: product.icon,
                                 color: product.color,
@@ -61,6 +63,8 @@ class ProductCard extends StatelessWidget {
                               width: double.infinity,
                               height: 100,
                               fit: BoxFit.contain,
+                              cacheWidth: 240,
+                              filterQuality: FilterQuality.low,
                               errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
                                 icon: product.icon,
                                 color: product.color,

@@ -211,7 +211,20 @@ class CategoryMockData {
       '$_p/masala1.png',
       '$_p/masala2.png',
     ],
-    'cat_dairy_bread_eggs': ['$_p/egg1.png', '$_p/egg2.png'],
+    'cat_dairy_bread_eggs': [
+      '$_p/milk1.png',
+      '$_p/milk2.png',
+      '$_p/milk3.png',
+      '$_p/bread1.png',
+      '$_p/bread2.png',
+      '$_p/pav1.png',
+      '$_p/egg1.png',
+      '$_p/egg2.png',
+      '$_p/egg3.png',
+      '$_p/butter1.png',
+      '$_p/butter2.png',
+      '$_p/butter3.png',
+    ],
     'cat_bakery_biscuits': [
       '$_p/biscuit1.png',
       '$_p/biscuit2.png',
@@ -613,6 +626,16 @@ class CategoryMockData {
       'Malai Kulfi', 'Pista Kulfi', 'Mango Kulfi',
     ],
   };
+
+  /// Returns a real product image path for [categoryId] at position
+  /// [index] (cycles through the pool), or null if no pool exists for
+  /// that category. Used to give backend products (which may have an
+  /// empty image_url) a real photo instead of a blank placeholder.
+  static String? imageForCategory(String categoryId, int index) {
+    final pool = _categoryImagePool[categoryId];
+    if (pool == null || pool.isEmpty) return null;
+    return pool[index % pool.length];
+  }
 
 
   /// Generates a handful of realistic-looking products per subcategory

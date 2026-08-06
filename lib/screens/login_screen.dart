@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/api_service.dart';
@@ -8,6 +8,7 @@ import 'home_screen.dart';
 const Color kBrandGreen = Color(0xFF0C831F);
 const Color kBrandGreenDark = Color(0xFF08611A);
 const Color kBrandGreenLight = Color(0xFF12A32E);
+const Color kHeroBg = Color(0xFF017731);
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -84,7 +85,7 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _HeroBanner(height: bannerHeight, onSkip: _skipLogin),
-              Container(height: 70, color: kBrandGreenLight),
+              Container(height: 70, color: kHeroBg),
               _LoginBottomSheet(
                 phoneController: _phoneController,
                 isValid: _isValid,
@@ -113,34 +114,25 @@ class _HeroBanner extends StatelessWidget {
       child: ClipPath(
         clipper: _BannerCurveClipper(),
         child: Container(
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-              colors: [kBrandGreenDark, kBrandGreen, kBrandGreenLight],
-            ),
-          ),
+          color: kHeroBg,
           child: Stack(
             children: [
               Align(
-                alignment: const Alignment(0, -0.2),
-                child: Container(
-                  width: 190,
-                  height: 190,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.white.withOpacity(0.08),
+                alignment: Alignment.topCenter,
+                child: Padding(
+                  padding: const EdgeInsets.only(top: 6),
+                  child: SizedBox(
+                    width: double.infinity,
+                    height: (height - 95).clamp(230.0, 300.0),
+                    child: Image.asset(
+                      'assets/images/auth/login_hero.png',
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 ),
               ),
-              const Positioned(top: 14, left: 20, child: Icon(Icons.location_on, color: Colors.white38, size: 18)),
-              const Positioned(top: 40, right: 26, child: Icon(Icons.location_on, color: Colors.white24, size: 16)),
-              Align(
-                alignment: const Alignment(0, -0.15),
-                child: _BagGraphic(),
-              ),
               Positioned(
-                bottom: 34,
+                bottom: 40,
                 left: 0,
                 right: 0,
                 child: Row(
@@ -346,49 +338,6 @@ class _LoginBottomSheet extends StatelessWidget {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-class _BagGraphic extends StatelessWidget {
-  @override
-  Widget build(BuildContext context) {
-    return SizedBox(
-      width: 150,
-      height: 150,
-      child: Stack(
-        alignment: Alignment.center,
-        children: [
-          Container(
-            width: 118,
-            height: 108,
-            margin: const EdgeInsets.only(top: 24),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(16),
-              boxShadow: [
-                BoxShadow(color: Colors.black.withOpacity(0.15), blurRadius: 16, offset: const Offset(0, 8)),
-              ],
-            ),
-            child: const Center(
-              child: Icon(Icons.bolt, color: kBrandGreen, size: 48),
-            ),
-          ),
-          Positioned(
-            top: 0,
-            child: Container(
-              width: 64,
-              height: 46,
-              decoration: BoxDecoration(
-                border: Border.all(color: Colors.white, width: 7),
-                borderRadius: const BorderRadius.vertical(top: Radius.circular(32)),
-              ),
-            ),
-          ),
-          const Positioned(top: 4, left: 22, child: Icon(Icons.eco, color: Colors.white, size: 22)),
-          const Positioned(top: 0, right: 20, child: Icon(Icons.local_grocery_store, color: Colors.white, size: 20)),
-        ],
       ),
     );
   }

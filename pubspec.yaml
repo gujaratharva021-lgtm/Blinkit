@@ -1,4 +1,4 @@
-﻿name: mepto_clone
+name: mepto_clone
 description: A Zepto clone app
 
 publish_to: 'none'
@@ -36,6 +36,7 @@ dev_dependencies:
 flutter:
   uses-material-design: true
   assets:
+    - assets/images/auth/login_hero.png
     - assets/images/products/
     - assets/events/
     - assets/images/banners/  

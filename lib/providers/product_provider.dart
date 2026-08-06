@@ -1,5 +1,6 @@
 ﻿import 'package:flutter/material.dart';
 import '../services/api_service.dart';
+import '../features/category_nav/data/category_mock_data.dart';
 
 class ProductProvider extends ChangeNotifier {
   List<Map<String, dynamic>> _products = [];
@@ -26,13 +27,21 @@ class ProductProvider extends ChangeNotifier {
     final categoryName = (categoryData is Map && categoryData['name'] != null)
         ? categoryData['name'].toString()
         : 'Others';
+    final name = (raw['name'] ?? '').toString();
+    final resolvedImage = _resolveImage(raw['image_url']);
+    final id = raw['id'];
+    final image = resolvedImage.isNotEmpty
+        ? resolvedImage
+        : (CategoryMockData.imageForProductByCategoryTitle(
+                categoryName, name, id is int ? id : 0) ??
+            '');
     return {
       'id': raw['id'],
-      'name': (raw['name'] ?? '').toString(),
+      'name': name,
       'price': (raw['price'] is num) ? (raw['price'] as num).round() : 0,
       'unit': (raw['description'] ?? '1 pc').toString(),
       'category': categoryName,
-      'image': _resolveImage(raw['image_url']),
+      'image': image,
     };
   }
 

@@ -637,6 +637,45 @@ class CategoryMockData {
     return pool[index % pool.length];
   }
 
+  /// Finds a category by its display title (case-insensitive) and picks
+  /// a fallback image whose subcategory best matches [productName], for
+  /// backend products whose own image_url is empty. Returns null if no
+  /// matching category is found. [fallbackIndex] (e.g. the product's own
+  /// id) spreads products with no name match across different photos.
+  static String? imageForProductByCategoryTitle(
+      String categoryTitle, String productName, int fallbackIndex) {
+    CategoryModel? category;
+    for (final section in sections) {
+      for (final c in section.categories) {
+        if (c.title.toLowerCase() == categoryTitle.toLowerCase()) {
+          category = c;
+          break;
+        }
+      }
+      if (category != null) break;
+    }
+    if (category == null) return null;
+
+    final subs = category.subCategories;
+    var subIndex = subs.isEmpty ? 0 : fallbackIndex % subs.length;
+    final nameLower = productName.toLowerCase();
+    for (var s = 0; s < subs.length; s++) {
+      final words = subs[s]
+          .title
+          .toLowerCase()
+          .split(RegExp(r'[ &,]+'))
+          .where((w) => w.length > 2);
+      for (final word in words) {
+        if (nameLower.contains(word)) {
+          subIndex = s;
+          break;
+        }
+      }
+    }
+    final poolIndex = subIndex * 3 + (fallbackIndex % 3);
+    return imageForCategory(category.id, poolIndex);
+  }
+
 
   /// Generates a handful of realistic-looking products per subcategory
   /// so every category/subcategory has something to show in the grid.

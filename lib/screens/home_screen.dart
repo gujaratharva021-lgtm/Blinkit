@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -154,7 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
+                          Expanded(
+                            child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
@@ -178,6 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               ),
                               ),
                             ],
+                          ),
                           ),
                           Row(
                             children: [
@@ -808,7 +810,12 @@ class _HomeScreenState extends State<HomeScreen> {
       child: CarouselSlider(
         options: CarouselOptions(
           height: 180,
-          autoPlay: true,
+          // autoPlay disabled: carousel_slider has a known bug where its
+          // internal auto-play Timer fires after the widget is disposed
+          // (e.g. during a fast navigation transition right after login),
+          // throwing "Null check operator used on a null value" and
+          // corrupting the whole render tree. Manual swipe still works.
+          autoPlay: false,
           enlargeCenterPage: true,
           autoPlayInterval: const Duration(seconds: 3),
           viewportFraction: 0.88,
@@ -1179,4 +1186,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

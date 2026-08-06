@@ -1,4 +1,4 @@
-import '../../../services/api_service.dart';
+﻿import '../../../services/api_service.dart';
 import '../data/category_mock_data.dart';
 import '../models/category_models.dart';
 
@@ -8,6 +8,59 @@ import '../models/category_models.dart';
 /// to a mock category by name, so cart/checkout works end-to-end.
 class CategoryRepository {
   static List<Map<String, dynamic>>? _cachedProducts;
+
+  // Backend category names (from the real DB, e.g. "Fruits", "Shampoo")
+  // don't line up 1:1 with the mock taxonomy's category titles (e.g.
+  // "Vegetables & Fruits", "Hair"). Matching on exact title equality meant
+  // every backend product silently failed to match and the screen fell
+  // back to fully-mock (non-purchasable) products. This maps each real
+  // backend category name to the mock categoryId it should appear under,
+  // so real products route into a real tab and stay purchasable.
+  static const Map<String, String> _backendToMockCategoryId = {
+    'fruits': 'cat_veg_fruits',
+    'chocolate': 'cat_sweets_choco',
+    'beverages': 'cat_drinks_juices',
+    'ice creams': 'cat_ice_creams',
+    'bakery': 'cat_bakery_biscuits',
+    'biscuits': 'cat_bakery_biscuits',
+    'namkeen': 'cat_chips_namkeen',
+    'wafers': 'cat_chips_namkeen',
+    'ketchup': 'cat_sauces_spreads',
+    'shampoo': 'cat_hair',
+    'soap': 'cat_bath_body',
+    'personal care': 'cat_bath_body',
+    'pickle': 'cat_sauces_spreads',
+    'puja items': 'cat_home_lifestyle',
+    'toys': 'cat_stationery_games',
+    'clothes': 'cat_home_lifestyle',
+    'atta & rice': 'cat_atta_rice_dal',
+    'oil & spices': 'cat_oil_ghee_masala',
+    'dairy & eggs': 'cat_dairy_bread_eggs',
+    'dry fruits': 'cat_dryfruits_cereals',
+    'kitchenware': 'cat_kitchenware',
+    'meat & fish': 'cat_chicken_meat_fish',
+    'tea & coffee': 'cat_tea_coffee',
+    'instant food': 'cat_instant_food',
+    'mouth fresheners': 'cat_paan_corner',
+    'skin care': 'cat_skin_face',
+    'feminine hygiene': 'cat_feminine_hygiene',
+    'baby care': 'cat_baby_care',
+    'health care': 'cat_health_pharma',
+    'cleaning supplies': 'cat_cleaners_repellents',
+    'electronics': 'cat_electronics',
+  };
+
+  /// True if a backend product's category name belongs on this mock
+  /// [categoryId]'s tab, using the explicit mapping above (falling back to
+  /// exact title equality for any backend category not yet mapped, so new
+  /// categories that happen to share their exact name with a mock one
+  /// still work automatically).
+  bool _backendCategoryBelongsTo(String backendCategoryName, CategoryModel category) {
+    final key = backendCategoryName.toLowerCase();
+    final mappedId = _backendToMockCategoryId[key];
+    if (mappedId != null) return mappedId == category.id;
+    return key == category.title.toLowerCase();
+  }
 
   Future<List<Map<String, dynamic>>> _allBackendProducts() async {
     if (_cachedProducts != null) return _cachedProducts!;
@@ -67,9 +120,19 @@ class CategoryRepository {
     return index % subs.length;
   }
 
+  // Backend image_url comes back as a relative path (e.g. "/uploads/x.png").
+  // ProductCard decides network-vs-asset purely by checking if the string
+  // starts with "http", so without this prefix it was treated as a bundled
+  // asset (and failed to load, since it isn't one).
+  static String _resolveImageUrl(String url) {
+    if (url.isEmpty || url.startsWith('http')) return url;
+    final host = ApiService.baseUrl.replaceAll('/api/v1', '');
+    return '$host$url';
+  }
+
   ProductModel _fromBackend(Map<String, dynamic> raw, CategoryModel category, int index) {
     final price = (raw['price'] is num) ? (raw['price'] as num).toDouble() : 0.0;
-    final imgUrl = (raw['image_url'] ?? '').toString();
+    final imgUrl = _resolveImageUrl((raw['image_url'] ?? '').toString());
     final name = (raw['name'] ?? '').toString();
     final subIndex = _guessSubCategoryIndex(name, category, index);
     final subs = category.subCategories;
@@ -107,7 +170,7 @@ class CategoryRepository {
     final category = _findCategoryById(categoryId);
     final all = await _allBackendProducts();
     final filtered = all
-        .where((p) => _categoryName(p).toLowerCase() == category.title.toLowerCase())
+        .where((p) => _backendCategoryBelongsTo(_categoryName(p), category))
         .toList();
     if (filtered.isEmpty) {
       // No backend products at all for this category yet -> show mock data.
@@ -153,12 +216,15 @@ class CategoryRepository {
       if (match.isNotEmpty) {
         final raw = match.first;
         final catName = _categoryName(raw);
-        final category = CategoryMockData.sections
-            .expand((s) => s.categories)
-            .firstWhere(
-              (c) => c.title.toLowerCase() == catName.toLowerCase(),
-              orElse: () => CategoryMockData.sections.first.categories.first,
-            );
+        final mappedId = _backendToMockCategoryId[catName.toLowerCase()];
+        final allCategories =
+            CategoryMockData.sections.expand((s) => s.categories);
+        final category = allCategories.firstWhere(
+          (c) => mappedId != null
+              ? c.id == mappedId
+              : c.title.toLowerCase() == catName.toLowerCase(),
+          orElse: () => allCategories.first,
+        );
         return _fromBackend(raw, category, 0);
       }
     }
@@ -172,8 +238,7 @@ class CategoryRepository {
       final all = await _allBackendProducts();
       final filtered = all
           .where((p) =>
-              _categoryName(p).toLowerCase() == category.title.toLowerCase() &&
-              p['id'] != intId)
+              _backendCategoryBelongsTo(_categoryName(p), category) && p['id'] != intId)
           .toList();
       final matched = <ProductModel>[
         for (var i = 0; i < filtered.length && i < 10; i++)

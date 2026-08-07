@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -7,6 +7,7 @@ import 'dart:convert';
 import '../providers/cart_provider.dart';
 import '../services/api_service.dart';
 import 'order_screen.dart';
+import '../services/location_service.dart';
 
 class AddressScreen extends StatefulWidget {
   final List<Map<String, dynamic>> items;
@@ -132,6 +133,8 @@ class _AddressScreenState extends State<AddressScreen> {
         'city': city.isEmpty ? 'NA' : city,
         'state': state.isEmpty ? 'NA' : state,
         'pincode': pincode,
+        'lat': addr['lat'],
+        'lng': addr['lng'],
         'is_default': index == 0,
       });
       final id = result['id'];
@@ -272,6 +275,10 @@ class _AddressScreenState extends State<AddressScreen> {
     final cityController = TextEditingController(text: existing?['city'] ?? '');
     final phoneController = TextEditingController(text: existing?['phone'] ?? '');
     String selectedType = existing?['type'] ?? 'Home';
+    double? capturedLat = (existing?['lat'] as num?)?.toDouble();
+    double? capturedLng = (existing?['lng'] as num?)?.toDouble();
+    bool isLocatingModal = false;
+    String? locationErrorModal;
 
     showModalBottomSheet(
       context: context,
@@ -342,6 +349,63 @@ class _AddressScreenState extends State<AddressScreen> {
                   const SizedBox(height: 12),
                   _buildTextField(cityController, 'City, State, Pincode',
                       Icons.location_city_outlined),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      GestureDetector(
+                        onTap: isLocatingModal
+                            ? null
+                            : () async {
+                                setModalState(() {
+                                  isLocatingModal = true;
+                                  locationErrorModal = null;
+                                });
+                                try {
+                                  final result = await LocationService.getCurrentLocation();
+                                  setModalState(() {
+                                    capturedLat = result.latitude;
+                                    capturedLng = result.longitude;
+                                    isLocatingModal = false;
+                                  });
+                                } catch (e) {
+                                  setModalState(() {
+                                    locationErrorModal = e.toString().replaceFirst('Exception: ', '');
+                                    isLocatingModal = false;
+                                  });
+                                }
+                              },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.my_location, size: 14, color: Color(0xFF0C831F)),
+                              const SizedBox(width: 6),
+                              Text(
+                                isLocatingModal ? 'Locating...' : 'Use my current location',
+                                style: GoogleFonts.poppins(fontSize: 12, color: const Color(0xFF0C831F)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (capturedLat != null && capturedLng != null) ...[
+                        const SizedBox(width: 8),
+                        Text('Location captured',
+                            style: GoogleFonts.poppins(fontSize: 11, color: Colors.green)),
+                      ],
+                    ],
+                  ),
+                  if (locationErrorModal != null)
+                    Padding(
+                      padding: const EdgeInsets.only(top: 4),
+                      child: Text(locationErrorModal!,
+                          style: GoogleFonts.poppins(fontSize: 11, color: Colors.red)),
+                    ),
                   const SizedBox(height: 24),
 
                   SizedBox(
@@ -366,6 +430,8 @@ class _AddressScreenState extends State<AddressScreen> {
                           'address': addressController.text,
                           'city': cityController.text,
                           'phone': phoneController.text,
+                          'lat': capturedLat,
+                          'lng': capturedLng,
                         };
 
                         setState(() {
@@ -707,3 +773,11 @@ class _AddressScreenState extends State<AddressScreen> {
     );
   }
 }
+
+
+
+
+
+
+
+

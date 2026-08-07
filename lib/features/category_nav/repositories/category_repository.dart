@@ -1,4 +1,4 @@
-﻿import '../../../services/api_service.dart';
+import '../../../services/api_service.dart';
 import '../data/category_mock_data.dart';
 import '../models/category_models.dart';
 
@@ -22,9 +22,9 @@ class CategoryRepository {
     'beverages': 'cat_drinks_juices',
     'ice creams': 'cat_ice_creams',
     'bakery': 'cat_bakery_biscuits',
-    'biscuits': 'cat_bakery_biscuits',
+    'biscuits': 'cat_biscuits',
     'namkeen': 'cat_chips_namkeen',
-    'wafers': 'cat_chips_namkeen',
+    'wafers': 'cat_chips',
     'ketchup': 'cat_sauces_spreads',
     'shampoo': 'cat_hair',
     'soap': 'cat_bath_body',
@@ -32,7 +32,7 @@ class CategoryRepository {
     'pickle': 'cat_sauces_spreads',
     'puja items': 'cat_home_lifestyle',
     'toys': 'cat_stationery_games',
-    'clothes': 'cat_home_lifestyle',
+    'clothes': 'cat_clothes',
     'atta & rice': 'cat_atta_rice_dal',
     'oil & spices': 'cat_oil_ghee_masala',
     'dairy & eggs': 'cat_dairy_bread_eggs',
@@ -73,9 +73,23 @@ class CategoryRepository {
     return _cachedProducts!;
   }
 
+  // Category ids to hide from the Home screen's category grid only.
+  // They stay fully visible/browsable in the Categories tab - this list
+  // only controls what shows up inline on Home.
+  static const Set<String> _hiddenOnHome = {'cat_chips', 'cat_biscuits'};
+
   Future<List<CategorySectionModel>> fetchHomeSections() async {
     await Future.delayed(const Duration(milliseconds: 400));
-    return CategoryMockData.sections;
+    return CategoryMockData.sections
+        .map((section) => CategorySectionModel(
+              id: section.id,
+              title: section.title,
+              categories: section.categories
+                  .where((c) => !_hiddenOnHome.contains(c.id))
+                  .toList(),
+            ))
+        .where((section) => section.categories.isNotEmpty)
+        .toList();
   }
 
   Future<List<SubCategoryModel>> fetchSubCategories(String categoryId) async {

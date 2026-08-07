@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
@@ -764,7 +764,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _promoTile('cat_veg_fruits', 'Fruits & Vegetables', AssetConstants.vegetablesFruits, const Color(0xFF3AA655)),
               _promoTile('cat_dairy_bread_eggs', 'Dairy, Bread & Eggs', AssetConstants.dairyBreadEggs, const Color(0xFF2F8FD1)),
-              _promoTile('cat_chips_namkeen', 'Chips & Namkeen', AssetConstants.chipsNamkeen, const Color(0xFFE0A72A)),
+              _promoTile('cat_chips_namkeen', 'Namkeen', AssetConstants.namkeen, const Color(0xFFE0A72A)),
               _promoTile('cat_cleaners_repellents', 'Cleaners & Repellents', AssetConstants.cleanersRepellents, const Color(0xFF2F7FC1)),
             ],
           ),

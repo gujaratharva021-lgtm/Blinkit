@@ -85,7 +85,35 @@ class _LoginScreenState extends State<LoginScreen> {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               _HeroBanner(height: bannerHeight, onSkip: _skipLogin),
-              Container(height: 70, color: kHeroBg),
+              Container(
+                height: 70,
+                color: kHeroBg,
+                child: Center(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: const Icon(Icons.two_wheeler, color: kBrandGreen, size: 16),
+                      ),
+                      const SizedBox(width: 10),
+                      Text(
+                        'Fresh. Fast. Reliable.',
+                        style: GoogleFonts.poppins(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          letterSpacing: 0.6,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
               _LoginBottomSheet(
                 phoneController: _phoneController,
                 isValid: _isValid,
@@ -108,55 +136,26 @@ class _HeroBanner extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SizedBox(
-      height: height,
-      width: double.infinity,
-      child: ClipPath(
-        clipper: _BannerCurveClipper(),
-        child: Container(
-          color: kHeroBg,
-          child: Stack(
+    return Container(
+      color: kHeroBg,
+      child: SizedBox(
+        height: height,
+        width: double.infinity,
+        child: ClipPath(
+          clipper: _BannerCurveClipper(),
+          child: Container(
+            color: kHeroBg,
+            child: Stack(
             children: [
               Align(
                 alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: SizedBox(
-                    width: double.infinity,
-                    height: (height - 95).clamp(230.0, 300.0),
-                    child: Image.asset(
-                      'assets/images/auth/login_hero.png',
-                      fit: BoxFit.contain,
-                    ),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: height,
+                  child: Image.asset(
+                    'assets/images/auth/login_hero.png',
+                    fit: BoxFit.contain,
                   ),
-                ),
-              ),
-              Positioned(
-                bottom: 40,
-                left: 0,
-                right: 0,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Container(
-                      padding: const EdgeInsets.all(6),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: const Icon(Icons.two_wheeler, color: kBrandGreen, size: 16),
-                    ),
-                    const SizedBox(width: 10),
-                    Text(
-                      'Fresh. Fast. Reliable.',
-                      style: GoogleFonts.poppins(
-                        color: Colors.white,
-                        fontSize: 13,
-                        fontWeight: FontWeight.w700,
-                        letterSpacing: 0.6,
-                      ),
-                    ),
-                  ],
                 ),
               ),
               Positioned(
@@ -180,6 +179,7 @@ class _HeroBanner extends StatelessWidget {
           ),
         ),
       ),
+    ),
     );
   }
 }

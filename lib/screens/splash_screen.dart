@@ -1,6 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'offer_screen.dart';
+import 'login_screen.dart';
 import 'home_screen.dart';
 
 const Color kSplashBg = Color(0xFF0A0F0A);
@@ -40,7 +41,7 @@ class _SplashScreenState extends State<SplashScreen>
           MaterialPageRoute(
             builder: (_) => token != null && token.isNotEmpty
                 ? const HomeScreen()
-                : const OfferScreen(),
+                : const LoginScreen(),
           ),
         );
       }

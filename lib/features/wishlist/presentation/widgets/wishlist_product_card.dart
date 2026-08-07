@@ -1,4 +1,5 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../../domain/entities/wishlist_item_entity.dart';
 
 class WishlistProductCard extends StatelessWidget {
@@ -46,12 +47,13 @@ class WishlistProductCard extends StatelessWidget {
                               child: const Icon(Icons.image_not_supported_outlined),
                             ),
                           )
-                        : Image.network(
-                            item.imageUrl,
+                        : CachedNetworkImage(
+                            imageUrl: item.imageUrl,
                             width: 84,
                             height: 84,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) => Container(
+                            placeholder: (_, __) => const Center(child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))),
+                            errorWidget: (_, __, ___) => Container(
                               width: 84,
                               height: 84,
                               color: theme.colorScheme.surfaceContainerHighest,

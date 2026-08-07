@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -363,9 +364,10 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                                   color: Colors.grey[200],
                                   child: const Icon(Icons.image_not_supported,
                                       color: Colors.grey, size: 20)))
-                              : Image.network(item.image,
+                              : CachedNetworkImage(imageUrl: item.image,
                               width: 44, height: 44, fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => Container(
+                              placeholder: (_, __) => const Center(child: SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))),
+                              errorWidget: (_, __, ___) => Container(
                                   width: 44, height: 44,
                                   color: Colors.grey[200],
                                   child: const Icon(Icons.image_not_supported,

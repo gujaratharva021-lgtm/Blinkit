@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
@@ -150,8 +151,10 @@ class _CartScreenState extends State<CartScreen> {
               width: 60, height: 60, color: kLightGreenBg,
               child: const Icon(Icons.image_not_supported, color: kBrandGreen)));
     }
-    return Image.network(imagePath, width: 60, height: 60, fit: BoxFit.cover,
-        errorBuilder: (_, __, ___) => Container(
+    return CachedNetworkImage(
+        imageUrl: imagePath, width: 60, height: 60, fit: BoxFit.cover,
+        placeholder: (_, __) => Container(width: 60, height: 60, color: kLightGreenBg, child: const Center(child: SizedBox(width: 16, height: 16, child: CircularProgressIndicator(strokeWidth: 2)))),
+        errorWidget: (_, __, ___) => Container(
             width: 60, height: 60, color: kLightGreenBg,
             child: const Icon(Icons.image_not_supported, color: kBrandGreen)));
   }

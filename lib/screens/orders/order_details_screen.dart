@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
@@ -121,11 +122,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: item.image.startsWith('http')
-                        ? Image.network(item.image,
+                        ? CachedNetworkImage(imageUrl: item.image,
                             width: 48,
                             height: 48,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
+                            placeholder: (_, __) => const Center(child: SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))),
+                            errorWidget: (_, __, ___) =>
                                 Container(width: 48, height: 48, color: scheme.surfaceContainerHighest))
                         : Image.asset(item.image,
                         width: 48,

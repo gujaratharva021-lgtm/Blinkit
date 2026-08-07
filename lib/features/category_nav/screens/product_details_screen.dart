@@ -6,8 +6,8 @@ import '../../../widgets/state_views.dart';
 import '../models/category_models.dart';
 import '../providers/category_nav_provider.dart';
 import '../routes/category_nav_routes.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/category_placeholder_image.dart';
-import '../widgets/product_card.dart';
 import '../widgets/product_card.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -166,12 +166,13 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(24),
                       child: product.image!.startsWith('http')
-                          ? Image.network(
-                              product.image!,
+                          ? CachedNetworkImage(
+                              imageUrl: product.image!,
                               width: 160,
                               height: 160,
                               fit: BoxFit.cover,
-                              errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
+                              placeholder: (_, __) => const Center(child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))),
+                              errorWidget: (_, __, ___) => CategoryPlaceholderImage(
                                 icon: product.icon,
                                 color: product.color,
                                 size: 160,

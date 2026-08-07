@@ -5,6 +5,7 @@ import '../providers/order_provider.dart';
 import '../providers/profile_provider.dart';
 import '../models/order_model.dart';
 import 'order_status_screen.dart';
+import 'orders/request_return_screen.dart';
 import '../utils/invoice_generator.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -337,6 +338,33 @@ class _OrderScreenState extends State<OrderScreen> {
                                   )
                                 : const Icon(Icons.download, size: 16),
                             label: Text('Download Invoice',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 13, fontWeight: FontWeight.w600)),
+                          ),
+                        ),
+                      ],
+                      if (order.rawStatus == 'delivered') ...[
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: () async {
+                              final submitted = await Navigator.push<bool>(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (_) => RequestReturnScreen(order: order),
+                                ),
+                              );
+                              if (submitted == true && mounted) _refreshAll();
+                            },
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.red.shade700,
+                              side: BorderSide(color: Colors.red.shade700),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                            icon: const Icon(Icons.assignment_return_outlined, size: 16),
+                            label: Text('Request Return',
                                 style: GoogleFonts.poppins(
                                     fontSize: 13, fontWeight: FontWeight.w600)),
                           ),

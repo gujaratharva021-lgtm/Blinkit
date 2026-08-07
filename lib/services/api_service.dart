@@ -215,4 +215,36 @@ class ApiService {
     );
     return jsonDecode(response.body);
   }
+
+  /// items: list of {"order_item_id": int, "quantity": int}
+  static Future<Map<String, dynamic>> requestReturn({
+    required int orderId,
+    required String reason,
+    required List<Map<String, dynamic>> items,
+  }) async {
+    final headers = await getHeaders();
+    final response = await http.post(
+      Uri.parse('$baseUrl/orders/$orderId/return'),
+      headers: headers,
+      body: jsonEncode({'reason': reason, 'items': items}),
+    );
+    final data = jsonDecode(response.body);
+    if (response.statusCode >= 400) {
+      throw Exception((data['error'] ?? 'Could not submit return request').toString());
+    }
+    return data;
+  }
+
+  static Future<List<dynamic>> getMyReturns() async {
+    final headers = await getHeaders();
+    final response = await http.get(
+      Uri.parse('$baseUrl/returns'),
+      headers: headers,
+    );
+    final data = jsonDecode(response.body);
+    if (response.statusCode >= 400) {
+      throw Exception((data['error'] ?? 'Could not load return requests').toString());
+    }
+    return data['return_requests'] ?? [];
+  }
 }

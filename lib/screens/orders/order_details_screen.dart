@@ -8,6 +8,7 @@ import '../../providers/profile_provider.dart';
 import '../../models/order_model.dart';
 import '../../widgets/state_views.dart';
 import '../../utils/invoice_generator.dart';
+import 'request_return_screen.dart';
 
 const Color kGreen = Color(0xFF0C831F);
 
@@ -236,6 +237,29 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
                   : const Icon(Icons.download, size: 18),
               label: Text('Download Tax Invoice',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+            ),
+          ),
+        ],
+        if (order.rawStatus == 'delivered') ...[
+          const SizedBox(height: 12),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () async {
+                final submitted = await Navigator.of(context).push<bool>(
+                  MaterialPageRoute(builder: (_) => RequestReturnScreen(order: order)),
+                );
+                if (submitted == true) _load();
+              },
+              style: OutlinedButton.styleFrom(
+                foregroundColor: Colors.red.shade700,
+                side: BorderSide(color: Colors.red.shade700),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              icon: const Icon(Icons.assignment_return_outlined, size: 18),
+              label: Text('Request Return',
                   style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
             ),
           ),

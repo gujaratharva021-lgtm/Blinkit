@@ -31,6 +31,7 @@ class OrderProvider extends ChangeNotifier {
       tab.page = 0;
       tab.hasMore = true;
       tab.orders = [];
+      _repo.invalidate();
     }
     if (tab.status == LoadStatus.loading || tab.status == LoadStatus.loadingMore) return;
 

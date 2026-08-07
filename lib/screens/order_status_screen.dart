@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../models/order_model.dart';
 import '../services/api_service.dart';
+import '../providers/profile_provider.dart';
+import '../utils/invoice_generator.dart';
 
 class OrderStatusScreen extends StatefulWidget {
   final Order order;
@@ -28,6 +31,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
 
   Map<String, dynamic>? _tracking;
   bool _isLoadingTracking = true;
+  bool _isGeneratingInvoice = false;
 
   @override
   void initState() {
@@ -179,6 +183,31 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
           behavior: SnackBarBehavior.floating,
         ));
       }
+    }
+  }
+
+  Future<void> _downloadInvoice() async {
+    if (_isGeneratingInvoice) return;
+    setState(() => _isGeneratingInvoice = true);
+    try {
+      final profile = context.read<ProfileProvider>().profile;
+      final customerName = (profile?.name.trim().isNotEmpty ?? false)
+          ? profile!.name
+          : 'Customer';
+      await InvoiceGenerator.downloadInvoice(
+        order: widget.order,
+        customerName: customerName,
+      );
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Could not generate invoice', style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    } finally {
+      if (mounted) setState(() => _isGeneratingInvoice = false);
     }
   }
 
@@ -516,6 +545,68 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
               ),
 
             if (order.paymentMethod == 'online' && order.paymentStatus == 'pending') const SizedBox(height: 16),
+
+            if (order.paymentStatus == 'paid')
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                  boxShadow: [
+                    BoxShadow(
+                        color: Colors.grey.withOpacity(0.08), blurRadius: 8)
+                  ],
+                ),
+                child: Row(
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF0C831F).withOpacity(0.1),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: const Icon(Icons.receipt_long_outlined,
+                          color: Color(0xFF0C831F)),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Tax Invoice',
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold, fontSize: 13)),
+                          Text('Payment successful \u2022 download your bill',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 11, color: Colors.grey)),
+                        ],
+                      ),
+                    ),
+                    OutlinedButton.icon(
+                      onPressed: _isGeneratingInvoice ? null : _downloadInvoice,
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: const Color(0xFF0C831F),
+                        side: const BorderSide(color: Color(0xFF0C831F)),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10)),
+                      ),
+                      icon: _isGeneratingInvoice
+                          ? const SizedBox(
+                              width: 14,
+                              height: 14,
+                              child: CircularProgressIndicator(strokeWidth: 2),
+                            )
+                          : const Icon(Icons.download, size: 16),
+                      label: Text('Download',
+                          style: GoogleFonts.poppins(
+                              fontSize: 12, fontWeight: FontWeight.w600)),
+                    ),
+                  ],
+                ),
+              ),
+
+            if (order.paymentStatus == 'paid') const SizedBox(height: 16),
 
             Container(
               padding: const EdgeInsets.all(16),

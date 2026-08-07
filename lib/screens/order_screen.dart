@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/order_provider.dart';
+import '../providers/profile_provider.dart';
 import '../models/order_model.dart';
 import 'order_status_screen.dart';
+import '../utils/invoice_generator.dart';
 
 class OrderScreen extends StatefulWidget {
   const OrderScreen({super.key});
@@ -13,15 +15,41 @@ class OrderScreen extends StatefulWidget {
 }
 
 class _OrderScreenState extends State<OrderScreen> {
+  final Set<String> _generatingInvoiceIds = {};
+
+  Future<void> _downloadInvoice(Order order) async {
+    if (_generatingInvoiceIds.contains(order.id)) return;
+    setState(() => _generatingInvoiceIds.add(order.id));
+    try {
+      final profile = context.read<ProfileProvider>().profile;
+      final customerName =
+          (profile?.name.trim().isNotEmpty ?? false) ? profile!.name : 'Customer';
+      await InvoiceGenerator.downloadInvoice(order: order, customerName: customerName);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Could not generate invoice', style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    } finally {
+      if (mounted) setState(() => _generatingInvoiceIds.remove(order.id));
+    }
+  }
+  Future<void> _refreshAll() async {
+    final provider = context.read<OrderProvider>();
+    await Future.wait([
+      provider.loadOrders(OrderStatus.active, refresh: true),
+      provider.loadOrders(OrderStatus.delivered, refresh: true),
+      provider.loadOrders(OrderStatus.cancelled, refresh: true),
+    ]);
+  }
+
   @override
   void initState() {
     super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final provider = context.read<OrderProvider>();
-      provider.loadOrders(OrderStatus.active, refresh: true);
-      provider.loadOrders(OrderStatus.delivered, refresh: true);
-      provider.loadOrders(OrderStatus.cancelled, refresh: true);
-    });
+    WidgetsBinding.instance.addPostFrameCallback((_) => _refreshAll());
   }
 
   @override
@@ -74,7 +102,10 @@ class _OrderScreenState extends State<OrderScreen> {
           ],
         ),
       )
-          : ListView.builder(
+          : RefreshIndicator(
+        color: const Color(0xFF0C831F),
+        onRefresh: _refreshAll,
+        child: ListView.builder(
         padding: const EdgeInsets.all(16),
         itemCount: orders.length,
         itemBuilder: (context, index) {
@@ -228,14 +259,17 @@ class _OrderScreenState extends State<OrderScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: () => Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => OrderStatusScreen(
-                                    order: order,
+                              onPressed: () async {
+                                await Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => OrderStatusScreen(
+                                      order: order,
+                                    ),
                                   ),
-                                ),
-                              ),
+                                );
+                                if (mounted) _refreshAll();
+                              },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                 const Color(0xFF2196F3),
@@ -281,6 +315,33 @@ class _OrderScreenState extends State<OrderScreen> {
                           ),
                         ],
                       ),
+                      if (order.paymentStatus == 'paid') ...[
+                        const SizedBox(height: 8),
+                        SizedBox(
+                          width: double.infinity,
+                          child: OutlinedButton.icon(
+                            onPressed: _generatingInvoiceIds.contains(order.id)
+                                ? null
+                                : () => _downloadInvoice(order),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: const Color(0xFF0C831F),
+                              side: const BorderSide(color: Color(0xFF0C831F)),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10)),
+                            ),
+                            icon: _generatingInvoiceIds.contains(order.id)
+                                ? const SizedBox(
+                                    width: 14,
+                                    height: 14,
+                                    child: CircularProgressIndicator(strokeWidth: 2),
+                                  )
+                                : const Icon(Icons.download, size: 16),
+                            label: Text('Download Invoice',
+                                style: GoogleFonts.poppins(
+                                    fontSize: 13, fontWeight: FontWeight.w600)),
+                          ),
+                        ),
+                      ],
                     ],
                   ),
                 ),
@@ -288,6 +349,7 @@ class _OrderScreenState extends State<OrderScreen> {
             ),
           );
         },
+      ),
       ),
     );
   }

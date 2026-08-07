@@ -1,4 +1,5 @@
-﻿import '../../models/order_model.dart';
+﻿import 'package:flutter/foundation.dart';
+import '../../models/order_model.dart';
 import '../../services/api_service.dart';
 
 class OrderRepository {
@@ -9,6 +10,13 @@ class OrderRepository {
   Future<List<Order>> _loadAll() async {
     if (_cache != null) return _cache!;
     final raw = await ApiService.getOrders(page: 1, limit: 100);
+    if (kDebugMode) {
+      for (final e in raw) {
+        final m = e as Map<String, dynamic>;
+        debugPrint(
+            '[ORDER DEBUG] id=${m['id']} status=${m['status']} payment_method=${m['payment_method']} payment_status=${m['payment_status']}');
+      }
+    }
     _cache = raw
         .map((e) => Order.fromJson(e as Map<String, dynamic>))
         .toList()

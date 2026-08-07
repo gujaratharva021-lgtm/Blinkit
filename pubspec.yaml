@@ -14,7 +14,7 @@ dependencies:
     sdk: flutter
   provider: ^6.1.2
   dio: ^5.11.0
-  cached_network_image: ^3.3.1
+  cached_network_image: ^3.4.1
   google_fonts: ^6.1.0
   carousel_slider: ^5.0.0
   smooth_page_indicator: ^1.1.0
@@ -26,6 +26,13 @@ dependencies:
   share_plus: ^13.3.0
   intl: ^0.20.3
   url_launcher: ^6.3.2
+  firebase_core: ^4.13.0
+  firebase_messaging: ^16.5.0
+  geolocator: ^14.0.3
+  geocoding: ^4.0.0
+  pdf: ^3.11.1
+  printing: ^5.13.4
+  path_provider: ^2.1.4
 
 dev_dependencies:
   flutter_test:

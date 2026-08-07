@@ -172,7 +172,7 @@ class _AddressScreenState extends State<AddressScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Error placing order', style: GoogleFonts.poppins()),
+          content: Text('Error: $e', style: GoogleFonts.poppins()),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ));
@@ -256,7 +256,7 @@ class _AddressScreenState extends State<AddressScreen> {
       _razorpay.open(options);
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error placing order', style: GoogleFonts.poppins()),
+        content: Text('Error: $e', style: GoogleFonts.poppins()),
         backgroundColor: Colors.red,
         behavior: SnackBarBehavior.floating,
       ));

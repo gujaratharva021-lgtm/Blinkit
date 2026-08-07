@@ -47,3 +47,5 @@ app.*.map.json
 *.bak
 *.bak2
 *.encoding_bak
+
+flutter_log.txt

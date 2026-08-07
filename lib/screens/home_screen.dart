@@ -4,6 +4,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
+import '../services/location_service.dart';
 import '../providers/cart_provider.dart';
 import '../providers/product_provider.dart';
 import '../constants/asset_constants.dart';
@@ -30,6 +31,22 @@ class HomeScreen extends StatefulWidget {
 
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
+  String _currentAddress = 'Mumbai, Maharashtra';
+  bool _loadingLocation = false;
+
+  Future<void> _fetchCurrentLocation() async {
+    setState(() => _loadingLocation = true);
+    try {
+      final result = await LocationService.getCurrentLocation();
+      if (mounted) setState(() => _currentAddress = result.displayAddress);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
+      }
+    } finally {
+      if (mounted) setState(() => _loadingLocation = false);
+    }
+  }
 
   @override
   void initState() {
@@ -37,6 +54,7 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.read<ProductProvider>().loadProducts();
     });
+    _fetchCurrentLocation();
     if (widget.showWishlistIntro) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) showWishlistIntro(context);
@@ -136,7 +154,8 @@ class _HomeScreenState extends State<HomeScreen> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Column(
+                          Expanded(
+                            child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Row(
@@ -147,16 +166,20 @@ class _HomeScreenState extends State<HomeScreen> {
                                           color: Colors.white, fontSize: 11, fontWeight: FontWeight.w600)),
                                 ],
                               ),
-                              Row(
+                              GestureDetector(
+                                onTap: _loadingLocation ? null : _fetchCurrentLocation,
+                                child: Row(
                                 children: [
                                   const Icon(Icons.location_on, color: Colors.white, size: 14),
-                                  Text('Mumbai, Maharashtra',
+                                  Flexible(child: Text(_loadingLocation ? 'Fetching...' : _currentAddress, overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.poppins(
-                                          color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold)),
+                                          color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))),
                                   const Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 16),
                                 ],
                               ),
+                              ),
                             ],
+                          ),
                           ),
                           Row(
                             children: [
@@ -741,7 +764,7 @@ class _HomeScreenState extends State<HomeScreen> {
             children: [
               _promoTile('cat_veg_fruits', 'Fruits & Vegetables', AssetConstants.vegetablesFruits, const Color(0xFF3AA655)),
               _promoTile('cat_dairy_bread_eggs', 'Dairy, Bread & Eggs', AssetConstants.dairyBreadEggs, const Color(0xFF2F8FD1)),
-              _promoTile('cat_chips_namkeen', 'Chips & Namkeen', AssetConstants.chipsNamkeen, const Color(0xFFE0A72A)),
+              _promoTile('cat_chips_namkeen', 'Namkeen', AssetConstants.namkeen, const Color(0xFFE0A72A)),
               _promoTile('cat_cleaners_repellents', 'Cleaners & Repellents', AssetConstants.cleanersRepellents, const Color(0xFF2F7FC1)),
             ],
           ),
@@ -787,7 +810,12 @@ class _HomeScreenState extends State<HomeScreen> {
       child: CarouselSlider(
         options: CarouselOptions(
           height: 180,
-          autoPlay: true,
+          // autoPlay disabled: carousel_slider has a known bug where its
+          // internal auto-play Timer fires after the widget is disposed
+          // (e.g. during a fast navigation transition right after login),
+          // throwing "Null check operator used on a null value" and
+          // corrupting the whole render tree. Manual swipe still works.
+          autoPlay: false,
           enlargeCenterPage: true,
           autoPlayInterval: const Duration(seconds: 3),
           viewportFraction: 0.88,
@@ -1158,4 +1186,3 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 }
-

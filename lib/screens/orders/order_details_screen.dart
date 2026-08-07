@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../../providers/order_provider.dart';
+import '../../providers/profile_provider.dart';
 import '../../models/order_model.dart';
 import '../../widgets/state_views.dart';
+import '../../utils/invoice_generator.dart';
 
 const Color kGreen = Color(0xFF0C831F);
 
@@ -19,6 +22,26 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
   Order? _order;
   bool _loading = true;
   String? _error;
+  bool _isGeneratingInvoice = false;
+
+  Future<void> _downloadInvoice(Order order) async {
+    if (_isGeneratingInvoice) return;
+    setState(() => _isGeneratingInvoice = true);
+    try {
+      final profile = context.read<ProfileProvider>().profile;
+      final customerName =
+          (profile?.name.trim().isNotEmpty ?? false) ? profile!.name : 'Customer';
+      await InvoiceGenerator.downloadInvoice(order: order, customerName: customerName);
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Could not generate invoice', style: GoogleFonts.poppins())),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isGeneratingInvoice = false);
+    }
+  }
 
   @override
   void initState() {
@@ -99,11 +122,12 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
                     child: item.image.startsWith('http')
-                        ? Image.network(item.image,
+                        ? CachedNetworkImage(imageUrl: item.image,
                             width: 48,
                             height: 48,
                             fit: BoxFit.cover,
-                            errorBuilder: (_, __, ___) =>
+                            placeholder: (_, __) => const Center(child: SizedBox(width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))),
+                            errorWidget: (_, __, ___) =>
                                 Container(width: 48, height: 48, color: scheme.surfaceContainerHighest))
                         : Image.asset(item.image,
                         width: 48,
@@ -195,6 +219,27 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
         if (order.discount > 0) _priceRow('Discount', '-${order.discount}', scheme, isDiscount: true),
         const Divider(),
         _priceRow('Grand Total', '${order.grandTotal}', scheme, isBold: true),
+        if (order.paymentStatus == 'paid') ...[
+          const SizedBox(height: 20),
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: _isGeneratingInvoice ? null : () => _downloadInvoice(order),
+              style: OutlinedButton.styleFrom(
+                foregroundColor: kGreen,
+                side: const BorderSide(color: kGreen),
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+              ),
+              icon: _isGeneratingInvoice
+                  ? const SizedBox(
+                      width: 14, height: 14, child: CircularProgressIndicator(strokeWidth: 2))
+                  : const Icon(Icons.download, size: 18),
+              label: Text('Download Tax Invoice',
+                  style: GoogleFonts.poppins(fontWeight: FontWeight.w600)),
+            ),
+          ),
+        ],
         const SizedBox(height: 24),
       ],
     );

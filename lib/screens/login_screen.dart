@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../services/api_service.dart';
@@ -47,7 +47,15 @@ class _LoginScreenState extends State<LoginScreen> {
       if (mounted) {
         Navigator.push(
           context,
-          MaterialPageRoute(builder: (_) => OtpScreen(phone: _phoneController.text)),
+          MaterialPageRoute(
+            builder: (_) => OtpScreen(
+              phone: _phoneController.text,
+              // TEST MODE ONLY: backend currently returns the OTP directly
+              // in the send-otp response (no real SMS). Remove this once a
+              // real SMS provider is wired back up.
+              testOtp: data['otp']?.toString(),
+            ),
+          ),
         );
       }
     } catch (e) {

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/cart_provider.dart';
@@ -44,14 +45,15 @@ class ProductCard extends StatelessWidget {
                   borderRadius: const BorderRadius.vertical(top: Radius.circular(14)),
                   child: (product.image != null && product.image!.isNotEmpty)
                       ? (product.image!.startsWith('http')
-                          ? Image.network(
-                              product.image!,
+                          ? CachedNetworkImage(
+                              imageUrl: product.image!,
                               width: double.infinity,
                               height: 100,
                               fit: BoxFit.contain,
-                              cacheWidth: 240,
+                              memCacheWidth: 240,
                               filterQuality: FilterQuality.low,
-                              errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
+                              placeholder: (_, __) => const Center(child: SizedBox(width: 18, height: 18, child: CircularProgressIndicator(strokeWidth: 2))),
+                              errorWidget: (_, __, ___) => CategoryPlaceholderImage(
                                 icon: product.icon,
                                 color: product.color,
                                 size: 100,

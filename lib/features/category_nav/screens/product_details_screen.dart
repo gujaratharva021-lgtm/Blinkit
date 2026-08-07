@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/cart_provider.dart';
@@ -6,8 +6,8 @@ import '../../../widgets/state_views.dart';
 import '../models/category_models.dart';
 import '../providers/category_nav_provider.dart';
 import '../routes/category_nav_routes.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/category_placeholder_image.dart';
-import '../widgets/product_card.dart';
 import '../widgets/product_card.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
@@ -165,18 +165,32 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
               child: (product.image != null && product.image!.isNotEmpty)
                   ? ClipRRect(
                       borderRadius: BorderRadius.circular(24),
-                      child: Image.asset(
-                        product.image!,
-                        width: 160,
-                        height: 160,
-                        fit: BoxFit.cover,
-                        errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
-                          icon: product.icon,
-                          color: product.color,
-                          size: 160,
-                          borderRadius: 24,
-                        ),
-                      ),
+                      child: product.image!.startsWith('http')
+                          ? CachedNetworkImage(
+                              imageUrl: product.image!,
+                              width: 160,
+                              height: 160,
+                              fit: BoxFit.cover,
+                              placeholder: (_, __) => const Center(child: SizedBox(width: 24, height: 24, child: CircularProgressIndicator(strokeWidth: 2))),
+                              errorWidget: (_, __, ___) => CategoryPlaceholderImage(
+                                icon: product.icon,
+                                color: product.color,
+                                size: 160,
+                                borderRadius: 24,
+                              ),
+                            )
+                          : Image.asset(
+                              product.image!,
+                              width: 160,
+                              height: 160,
+                              fit: BoxFit.cover,
+                              errorBuilder: (_, __, ___) => CategoryPlaceholderImage(
+                                icon: product.icon,
+                                color: product.color,
+                                size: 160,
+                                borderRadius: 24,
+                              ),
+                            ),
                     )
                   : CategoryPlaceholderImage(
                       icon: product.icon,

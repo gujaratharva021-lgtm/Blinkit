@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'package:flutter/services.dart';
@@ -10,7 +10,10 @@ const Color kBrandGreen = Color(0xFF0C831F);
 
 class OtpScreen extends StatefulWidget {
   final String phone;
-  const OtpScreen({super.key, required this.phone});
+  // TEST MODE ONLY: OTP returned directly by the backend (no real SMS).
+  // Remove once a real SMS provider is wired back up.
+  final String? testOtp;
+  const OtpScreen({super.key, required this.phone, this.testOtp});
 
   @override
   State<OtpScreen> createState() => _OtpScreenState();
@@ -29,8 +32,20 @@ class _OtpScreenState extends State<OtpScreen> {
     super.initState();
     _startTimer();
     Future.delayed(const Duration(seconds: 3), () {
-      if (mounted) setState(() => _showSmsBanner = false);
+      if (mounted && widget.testOtp == null) setState(() => _showSmsBanner = false);
     });
+    // TEST MODE ONLY: auto-fill and auto-verify using the OTP the backend
+    // returned directly (no real SMS). Remove once a real SMS provider is
+    // wired back up.
+    if (widget.testOtp != null && widget.testOtp!.length == 6) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        for (var i = 0; i < 6; i++) {
+          _controllers[i].text = widget.testOtp![i];
+        }
+        if (mounted) setState(() {});
+        _verify();
+      });
+    }
   }
 
   void _startTimer() {
@@ -192,7 +207,24 @@ class _OtpScreenState extends State<OtpScreen> {
               ],
             ),
           ),
-          if (_showSmsBanner)
+          if (widget.testOtp != null)
+            Positioned(
+              left: 24,
+              right: 24,
+              bottom: 30,
+              child: SafeArea(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 14),
+                  decoration: BoxDecoration(
+                    color: Colors.orange.shade700,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text('TEST MODE -- OTP: ${widget.testOtp} (auto-filled)',
+                      style: GoogleFonts.poppins(color: Colors.white, fontSize: 13, fontWeight: FontWeight.w600)),
+                ),
+              ),
+            )
+          else if (_showSmsBanner)
             Positioned(
               left: 24,
               right: 24,

@@ -46,19 +46,6 @@ class _AppPermissionsScreenState extends State<AppPermissionsScreen> {
           'Used to send order updates, delivery alerts, offers and wallet activity.',
       granted: true,
     ),
-    _PermissionItem(
-      icon: Icons.mic_none_outlined,
-      title: 'Microphone',
-      description: 'Used for voice search when looking for products.',
-      granted: false,
-    ),
-    _PermissionItem(
-      icon: Icons.photo_library_outlined,
-      title: 'Storage / Photos',
-      description:
-          'Used to save invoices, order receipts and downloaded data to your device.',
-      granted: false,
-    ),
   ];
 
   @override

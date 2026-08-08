@@ -1,5 +1,5 @@
 import 'dart:convert';
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' show DioException, DioExceptionType, RequestOptions;
 import 'package:flutter/services.dart' show rootBundle;
 import '../models/address_model.dart';
 
@@ -7,7 +7,6 @@ import '../models/address_model.dart';
 /// a real network datasource ??" swap the body of each method for an actual
 /// `dio.get(...)` / `dio.post(...)` call once the backend is ready.
 class AddressMockDataSource {
-  final Dio _dio = Dio();
   List<AddressModel>? _cache;
 
   /// Set to true from a debug menu to preview the error state.

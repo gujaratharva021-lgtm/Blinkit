@@ -470,7 +470,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                                   Text('Delivery Partner',
                                       style: GoogleFonts.poppins(
                                           fontSize: 11, color: Colors.grey)),
-                                  Text(partnerName!,
+                                  Text(partnerName,
                                       style: GoogleFonts.poppins(
                                           fontSize: 14,
                                           fontWeight: FontWeight.bold)),

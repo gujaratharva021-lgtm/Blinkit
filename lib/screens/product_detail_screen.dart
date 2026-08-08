@@ -44,8 +44,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   int _galleryIndex = 0;
 
   late final List<String> _galleryImages;
-  late final List<_ReviewData> _reviews;
-  late final double _avgRating;
   late final List<Map<String, dynamic>> _relatedProducts;
 
   @override
@@ -58,12 +56,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     // across a few "angles" until real multi-image assets are added.
     _galleryImages = [baseImage, baseImage, baseImage];
 
-    _reviews = _mockReviews(widget.product['name'] as String);
-    _avgRating = _reviews.isEmpty
-        ? 0
-        : _reviews.map((r) => r.rating).reduce((a, b) => a + b) /
-            _reviews.length;
-
     _relatedProducts = _computeRelatedProducts();
   }
 
@@ -71,29 +63,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   void dispose() {
     _galleryController.dispose();
     super.dispose();
-  }
-
-  List<_ReviewData> _mockReviews(String productName) {
-    return [
-      _ReviewData(
-        name: 'Aditi Sharma',
-        rating: 5,
-        comment: 'Good quality and delivered fresh. Will order again.',
-        daysAgo: 2,
-      ),
-      _ReviewData(
-        name: 'Rohan Mehta',
-        rating: 4,
-        comment: 'Packaging could be better but the product itself is nice.',
-        daysAgo: 6,
-      ),
-      _ReviewData(
-        name: 'Priya Nair',
-        rating: 4,
-        comment: 'As described, matches what was shown in the app.',
-        daysAgo: 11,
-      ),
-    ];
   }
 
   List<Map<String, dynamic>> _computeRelatedProducts() {
@@ -682,18 +651,4 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
-}
-
-class _ReviewData {
-  final String name;
-  final int rating;
-  final String comment;
-  final int daysAgo;
-
-  _ReviewData({
-    required this.name,
-    required this.rating,
-    required this.comment,
-    required this.daysAgo,
-  });
 }

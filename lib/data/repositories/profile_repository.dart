@@ -1,14 +1,12 @@
 ﻿import 'dart:convert';
 import 'package:flutter/services.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:dio/dio.dart';
 import '../models/user_profile_model.dart';
 
 /// Mock repository — reads seed data from local JSON, persists edits to
 /// SharedPreferences. Replace the body of each method with real Dio calls
 /// (the `_dio` client is already wired) once a backend endpoint exists.
 class ProfileRepository {
-  final Dio _dio = Dio();
   static const _prefsKey = 'user_profile_json';
 
   Future<UserProfileModel> fetchProfile() async {

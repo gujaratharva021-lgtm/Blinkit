@@ -1,10 +1,9 @@
 ﻿import 'dart:convert';
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' show DioException, DioExceptionType, RequestOptions;
 import 'package:flutter/services.dart' show rootBundle;
 import '../models/gst_model.dart';
 
 class GstMockDataSource {
-  final Dio _dio = Dio();
   List<GstModel>? _cache;
 
   bool simulateError = false;

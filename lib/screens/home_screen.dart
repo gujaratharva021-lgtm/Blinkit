@@ -16,10 +16,6 @@ import 'product_detail_screen.dart';
 import '../widgets/wishlist_intro_sheet.dart';
 import '../features/category_nav/screens/home_category_sections.dart';
 import 'notifications/notification_list_screen.dart';
-import '../features/category_nav/data/category_mock_data.dart';
-import '../features/category_nav/models/category_models.dart';
-import '../features/category_nav/routes/category_nav_routes.dart';
-import '../features/category_nav/widgets/product_card.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool showWishlistIntro;
@@ -651,15 +647,6 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
     );
-  }
-
-  CategoryModel? _findCategoryById(String id) {
-    for (final section in CategoryMockData.sections) {
-      for (final cat in section.categories) {
-        if (cat.id == id) return cat;
-      }
-    }
-    return null;
   }
 
   Widget _promoTile(String categoryId, String label, String imagePath, Color color) {

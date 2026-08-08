@@ -1,11 +1,10 @@
 ﻿import 'dart:convert';
-import 'package:dio/dio.dart';
+import 'package:dio/dio.dart' show DioException, DioExceptionType, RequestOptions;
 import 'package:flutter/services.dart' show rootBundle;
 import '../../domain/entities/gift_card_entity.dart';
 import '../models/gift_card_model.dart';
 
 class GiftCardMockDataSource {
-  final Dio _dio = Dio();
   List<GiftCardModel>? _cache;
 
   bool simulateError = false;

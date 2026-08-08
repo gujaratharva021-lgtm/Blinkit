@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../../../providers/cart_provider.dart';
@@ -10,6 +10,8 @@ import 'package:cached_network_image/cached_network_image.dart';
 import '../widgets/category_placeholder_image.dart';
 import '../widgets/product_card.dart';
 import '../../../screens/cart_screen.dart';
+import '../../wishlist/presentation/providers/wishlist_provider.dart';
+import '../../wishlist/domain/entities/wishlist_item_entity.dart';
 
 class ProductDetailsScreen extends StatefulWidget {
   final ProductModel product;
@@ -36,11 +38,28 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
     super.dispose();
   }
 
+  WishlistItemEntity _toWishlistItem(ProductModel product) {
+    return WishlistItemEntity(
+      id: product.id,
+      productId: product.id,
+      name: product.name,
+      imageUrl: product.image ?? '',
+      price: product.price,
+      mrp: product.mrp,
+      discountPercent: product.discountPercent,
+      rating: product.rating,
+      ratingCount: product.ratingCount,
+      inStock: product.inStock,
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final product = widget.product;
     final cart = context.watch<CartProvider>();
     final qty = cart.getQuantityByProductId(product.id);
+    final wishlist = context.watch<WishlistProvider>();
+    final isWishlisted = wishlist.isWishlisted(product.id);
 
     return Scaffold(
       body: SafeArea(
@@ -149,6 +168,16 @@ class _ProductDetailsScreenState extends State<ProductDetailsScreen> {
         elevation: 0,
         title: Text('Product details',
             style: GoogleFonts.poppins(fontSize: 15, fontWeight: FontWeight.w600, color: Colors.black)),
+        actions: [
+          IconButton(
+            onPressed: () =>
+                context.read<WishlistProvider>().toggle(_toWishlistItem(product)),
+            icon: Icon(
+              isWishlisted ? Icons.favorite : Icons.favorite_border,
+              color: isWishlisted ? Colors.red : Colors.black87,
+            ),
+          ),
+        ],
       ),
     );
   }

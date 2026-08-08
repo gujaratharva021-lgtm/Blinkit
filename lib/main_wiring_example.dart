@@ -1,5 +1,5 @@
-﻿// This file shows how to wire the four new modules into an existing
-// Flutter app. Merge the relevant pieces into your current main.dart â€”
+// This file shows how to wire the four new modules into an existing
+// Flutter app. Merge the relevant pieces into your current main.dart —
 // don't just drop this in wholesale if you already have a MultiProvider
 // / GoRouter setup; add these providers and routes to your existing ones.
 
@@ -76,7 +76,7 @@ class MyApp extends StatelessWidget {
   }
 }
 
-// Merge `newModuleRoutes` into your existing GoRouter's routes list â€”
+// Merge `newModuleRoutes` into your existing GoRouter's routes list —
 // this standalone router is only here so the example is runnable as-is.
 final GoRouter _router = GoRouter(
   initialLocation: AppRoutePaths.addressBook,

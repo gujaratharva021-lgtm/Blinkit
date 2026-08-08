@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
@@ -311,7 +311,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   color: const Color(0xFF0C831F),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
-                                child: Text('?${product['price']}',
+                                child: Text('₹${product['price']}',
                                     style: GoogleFonts.poppins(
                                         color: Colors.white,
                                         fontSize: 18,
@@ -319,7 +319,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                               ),
                               const SizedBox(width: 10),
                               Text(
-                                  'MRP ?${(product['price'] * 1.3).toInt()}',
+                                  'MRP ₹${(product['price'] * 1.3).toInt()}',
                                   style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       color: Colors.grey,
@@ -327,7 +327,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                       TextDecoration.lineThrough)),
                               const SizedBox(width: 8),
                               Text(
-                                  '?${(product['price'] * 0.3).toInt()} OFF',
+                                  '₹${(product['price'] * 0.3).toInt()} OFF',
                                   style: GoogleFonts.poppins(
                                       fontSize: 13,
                                       color: Colors.green,
@@ -534,7 +534,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                             fontSize: 12,
                                             fontWeight: FontWeight.w500)),
                                     const SizedBox(height: 4),
-                                    Text('?${related['price']}',
+                                    Text('₹${related['price']}',
                                         style: GoogleFonts.poppins(
                                             fontSize: 13,
                                             fontWeight: FontWeight.bold)),

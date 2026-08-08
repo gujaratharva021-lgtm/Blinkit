@@ -1,10 +1,9 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/profile_provider.dart';
 import '../../widgets/avatar_picker_sheet.dart';
 
 const Color kGreen = Color(0xFF0C831F);
-const List<String> kGenderOptions = ['Male', 'Female', 'Other'];
 
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
@@ -16,10 +15,7 @@ class EditProfileScreen extends StatefulWidget {
 class _EditProfileScreenState extends State<EditProfileScreen> {
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
-  final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
-  String _gender = kGenderOptions.first;
-  DateTime? _dob;
   bool _loaded = false;
 
   @override
@@ -29,10 +25,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       final p = context.read<ProfileProvider>().profile;
       if (p != null) {
         _nameCtrl.text = p.name;
-        _emailCtrl.text = p.email;
         _phoneCtrl.text = p.phone;
-        _gender = kGenderOptions.contains(p.gender) ? p.gender : kGenderOptions.first;
-        _dob = p.dob;
       }
       _loaded = true;
     }
@@ -41,7 +34,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   @override
   void dispose() {
     _nameCtrl.dispose();
-    _emailCtrl.dispose();
     _phoneCtrl.dispose();
     super.dispose();
   }
@@ -103,14 +95,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               ),
               const SizedBox(height: 16),
               TextFormField(
-                controller: _emailCtrl,
-                decoration: const InputDecoration(
-                    labelText: 'Email', border: OutlineInputBorder()),
-                validator: (v) =>
-                    context.read<ProfileProvider>().validateEmail(v ?? ''),
-              ),
-              const SizedBox(height: 16),
-              TextFormField(
                 controller: _phoneCtrl,
                 keyboardType: TextInputType.phone,
                 maxLength: 10,
@@ -127,36 +111,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   return null;
                 },
               ),
-              const SizedBox(height: 16),
-              DropdownButtonFormField<String>(
-                initialValue: _gender,
-                decoration: const InputDecoration(
-                    labelText: 'Gender', border: OutlineInputBorder()),
-                items: kGenderOptions
-                    .map((g) => DropdownMenuItem(value: g, child: Text(g)))
-                    .toList(),
-                onChanged: (v) => setState(() => _gender = v ?? _gender),
-              ),
-              const SizedBox(height: 16),
-              InkWell(
-                onTap: () async {
-                  final picked = await showDatePicker(
-                    context: context,
-                    initialDate: _dob ?? DateTime(2000, 1, 1),
-                    firstDate: DateTime(1950),
-                    lastDate: DateTime.now(),
-                  );
-                  if (picked != null) setState(() => _dob = picked);
-                },
-                child: InputDecorator(
-                  decoration: const InputDecoration(
-                      labelText: 'Date of birth',
-                      border: OutlineInputBorder()),
-                  child: Text(_dob == null
-                      ? 'Select date'
-                      : '${_dob!.day}/${_dob!.month}/${_dob!.year}'),
-                ),
-              ),
               const SizedBox(height: 28),
               SizedBox(
                 width: double.infinity,
@@ -167,9 +121,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                           if (!_formKey.currentState!.validate()) return;
                           final ok = await context.read<ProfileProvider>().save(
                                 name: _nameCtrl.text,
-                                email: _emailCtrl.text,
-                                gender: _gender,
-                                dob: _dob,
+                                phone: _phoneCtrl.text,
                               );
                           if (ok && context.mounted) {
                             ScaffoldMessenger.of(context).showSnackBar(

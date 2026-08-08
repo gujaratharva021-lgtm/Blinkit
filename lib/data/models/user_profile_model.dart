@@ -38,6 +38,7 @@
   UserProfileModel copyWith({
     String? name,
     String? email,
+    String? phone,
     String? gender,
     DateTime? dob,
     String? avatarPath,
@@ -45,7 +46,7 @@
     return UserProfileModel(
       name: name ?? this.name,
       email: email ?? this.email,
-      phone: phone,
+      phone: phone ?? this.phone,
       gender: gender ?? this.gender,
       dob: dob ?? this.dob,
       avatarPath: avatarPath ?? this.avatarPath,

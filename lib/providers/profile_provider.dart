@@ -41,8 +41,9 @@ class ProfileProvider extends ChangeNotifier {
 
   Future<bool> save({
     required String name,
-    required String email,
-    required String gender,
+    required String phone,
+    String? email,
+    String? gender,
     DateTime? dob,
   }) async {
     status = ProfileStatus.loading;
@@ -54,7 +55,8 @@ class ProfileProvider extends ChangeNotifier {
                   name: '', email: '', phone: '', gender: 'Not specified'))
           .copyWith(
         name: name.trim(),
-        email: email.trim(),
+        phone: phone.trim(),
+        email: email?.trim(),
         gender: gender,
         dob: dob,
         avatarPath: pendingAvatarFile?.path,

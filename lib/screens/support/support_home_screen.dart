@@ -24,12 +24,6 @@ class _SupportHomeScreenState extends State<SupportHomeScreen> {
     });
   }
 
-  void _showComingSoon(String feature) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('$feature - Coming Soon'), backgroundColor: kGreen, behavior: SnackBarBehavior.floating),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
     final scheme = Theme.of(context).colorScheme;
@@ -44,7 +38,17 @@ class _SupportHomeScreenState extends State<SupportHomeScreen> {
       body: ListView(
         padding: const EdgeInsets.all(16),
         children: [
-          _optionTile(scheme, Icons.chat_bubble_outline, 'Chat Support', () => _showComingSoon('Chat Support')),
+          _optionTile(scheme, Icons.chat_bubble_outline, 'Chat Support', () async {
+            final uri = Uri.parse(
+                'https://wa.me/918104090442?text=${Uri.encodeComponent('Hi, I am facing an issue with a product I ordered. ')}');
+            if (await canLaunchUrl(uri)) {
+              launchUrl(uri, mode: LaunchMode.externalApplication);
+            } else if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Could not open WhatsApp')),
+              );
+            }
+          }),
           _optionTile(scheme, Icons.call_outlined, 'Call Support', () async {
             final uri = Uri(scheme: 'tel', path: '18001234567');
             if (await canLaunchUrl(uri)) launchUrl(uri);

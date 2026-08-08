@@ -15,7 +15,6 @@ import 'order_screen.dart';
 import 'wallet/wallet_screen.dart';
 import 'support/support_home_screen.dart';
 import 'about/about_us_screen.dart';
-import '../features/address_book/presentation/screens/address_list_screen.dart';
 import '../features/wishlist/presentation/screens/wishlist_screen.dart';
 import '../features/gst_details/presentation/screens/gst_list_screen.dart';
 import 'categories_screen.dart';
@@ -75,10 +74,6 @@ class _ProfileScreenState extends State<ProfileScreen> {
               const SizedBox(height: 20),
               _buildSectionLabel('Your information', scheme),
               _buildSectionCard(scheme, [
-                _tile(Icons.menu_book_outlined, 'Address book', () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const AddressListScreen()));
-                }, scheme),
                 _tile(Icons.favorite_border, 'Your wishlist', () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const WishlistScreen()));

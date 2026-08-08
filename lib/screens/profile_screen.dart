@@ -18,7 +18,6 @@ import 'about/about_us_screen.dart';
 import '../features/address_book/presentation/screens/address_list_screen.dart';
 import '../features/wishlist/presentation/screens/wishlist_screen.dart';
 import '../features/gst_details/presentation/screens/gst_list_screen.dart';
-import '../features/gift_cards/presentation/screens/gift_cards_screen.dart';
 import 'categories_screen.dart';
 import 'home_screen.dart';
 
@@ -87,14 +86,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 _tile(Icons.description_outlined, 'GST details', () {
                   Navigator.push(context,
                       MaterialPageRoute(builder: (_) => const GstListScreen()));
-                }, scheme),
-                _tile(Icons.card_giftcard_outlined, 'E-gift cards', () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (_) => const GiftCardsScreen()));
-                }, scheme),
-                _tile(Icons.receipt_long_outlined, 'Your prescriptions',
-                    () => _showComingSoon('Prescriptions'), scheme,
-                    isLast: true),
+                }, scheme, isLast: true),
               ]),
               const SizedBox(height: 20),
               _buildSectionLabel('Payment and coupons', scheme),
@@ -104,16 +96,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       MaterialPageRoute(builder: (_) => const WalletScreen()));
                 }, scheme),
                 _tile(Icons.credit_card_outlined, 'Payment settings',
-                    () => _showComingSoon('Payment settings'), scheme),
-                _tile(Icons.redeem_outlined, 'Claim gift card', () {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (_) => const GiftCardsScreen()));
-                }, scheme),
-                _tile(Icons.card_membership_outlined, 'Your collected rewards',
-                    () => _showComingSoon('Rewards'), scheme,
-                    isLast: true),
+                    () => _showComingSoon('Payment settings'), scheme, isLast: true),
               ]),
               const SizedBox(height: 20),
               _buildSectionLabel('Other information', scheme),

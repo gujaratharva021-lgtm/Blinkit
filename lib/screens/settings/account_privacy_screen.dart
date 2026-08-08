@@ -1,5 +1,6 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import '../../widgets/confirm_dialog.dart';
+import 'app_permissions_screen.dart';
 
 const Color kGreen = Color(0xFF0C831F);
 
@@ -18,39 +19,12 @@ class AccountPrivacyScreen extends StatelessWidget {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
             child: ListTile(
-              leading: const Icon(Icons.download_outlined, color: kGreen),
-              title: const Text('Download your data'),
-              subtitle: const Text('Get a copy of your account data'),
-              onTap: () async {
-                final ok = await ConfirmDialog.show(
-                  context,
-                  title: 'Download data',
-                  message:
-                      'We will prepare your data and email you a download link within 24 hours.',
-                  confirmLabel: 'Request',
-                );
-                if (ok && context.mounted) {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                        content: Text('Request submitted'),
-                        backgroundColor: kGreen),
-                  );
-                }
-              },
-            ),
-          ),
-          const SizedBox(height: 12),
-          Card(
-            shape:
-                RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-            child: ListTile(
               leading: const Icon(Icons.shield_outlined, color: kGreen),
               title: const Text('App permissions'),
               subtitle: const Text('Location, camera, notifications'),
               trailing: const Icon(Icons.chevron_right),
-              onTap: () => ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(content: Text('Permissions - Coming Soon')),
-              ),
+              onTap: () => Navigator.push(context,
+                  MaterialPageRoute(builder: (_) => const AppPermissionsScreen())),
             ),
           ),
           const SizedBox(height: 12),

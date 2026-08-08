@@ -1,10 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../../../core/utils/view_state.dart';
 import '../../../../core/widgets/skeleton_loader.dart';
 import '../../../../core/widgets/state_widgets.dart';
 import '../providers/wishlist_provider.dart';
 import '../widgets/wishlist_product_card.dart';
+import '../../../../screens/product_detail_screen.dart';
 
 class WishlistScreen extends StatefulWidget {
   const WishlistScreen({super.key});
@@ -61,21 +62,24 @@ class _WishlistScreenState extends State<WishlistScreen> {
               final item = provider.items[index];
               return WishlistProductCard(
                 item: item,
-                isBusy: provider.pendingIds.contains(item.id),
                 onOpenDetails: () {
-                  // Navigate to product details route.
-                  Navigator.pushNamed(context, '/product-details',
-                      arguments: item.productId);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => ProductDetailScreen(
+                        product: {
+                          'id': item.productId,
+                          'name': item.name,
+                          'price': item.price,
+                          'image': item.imageUrl,
+                          'unit': '1 pc',
+                          'category': 'Grocery',
+                        },
+                      ),
+                    ),
+                  );
                 },
                 onRemove: () => provider.removeItem(item.id),
-                onMoveToCart: () async {
-                  final ok = await provider.moveToCart(item.id);
-                  if (ok && context.mounted) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('${item.name} moved to cart')),
-                    );
-                  }
-                },
               );
             },
           ),
@@ -106,8 +110,6 @@ class _WishlistCardSkeleton extends StatelessWidget {
                   SkeletonBox(width: 100, height: 12, borderRadius: BorderRadius.circular(4)),
                   const SizedBox(height: 8),
                   SkeletonBox(width: 140, height: 12, borderRadius: BorderRadius.circular(4)),
-                  const SizedBox(height: 10),
-                  SkeletonBox(width: double.infinity, height: 32, borderRadius: BorderRadius.circular(8)),
                 ],
               ),
             ),
@@ -117,4 +119,3 @@ class _WishlistCardSkeleton extends StatelessWidget {
     );
   }
 }
-

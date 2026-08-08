@@ -4,18 +4,14 @@ import '../../domain/entities/wishlist_item_entity.dart';
 
 class WishlistProductCard extends StatelessWidget {
   final WishlistItemEntity item;
-  final bool isBusy;
   final VoidCallback onOpenDetails;
   final VoidCallback onRemove;
-  final VoidCallback onMoveToCart;
 
   const WishlistProductCard({
     super.key,
     required this.item,
-    required this.isBusy,
     required this.onOpenDetails,
     required this.onRemove,
-    required this.onMoveToCart,
   });
 
   @override
@@ -140,28 +136,6 @@ class WishlistProductCard extends StatelessWidget {
                         ),
                       ],
                     ),
-                    const SizedBox(height: 10),
-                    SizedBox(
-                      height: 34,
-                      child: isBusy
-                          ? const Center(
-                              child: SizedBox(
-                                height: 18,
-                                width: 18,
-                                child: CircularProgressIndicator(strokeWidth: 2),
-                              ),
-                            )
-                          : OutlinedButton(
-                              onPressed: item.inStock ? onMoveToCart : null,
-                              style: OutlinedButton.styleFrom(
-                                minimumSize: const Size.fromHeight(34),
-                                padding: EdgeInsets.zero,
-                              ),
-                              child: Text(
-                                item.inStock ? 'Move to Cart' : 'Out of stock',
-                              ),
-                            ),
-                    ),
                   ],
                 ),
               ),
@@ -172,4 +146,3 @@ class WishlistProductCard extends StatelessWidget {
     );
   }
 }
-

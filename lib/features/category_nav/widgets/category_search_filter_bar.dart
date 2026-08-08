@@ -76,7 +76,6 @@ class FilterSortBar extends StatelessWidget {
   }
 
   void _showFilterSheet(BuildContext context) {
-    final provider = context.read<CategoryNavProvider>();
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -115,7 +114,6 @@ class FilterSortBar extends StatelessWidget {
   }
 
   void _showSortSheet(BuildContext context) {
-    final provider = context.read<CategoryNavProvider>();
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(

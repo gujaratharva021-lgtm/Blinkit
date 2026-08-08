@@ -1,0 +1,7 @@
+﻿{
+  "orders": true,
+  "offers": true,
+  "wallet": true,
+  "recommendations": false,
+  "updates": true
+}

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Theme applied to the Android Window while the process is starting when the OS's Dark Mode setting is on -->
+    <style name="LaunchTheme" parent="@android:style/Theme.Black.NoTitleBar">
+        <!-- Show a splash screen on the activity. Automatically removed when
+             the Flutter engine draws its first frame -->
+        <item name="android:windowBackground">@drawable/launch_background</item>
+        <!-- Override the Android 12+ system splash screen so it doesn't show
+             the launcher icon (GoFresh logo). Background matches the app's
+             own splash screen (kSplashBg in splash_screen.dart) so the
+             transition into the Flutter splash is seamless. -->
+        <item name="android:windowSplashScreenBackground">#0A0F0A</item>
+        <item name="android:windowSplashScreenAnimatedIcon">@drawable/transparent_icon</item>
+        <item name="android:windowSplashScreenIconBackgroundColor">#0A0F0A</item>
+    </style>
+    <!-- Theme applied to the Android Window as soon as the process has started.
+         This theme determines the color of the Android Window while your
+         Flutter UI initializes, as well as behind your Flutter UI while its
+         running.
+
+         This Theme is only used starting with V2 of Flutter's Android embedding. -->
+    <!-- BUG FIX ("Black status/nav bar in system dark mode"): this file is
+         the theme Android uses when the DEVICE's system dark mode is on,
+         separate from values/styles.xml (used in light mode). It was
+         missing the exact same transparent-status-bar / white-nav-bar
+         overrides that values/styles.xml has, and inherited from
+         Theme.Black.NoTitleBar - so on any device with system dark mode
+         enabled, Android painted solid black status/navigation bars
+         behind the app regardless of what main.dart's SystemChrome calls
+         requested at runtime. The app always renders with AppTheme.lightTheme
+         (no dark theme of its own), so this native theme needs the same
+         light-safe bar colors as the day version, not a black one. -->
+    <style name="NormalTheme" parent="@android:style/Theme.Light.NoTitleBar">
+        <item name="android:windowBackground">?android:colorBackground</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/white</item>
+    </style>
+</resources>

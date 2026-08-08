@@ -1,0 +1,120 @@
+﻿import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import '../../../../core/utils/view_state.dart';
+import '../../../../core/widgets/skeleton_loader.dart';
+import '../../../../core/widgets/state_widgets.dart';
+import '../providers/wishlist_provider.dart';
+import '../widgets/wishlist_product_card.dart';
+
+class WishlistScreen extends StatefulWidget {
+  const WishlistScreen({super.key});
+
+  @override
+  State<WishlistScreen> createState() => _WishlistScreenState();
+}
+
+class _WishlistScreenState extends State<WishlistScreen> {
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      context.read<WishlistProvider>().loadWishlist();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final provider = context.watch<WishlistProvider>();
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Wishlist')),
+      body: _buildBody(context, provider),
+    );
+  }
+
+  Widget _buildBody(BuildContext context, WishlistProvider provider) {
+    switch (provider.status) {
+      case ViewStatus.initial:
+      case ViewStatus.loading:
+        return SkeletonListView(
+          itemBuilder: (_) => const _WishlistCardSkeleton(),
+        );
+      case ViewStatus.error:
+        return ErrorStateWidget(
+          message: provider.errorMessage ?? 'Please try again.',
+          onRetry: provider.loadWishlist,
+        );
+      case ViewStatus.empty:
+        return EmptyStateWidget(
+          icon: Icons.favorite_border_rounded,
+          title: 'Your wishlist is empty',
+          message: 'Tap the heart on any product to save it here for later.',
+        );
+      case ViewStatus.loaded:
+        return RefreshIndicator(
+          onRefresh: provider.loadWishlist,
+          child: ListView.separated(
+            padding: const EdgeInsets.all(16),
+            itemCount: provider.items.length,
+            separatorBuilder: (_, __) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              final item = provider.items[index];
+              return WishlistProductCard(
+                item: item,
+                isBusy: provider.pendingIds.contains(item.id),
+                onOpenDetails: () {
+                  // Navigate to product details route.
+                  Navigator.pushNamed(context, '/product-details',
+                      arguments: item.productId);
+                },
+                onRemove: () => provider.removeItem(item.id),
+                onMoveToCart: () async {
+                  final ok = await provider.moveToCart(item.id);
+                  if (ok && context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('${item.name} moved to cart')),
+                    );
+                  }
+                },
+              );
+            },
+          ),
+        );
+    }
+  }
+}
+
+class _WishlistCardSkeleton extends StatelessWidget {
+  const _WishlistCardSkeleton();
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      child: Padding(
+        padding: const EdgeInsets.all(12),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            SkeletonBox(width: 84, height: 84, borderRadius: BorderRadius.circular(10)),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  SkeletonBox(width: double.infinity, height: 14, borderRadius: BorderRadius.circular(4)),
+                  const SizedBox(height: 8),
+                  SkeletonBox(width: 100, height: 12, borderRadius: BorderRadius.circular(4)),
+                  const SizedBox(height: 8),
+                  SkeletonBox(width: 140, height: 12, borderRadius: BorderRadius.circular(4)),
+                  const SizedBox(height: 10),
+                  SkeletonBox(width: double.infinity, height: 32, borderRadius: BorderRadius.circular(8)),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+

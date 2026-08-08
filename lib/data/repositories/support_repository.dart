@@ -27,13 +27,4 @@ class SupportRepository {
               'Refunds for cancelled or returned orders are credited to GoFresh Money within 24 hours.'),
     ];
   }
-
-  Future<void> submitIssue({
-    required String categoryId,
-    required String description,
-    String? screenshotPath,
-  }) async {
-    await Future.delayed(const Duration(seconds: 1));
-    // Mock submission — always succeeds. Wire to real API here later.
-  }
 }

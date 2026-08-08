@@ -8,6 +8,7 @@ import '../models/order_model.dart';
 import '../services/api_service.dart';
 import '../providers/profile_provider.dart';
 import '../utils/invoice_generator.dart';
+import 'support/support_home_screen.dart';
 
 class OrderStatusScreen extends StatefulWidget {
   final Order order;
@@ -610,31 +611,38 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
 
             if (order.paymentStatus == 'paid') const SizedBox(height: 16),
 
-            Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: Row(
-                children: [
-                  const Icon(Icons.chat_bubble_outline, color: Colors.grey),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text('Need help with this order?',
-                            style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold, fontSize: 13)),
-                        Text('Find your issue or reach out via chat',
-                            style: GoogleFonts.poppins(
-                                fontSize: 11, color: Colors.grey)),
-                      ],
+            InkWell(
+              borderRadius: BorderRadius.circular(16),
+              onTap: () {
+                Navigator.push(context,
+                    MaterialPageRoute(builder: (_) => const SupportHomeScreen()));
+              },
+              child: Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(16),
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.chat_bubble_outline, color: Colors.grey),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text('Need help with this order?',
+                              style: GoogleFonts.poppins(
+                                  fontWeight: FontWeight.bold, fontSize: 13)),
+                          Text('Find your issue or reach out via chat',
+                              style: GoogleFonts.poppins(
+                                  fontSize: 11, color: Colors.grey)),
+                        ],
+                      ),
                     ),
-                  ),
-                  const Icon(Icons.chevron_right, color: Colors.grey),
-                ],
+                    const Icon(Icons.chevron_right, color: Colors.grey),
+                  ],
+                ),
               ),
             ),
           ],

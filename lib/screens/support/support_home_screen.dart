@@ -4,7 +4,6 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../providers/support_provider.dart';
 import '../../widgets/state_views.dart';
-import 'report_issue_screen.dart';
 
 const Color kGreen = Color(0xFF0C831F);
 
@@ -53,9 +52,6 @@ class _SupportHomeScreenState extends State<SupportHomeScreen> {
           _optionTile(scheme, Icons.email_outlined, 'Email Support', () async {
             final uri = Uri(scheme: 'mailto', path: 'support@gofresh.app', query: 'subject=Help needed');
             if (await canLaunchUrl(uri)) launchUrl(uri);
-          }),
-          _optionTile(scheme, Icons.report_gmailerrorred_outlined, 'Report Issue', () {
-            Navigator.push(context, MaterialPageRoute(builder: (_) => const ReportIssueScreen()));
           }),
           const SizedBox(height: 20),
           Text('Frequently Asked Questions',

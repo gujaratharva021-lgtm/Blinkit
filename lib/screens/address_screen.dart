@@ -48,40 +48,38 @@ class _AddressScreenState extends State<AddressScreen> {
     super.dispose();
   }
 
+  // Addresses are user-specific and live on the backend (tied to the
+  // logged-in account's JWT). We fetch them fresh on every load instead of
+  // trusting local device storage, so a new login on any device never shows
+  // a previous user's (or a stale dummy) address.
   Future<void> _loadAddresses() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? data = prefs.getString('saved_addresses');
-    if (data != null) {
-      final List<dynamic> decoded = jsonDecode(data);
+    try {
+      final backendAddresses = await ApiService.getAddresses();
       setState(() {
-        _addresses = decoded.map((e) {
-          final map = Map<String, dynamic>.from(e);
-          map['icon'] = _iconFromType(map['type']);
-          return map;
+        _addresses = backendAddresses.map<Map<String, dynamic>>((a) {
+          final map = Map<String, dynamic>.from(a);
+          final cityLine = [map['city'], map['state'], map['pincode']]
+              .where((v) => v != null && v.toString().isNotEmpty)
+              .join(', ');
+          return {
+            'type': map['label'] ?? 'Home',
+            'icon': _iconFromType(map['label'] ?? 'Home'),
+            'name': map['full_name'] ?? '',
+            'address': map['line1'] ?? '',
+            'city': cityLine,
+            'phone': map['phone'] ?? '',
+            'lat': map['lat'],
+            'lng': map['lng'],
+            'backend_id': map['id'],
+          };
         }).toList();
       });
-    } else {
+    } catch (e) {
+      // Network/auth error: show an empty list rather than any cached or
+      // placeholder data, so we never risk showing someone else's address.
       setState(() {
-        _addresses = [
-          {
-            'type': 'Home',
-            'icon': Icons.home_outlined,
-            'name': 'Atharv',
-            'address': 'Flat 402, Shanti Nagar, Andheri West',
-            'city': 'Mumbai, Maharashtra 400053',
-            'phone': '+91 98765 43210',
-          },
-          {
-            'type': 'Office',
-            'icon': Icons.work_outline,
-            'name': 'Atharv',
-            'address': 'Unit 5, Tech Park, Bandra Kurla Complex',
-            'city': 'Mumbai, Maharashtra 400051',
-            'phone': '+91 98765 43210',
-          },
-        ];
+        _addresses = [];
       });
-      _saveAddresses();
     }
   }
 

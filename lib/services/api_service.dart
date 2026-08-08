@@ -1,4 +1,4 @@
-import 'dart:convert';
+﻿import 'dart:convert';
 import 'dart:async';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -157,6 +157,16 @@ class ApiService {
     ).timeout(_timeout);
     final data = jsonDecode(response.body);
     return data['orders'] ?? [];
+  }
+
+  static Future<List<dynamic>> getAddresses() async {
+    final headers = await getHeaders();
+    final response = await http.get(
+      Uri.parse('$baseUrl/addresses'),
+      headers: headers,
+    ).timeout(_timeout);
+    final data = jsonDecode(response.body);
+    return data['addresses'] ?? [];
   }
 
   static Future<Map<String, dynamic>> createAddress(Map<String, dynamic> address) async {

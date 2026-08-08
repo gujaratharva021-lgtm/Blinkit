@@ -216,6 +216,19 @@ class ApiService {
     return jsonDecode(response.body);
   }
 
+  static Future<Map<String, dynamic>> cancelOrder(int orderId) async {
+    final headers = await getHeaders();
+    final response = await http.post(
+      Uri.parse('$baseUrl/orders/$orderId/cancel'),
+      headers: headers,
+    );
+    final data = jsonDecode(response.body);
+    if (response.statusCode >= 400) {
+      throw Exception((data['error'] ?? 'Could not cancel order').toString());
+    }
+    return data;
+  }
+
   /// items: list of {"order_item_id": int, "quantity": int}
   static Future<Map<String, dynamic>> requestReturn({
     required int orderId,

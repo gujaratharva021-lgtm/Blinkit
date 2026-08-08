@@ -13,6 +13,7 @@ String _resolveImage(String? raw) {
 
 class OrderItem {
   final int id;
+  final int? productId;
   final String name;
   final String image;
   final String unit;
@@ -21,6 +22,7 @@ class OrderItem {
 
   OrderItem({
     required this.id,
+    this.productId,
     required this.name,
     required this.image,
     required this.unit,
@@ -30,8 +32,12 @@ class OrderItem {
 
   factory OrderItem.fromJson(Map<String, dynamic> json) {
     final product = json['product'] as Map<String, dynamic>? ?? {};
+    final rawProductId = product['id'];
     return OrderItem(
       id: (json['id'] ?? 0) is int ? json['id'] as int : (json['id'] as num).toInt(),
+      productId: rawProductId is int
+          ? rawProductId
+          : (rawProductId is num ? rawProductId.toInt() : int.tryParse(rawProductId?.toString() ?? '')),
       name: (product['name'] ?? 'Item').toString(),
       image: _resolveImage(product['image_url']?.toString()),
       unit: '1 unit',

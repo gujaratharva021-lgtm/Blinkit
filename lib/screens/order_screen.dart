@@ -3,9 +3,12 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/order_provider.dart';
 import '../providers/profile_provider.dart';
+import '../providers/cart_provider.dart';
+import '../services/api_service.dart';
 import '../models/order_model.dart';
 import 'order_status_screen.dart';
 import 'orders/request_return_screen.dart';
+import 'cart_screen.dart';
 import '../utils/invoice_generator.dart';
 
 class OrderScreen extends StatefulWidget {
@@ -46,6 +49,81 @@ class _OrderScreenState extends State<OrderScreen> {
       provider.loadOrders(OrderStatus.cancelled, refresh: true),
     ]);
   }
+
+  Future<void> _cancelOrder(Order order) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (_) => AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        title: Text('Cancel Order', style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
+        content: Text('Are you sure you want to cancel this order?',
+            style: GoogleFonts.poppins()),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('No', style: GoogleFonts.poppins(color: Colors.grey)),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.red,
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
+            ),
+            child: Text('Yes, Cancel', style: GoogleFonts.poppins(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+    if (confirm != true) return;
+
+    try {
+      final orderId = int.tryParse(order.id);
+      if (orderId == null) throw Exception('Invalid order id');
+      await ApiService.cancelOrder(orderId);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Order cancelled successfully', style: GoogleFonts.poppins()),
+          backgroundColor: const Color(0xFF0C831F),
+          behavior: SnackBarBehavior.floating,
+        ));
+        _refreshAll();
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Could not cancel order. Please try again.',
+              style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    }
+  }
+
+  Future<void> _reorder(Order order) async {
+    final cart = context.read<CartProvider>();
+    try {
+      for (final item in order.items) {
+        if (item.productId == null) continue;
+        await cart.addProduct(item.productId, quantity: item.quantity);
+      }
+      if (mounted) {
+        Navigator.push(context, MaterialPageRoute(builder: (_) => const CartScreen()));
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Could not add items to cart. Please try again.',
+              style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+    }
+  }
+
+  bool _isCancellable(Order order) =>
+      order.rawStatus == 'pending' || order.rawStatus == 'confirmed';
 
   @override
   void initState() {
@@ -230,30 +308,24 @@ class _OrderScreenState extends State<OrderScreen> {
                         children: [
                           Expanded(
                             child: OutlinedButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Support coming soon!',
-                                        style:
-                                        GoogleFonts.poppins()),
-                                    behavior:
-                                    SnackBarBehavior.floating,
-                                  ),
-                                );
-                              },
+                              onPressed: _isCancellable(order)
+                                  ? () => _cancelOrder(order)
+                                  : null,
                               style: OutlinedButton.styleFrom(
-                                side: const BorderSide(
-                                    color: Color(0xFF0C831F)),
+                                foregroundColor: Colors.red.shade700,
+                                side: BorderSide(
+                                    color: _isCancellable(order)
+                                        ? Colors.red.shade700
+                                        : Colors.grey),
                                 shape: RoundedRectangleBorder(
                                     borderRadius:
                                     BorderRadius.circular(10)),
                               ),
-                              child: Text('Help',
+                              child: Text('Cancel',
                                   style: GoogleFonts.poppins(
-                                      color:
-                                      const Color(0xFF0C831F),
+                                      color: _isCancellable(order)
+                                          ? Colors.red.shade700
+                                          : Colors.grey,
                                       fontSize: 13)),
                             ),
                           ),
@@ -287,20 +359,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           const SizedBox(width: 8),
                           Expanded(
                             child: ElevatedButton(
-                              onPressed: () {
-                                ScaffoldMessenger.of(context)
-                                    .showSnackBar(
-                                  SnackBar(
-                                    content: Text(
-                                        'Reorder coming soon!',
-                                        style:
-                                        GoogleFonts.poppins()),
-                                    backgroundColor: Colors.orange,
-                                    behavior:
-                                    SnackBarBehavior.floating,
-                                  ),
-                                );
-                              },
+                              onPressed: () => _reorder(order),
                               style: ElevatedButton.styleFrom(
                                 backgroundColor:
                                 const Color(0xFF0C831F),

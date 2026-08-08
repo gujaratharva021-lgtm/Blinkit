@@ -5,7 +5,6 @@ import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import '../features/wishlist/presentation/providers/wishlist_provider.dart';
 import '../features/wishlist/domain/entities/wishlist_item_entity.dart';
-import 'cart_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -567,10 +566,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               child: Row(
                 children: [
-                  GestureDetector(
-                    onTap: () => Navigator.push(
-                        context, MaterialPageRoute(builder: (_) => const CartScreen())),
-                    child: Container(
+                  Container(
                     width: 56, height: 56,
                     decoration: BoxDecoration(
                       border: Border.all(color: Colors.grey.shade300),
@@ -597,7 +593,6 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                       ],
-                    ),
                     ),
                   ),
                   const SizedBox(width: 12),

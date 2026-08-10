@@ -1,6 +1,6 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'offer_screen.dart';
 import 'login_screen.dart';
 import 'home_screen.dart';
 
@@ -17,6 +17,7 @@ class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _controller;
   late Animation<double> _fadeAnimation;
+  Timer? _navigationTimer;
 
   @override
   void initState() {
@@ -32,24 +33,26 @@ class _SplashScreenState extends State<SplashScreen>
 
     _controller.forward();
 
-    Future.delayed(const Duration(seconds: 3), () async {
-      if (mounted) {
-        final prefs = await SharedPreferences.getInstance();
-        final token = prefs.getString('token');
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (_) => token != null && token.isNotEmpty
-                ? const HomeScreen()
-                : const LoginScreen(),
-          ),
-        );
-      }
+    _navigationTimer = Timer(const Duration(seconds: 3), () async {
+      final prefs = await SharedPreferences.getInstance();
+      // Re-check mounted AFTER the await -- the widget may have been
+      // disposed while we were waiting on SharedPreferences.
+      if (!mounted) return;
+      final token = prefs.getString('token');
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(
+          builder: (_) => token != null && token.isNotEmpty
+              ? const HomeScreen()
+              : const LoginScreen(),
+        ),
+      );
     });
   }
 
   @override
   void dispose() {
+    _navigationTimer?.cancel();
     _controller.dispose();
     super.dispose();
   }

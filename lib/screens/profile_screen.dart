@@ -10,7 +10,6 @@ import 'settings/notification_preferences_screen.dart';
 import 'notifications/notification_list_screen.dart';
 import 'settings/account_privacy_screen.dart';
 import 'share/share_app_screen.dart';
-import 'orders/order_list_screen.dart';
 import 'order_screen.dart';
 import 'wallet/wallet_screen.dart';
 import 'support/support_home_screen.dart';

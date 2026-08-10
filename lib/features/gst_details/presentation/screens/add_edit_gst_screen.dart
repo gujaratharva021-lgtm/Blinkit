@@ -23,6 +23,8 @@ class _AddEditGstScreenState extends State<AddEditGstScreen> {
   late final TextEditingController _businessName;
   late final TextEditingController _businessAddress;
 
+  bool _isSubmitting = false;
+
   bool get isEditing => widget.existing != null;
 
   @override
@@ -43,7 +45,15 @@ class _AddEditGstScreenState extends State<AddEditGstScreen> {
   }
 
   Future<void> _submit() async {
-    if (!_formKey.currentState!.validate()) return;
+    // Guard against a fast double-tap firing this twice before the
+    // isSaving-driven rebuild has a chance to disable the button.
+    if (_isSubmitting) return;
+    _isSubmitting = true;
+
+    if (!_formKey.currentState!.validate()) {
+      _isSubmitting = false;
+      return;
+    }
 
     final provider = context.read<GstProvider>();
     final entity = GstEntity(
@@ -57,6 +67,7 @@ class _AddEditGstScreenState extends State<AddEditGstScreen> {
         ? await provider.updateGst(entity)
         : await provider.addGst(entity);
 
+    _isSubmitting = false;
     if (!mounted) return;
     if (ok) {
       Navigator.pop(context);
@@ -130,4 +141,3 @@ class UpperCaseTextFormatter extends TextInputFormatter {
     return newValue.copyWith(text: newValue.text.toUpperCase());
   }
 }
-

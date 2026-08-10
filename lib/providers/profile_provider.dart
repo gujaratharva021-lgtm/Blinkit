@@ -1,5 +1,4 @@
-﻿import 'dart:io';
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import '../data/models/user_profile_model.dart';
 import '../data/repositories/profile_repository.dart';
 
@@ -11,18 +10,19 @@ class ProfileProvider extends ChangeNotifier {
   UserProfileModel? profile;
   ProfileStatus status = ProfileStatus.idle;
   String? errorMessage;
-  File? pendingAvatarFile;
+  String? pendingAvatarId;
 
   Future<void> load() async {
     status = ProfileStatus.loading;
     notifyListeners();
     profile = await _repo.fetchProfile();
+    pendingAvatarId = profile?.avatarId;
     status = ProfileStatus.idle;
     notifyListeners();
   }
 
-  void setPendingAvatar(File file) {
-    pendingAvatarFile = file;
+  void setPendingAvatar(String avatarId) {
+    pendingAvatarId = avatarId;
     notifyListeners();
   }
 
@@ -59,7 +59,7 @@ class ProfileProvider extends ChangeNotifier {
         email: email?.trim(),
         gender: gender,
         dob: dob,
-        avatarPath: pendingAvatarFile?.path,
+        avatarId: pendingAvatarId,
       );
       profile = await _repo.updateProfile(updated);
       status = ProfileStatus.success;

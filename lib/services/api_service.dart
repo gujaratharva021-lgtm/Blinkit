@@ -252,7 +252,7 @@ class ApiService {
 
   static Future<Map<String, dynamic>> cancelOrder(int orderId) async {
     final headers = await getHeaders();
-    final response = await http.post(
+    final response = await http.put(
       Uri.parse('$baseUrl/orders/$orderId/cancel'),
       headers: headers,
     );

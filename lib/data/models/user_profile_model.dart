@@ -4,7 +4,7 @@
   final String phone;
   final String gender;
   final DateTime? dob;
-  final String? avatarPath;
+  final String? avatarId;
 
   UserProfileModel({
     required this.name,
@@ -12,7 +12,7 @@
     required this.phone,
     required this.gender,
     this.dob,
-    this.avatarPath,
+    this.avatarId,
   });
 
   factory UserProfileModel.fromJson(Map<String, dynamic> json) {
@@ -22,7 +22,7 @@
       phone: json['phone'] ?? '',
       gender: json['gender'] ?? 'Not specified',
       dob: json['dob'] != null ? DateTime.tryParse(json['dob']) : null,
-      avatarPath: json['avatarPath'],
+      avatarId: json['avatarId'] ?? json['avatarPath'],
     );
   }
 
@@ -32,7 +32,7 @@
         'phone': phone,
         'gender': gender,
         'dob': dob?.toIso8601String(),
-        'avatarPath': avatarPath,
+        'avatarId': avatarId,
       };
 
   UserProfileModel copyWith({
@@ -41,7 +41,7 @@
     String? phone,
     String? gender,
     DateTime? dob,
-    String? avatarPath,
+    String? avatarId,
   }) {
     return UserProfileModel(
       name: name ?? this.name,
@@ -49,7 +49,7 @@
       phone: phone ?? this.phone,
       gender: gender ?? this.gender,
       dob: dob ?? this.dob,
-      avatarPath: avatarPath ?? this.avatarPath,
+      avatarId: avatarId ?? this.avatarId,
     );
   }
 }

@@ -28,7 +28,11 @@ class GstMockDataSource {
         type: DioExceptionType.connectionError,
       );
     }
-    return _loadSeed();
+    // Return a copy, not the live cache reference -- otherwise the caller's
+    // list and our internal cache are the same object in memory, so later
+    // mutating the cache in addGst() silently mutates the caller's list too.
+    final seed = await _loadSeed();
+    return List<GstModel>.from(seed);
   }
 
   Future<GstModel> addGst(GstModel gst) async {
@@ -53,4 +57,3 @@ class GstMockDataSource {
     return true;
   }
 }
-

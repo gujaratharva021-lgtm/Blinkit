@@ -1,6 +1,7 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/profile_provider.dart';
+import '../../core/avatar/avatar_catalog.dart';
 import '../../widgets/avatar_picker_sheet.dart';
 
 const Color kGreen = Color(0xFF0C831F);
@@ -54,22 +55,20 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
               Center(
                 child: GestureDetector(
                   onTap: () async {
-                    final file = await AvatarPickerSheet.show(context);
-                    if (file != null) {
-                      context.read<ProfileProvider>().setPendingAvatar(file);
+                    final avatarId = await AvatarPickerSheet.show(
+                      context,
+                      currentAvatarId: provider.pendingAvatarId,
+                    );
+                    if (avatarId != null) {
+                      context.read<ProfileProvider>().setPendingAvatar(avatarId);
                     }
                   },
                   child: Stack(
                     children: [
-                      CircleAvatar(
+                      AvatarDisplay(
+                        avatarId: provider.pendingAvatarId,
+                        fallbackName: _nameCtrl.text,
                         radius: 48,
-                        backgroundColor: Colors.white,
-                        backgroundImage: provider.pendingAvatarFile != null
-                            ? FileImage(provider.pendingAvatarFile!)
-                            : null,
-                        child: provider.pendingAvatarFile == null
-                            ? const Icon(Icons.person, size: 48, color: kGreen)
-                            : null,
                       ),
                       const Positioned(
                         bottom: 0,
@@ -77,7 +76,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         child: CircleAvatar(
                           radius: 15,
                           backgroundColor: kGreen,
-                          child: Icon(Icons.camera_alt,
+                          child: Icon(Icons.edit,
                               size: 16, color: Colors.white),
                         ),
                       ),

@@ -16,6 +16,10 @@ import 'product_detail_screen.dart';
 import '../widgets/wishlist_intro_sheet.dart';
 import '../features/category_nav/screens/home_category_sections.dart';
 import 'notifications/notification_list_screen.dart';
+import '../features/category_nav/data/category_mock_data.dart';
+import '../features/category_nav/models/category_models.dart';
+import '../features/category_nav/routes/category_nav_routes.dart';
+import '../features/category_nav/widgets/product_card.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool showWishlistIntro;
@@ -121,10 +125,12 @@ class _HomeScreenState extends State<HomeScreen> {
     final cart = context.watch<CartProvider>();
     return Scaffold(
       backgroundColor: Theme.of(context).colorScheme.surface,
-      body: SingleChildScrollView(
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+      body: CustomScrollView(
+        slivers: [
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
             Container(
               decoration: const BoxDecoration(
                 gradient: LinearGradient(
@@ -276,8 +282,15 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildProductSection('Ketchup', 'Ketchup'),
 
             _buildSlidingPromoSection(),
-
-            _buildFeaturedProductsGrid(),
+              ],
+            ),
+          ),
+          _buildFeaturedProductsHeaderSliver(),
+          _buildFeaturedProductsSliverGrid(),
+          SliverToBoxAdapter(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
 
             _buildProductSection('Shampoo', 'Shampoo'),
             _buildProductSection('Soap', 'Soap'),
@@ -287,8 +300,10 @@ class _HomeScreenState extends State<HomeScreen> {
             _buildProductSection('Toys', 'Toys'),
             _buildProductSection('Clothes', 'Clothes'),
             const SizedBox(height: 80),
-          ],
-        ),
+              ],
+            ),
+          ),
+        ],
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -649,6 +664,15 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
+  CategoryModel? _findCategoryById(String id) {
+    for (final section in CategoryMockData.sections) {
+      for (final cat in section.categories) {
+        if (cat.id == id) return cat;
+      }
+    }
+    return null;
+  }
+
   Widget _promoTile(String categoryId, String label, String imagePath, Color color) {
     return GestureDetector(
       onTap: () {
@@ -888,28 +912,32 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildFeaturedProductsGrid() {
+  Widget _buildFeaturedProductsHeaderSliver() {
     final products = context.watch<ProductProvider>().products;
-    if (products.isEmpty) return const SizedBox();
-    return Padding(
-      padding: const EdgeInsets.fromLTRB(12, 8, 12, 8),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text('Recommended for you',
-              style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
-          const SizedBox(height: 10),
-          GridView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: products.length,
-            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 3,
-              childAspectRatio: 0.46,
-              crossAxisSpacing: 10,
-              mainAxisSpacing: 10,
-            ),
-            itemBuilder: (context, index) {
+    if (products.isEmpty) return const SliverToBoxAdapter(child: SizedBox());
+    return SliverToBoxAdapter(
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(12, 8, 12, 0),
+        child: Text('Recommended for you',
+            style: GoogleFonts.poppins(fontSize: 16, fontWeight: FontWeight.bold)),
+      ),
+    );
+  }
+
+  Widget _buildFeaturedProductsSliverGrid() {
+    final products = context.watch<ProductProvider>().products;
+    if (products.isEmpty) return const SliverToBoxAdapter(child: SizedBox());
+    return SliverPadding(
+      padding: const EdgeInsets.fromLTRB(12, 10, 12, 8),
+      sliver: SliverGrid(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          childAspectRatio: 0.46,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+        ),
+        delegate: SliverChildBuilderDelegate(
+          (context, index) {
               final product = products[index];
               final cart = context.watch<CartProvider>();
               final qty = cart.getQuantityByProductId(product['id']);
@@ -987,9 +1015,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
               );
-            },
-          ),
-        ],
+          },
+          childCount: products.length,
+        ),
       ),
     );
   }

@@ -1,10 +1,11 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart';
 import '../features/wishlist/presentation/providers/wishlist_provider.dart';
 import '../features/wishlist/domain/entities/wishlist_item_entity.dart';
+import 'cart_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   final Map<String, dynamic> product;
@@ -535,33 +536,37 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
               ),
               child: Row(
                 children: [
-                  Container(
-                    width: 56, height: 56,
-                    decoration: BoxDecoration(
-                      border: Border.all(color: Colors.grey.shade300),
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    child: Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Icon(Icons.shopping_cart_outlined,
-                            color: Theme.of(context).colorScheme.onSurface),
-                        if (cart.cartCount > 0)
-                          Positioned(
-                            top: 4, right: 4,
-                            child: Container(
-                              width: 16, height: 16,
-                              decoration: const BoxDecoration(
-                                  color: Color(0xFF0C831F),
-                                  shape: BoxShape.circle),
-                              child: Center(
-                                child: Text('${cart.cartCount}',
-                                    style: const TextStyle(
-                                        color: Colors.white, fontSize: 10)),
+                  GestureDetector(
+                    onTap: () => Navigator.push(
+                        context, MaterialPageRoute(builder: (_) => const CartScreen())),
+                    child: Container(
+                      width: 56, height: 56,
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.grey.shade300),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Icon(Icons.shopping_cart_outlined,
+                              color: Theme.of(context).colorScheme.onSurface),
+                          if (cart.cartCount > 0)
+                            Positioned(
+                              top: 4, right: 4,
+                              child: Container(
+                                width: 16, height: 16,
+                                decoration: const BoxDecoration(
+                                    color: Color(0xFF0C831F),
+                                    shape: BoxShape.circle),
+                                child: Center(
+                                  child: Text('${cart.cartCount}',
+                                      style: const TextStyle(
+                                          color: Colors.white, fontSize: 10)),
+                                ),
                               ),
                             ),
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -652,3 +657,4 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     );
   }
 }
+

@@ -4,14 +4,18 @@
 //
 // All seller/company details below are PLACEHOLDERS. Update them with your
 // real registered business details before using this for actual orders.
+import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:intl/intl.dart';
+import 'package:media_store_plus/media_store_plus.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pdf/pdf.dart';
 import 'package:pdf/widgets.dart' as pw;
 import 'package:printing/printing.dart';
 
 import '../models/order_model.dart';
+import 'download_notification_service.dart';
 
 /// Edit these with GoFresh's real registered business details.
 class InvoiceSellerConfig {
@@ -359,8 +363,15 @@ class InvoiceGenerator {
     return doc.save();
   }
 
-  /// Generates the invoice PDF and opens the platform share/print/download sheet.
-  static Future<void> downloadInvoice({
+  /// Generates the invoice PDF and actually saves it to the phone's public
+  /// Downloads folder (Android), showing a "Download complete" notification
+  /// that opens the file on tap — instead of only opening a share sheet.
+  ///
+  /// On platforms without a public Downloads folder (iOS/desktop), it falls
+  /// back to the share/print sheet so the user can save it wherever they like.
+  ///
+  /// Returns the saved file's path (or a content URI / filename fallback).
+  static Future<String> downloadInvoice({
     required Order order,
     required String customerName,
     String? placeOfSupply,
@@ -370,6 +381,50 @@ class InvoiceGenerator {
       customerName: customerName,
       placeOfSupply: placeOfSupply,
     );
-    await Printing.sharePdf(bytes: bytes, filename: 'GoFresh_Invoice_${order.id}.pdf');
+    final fileName = 'GoFresh_Invoice_${order.id}.pdf';
+
+    if (Platform.isAndroid) {
+      // media_store_plus needs the file to exist somewhere first (e.g. app's
+      // temp folder); it then copies it into the public Downloads folder via
+      // MediaStore and deletes nothing on our side — we clean up ourselves.
+      final tempDir = await getTemporaryDirectory();
+      final tempFile = File('${tempDir.path}/$fileName');
+      await tempFile.writeAsBytes(bytes, flush: true);
+
+      final mediaStore = MediaStore();
+      SaveInfo? saveInfo;
+      try {
+        saveInfo = await mediaStore.saveFile(
+          tempFilePath: tempFile.path,
+          dirType: DirType.download,
+          dirName: DirName.download,
+        );
+      } finally {
+        if (await tempFile.exists()) {
+          await tempFile.delete();
+        }
+      }
+
+      if (saveInfo == null) {
+        throw Exception('Could not save invoice to Downloads');
+      }
+
+      // Try to resolve a real filesystem path so tapping the notification
+      // can open the file directly with open_filex.
+      final filePath = await mediaStore.getFilePathFromUri(
+        uriString: saveInfo.uri.toString(),
+      );
+      final openablePath = filePath ?? saveInfo.uri.toString();
+
+      await DownloadNotificationService.showDownloadComplete(
+        fileName: saveInfo.name,
+        filePath: openablePath,
+      );
+
+      return openablePath;
+    } else {
+      await Printing.sharePdf(bytes: bytes, filename: fileName);
+      return fileName;
+    }
   }
 }

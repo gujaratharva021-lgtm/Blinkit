@@ -28,8 +28,20 @@ class _OrderScreenState extends State<OrderScreen> {
       final profile = context.read<ProfileProvider>().profile;
       final customerName =
           (profile?.name.trim().isNotEmpty ?? false) ? profile!.name : 'Customer';
-      await InvoiceGenerator.downloadInvoice(order: order, customerName: customerName);
+      final savedPath = await InvoiceGenerator.downloadInvoice(order: order, customerName: customerName);
+      final saved = savedPath.isNotEmpty;
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(
+            saved ? 'Invoice saved to Downloads' : 'Could not save invoice',
+            style: GoogleFonts.poppins(),
+          ),
+          backgroundColor: saved ? Colors.green : Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
     } catch (e) {
+      debugPrint('INVOICE ERROR: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text('Could not generate invoice', style: GoogleFonts.poppins()),

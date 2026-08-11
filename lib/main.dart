@@ -1,4 +1,7 @@
-﻿import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:flutter/material.dart';
+import 'package:media_store_plus/media_store_plus.dart';
+import 'utils/download_notification_service.dart';
 import 'package:provider/provider.dart';
 import 'services/push_notification_service.dart';
 import 'core/theme/theme_provider.dart';
@@ -35,6 +38,11 @@ void main() async {
   } catch (e) {
     print('Push notification init failed: $e');
   }
+  if (Platform.isAndroid) {
+    await MediaStore.ensureInitialized();
+    MediaStore.appFolder = 'GoFresh';
+  }
+  await DownloadNotificationService.initialize();
   runApp(MyApp(themeProvider: themeProvider));
 }
 

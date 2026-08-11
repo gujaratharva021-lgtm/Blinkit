@@ -32,7 +32,18 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
       final profile = context.read<ProfileProvider>().profile;
       final customerName =
           (profile?.name.trim().isNotEmpty ?? false) ? profile!.name : 'Customer';
-      await InvoiceGenerator.downloadInvoice(order: order, customerName: customerName);
+      final saved = await InvoiceGenerator.downloadInvoice(order: order, customerName: customerName);
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              saved ? 'Invoice saved to Downloads' : 'Could not save invoice',
+              style: GoogleFonts.poppins(),
+            ),
+            backgroundColor: saved ? Colors.green : Colors.red,
+          ),
+        );
+      }
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -144,7 +155,7 @@ class _OrderDetailsScreenState extends State<OrderDetailsScreen> {
                       children: [
                         Text(item.name,
                             style: GoogleFonts.poppins(fontSize: 13, fontWeight: FontWeight.w600, color: scheme.onSurface)),
-                        Text('${item.unit} × ${item.quantity}',
+                        Text('${item.unit} Ã— ${item.quantity}',
                             style: GoogleFonts.poppins(fontSize: 11, color: scheme.onSurface.withOpacity(0.6))),
                       ],
                     ),

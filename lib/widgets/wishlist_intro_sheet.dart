@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 const Color kBrandGreen = Color(0xFF0C831F);
@@ -28,11 +28,11 @@ class WishlistIntroSheet extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              _card(),
+              _card('assets/images/wishlist_intro/card1.png'),
               const SizedBox(width: 12),
-              _card(highlighted: true),
+              _card('assets/images/wishlist_intro/card2.png', highlighted: true),
               const SizedBox(width: 12),
-              _card(),
+              _card('assets/images/wishlist_intro/card3.png'),
             ],
           ),
           const SizedBox(height: 24),
@@ -64,13 +64,17 @@ class WishlistIntroSheet extends StatelessWidget {
     );
   }
 
-  Widget _card({bool highlighted = false}) {
+  Widget _card(String imagePath, {bool highlighted = false}) {
     return Container(
       width: 80,
       height: 90,
       decoration: BoxDecoration(
         color: highlighted ? const Color(0xFFFCE4E4) : const Color(0xFFF3F3F3),
         borderRadius: BorderRadius.circular(12),
+        image: DecorationImage(
+          image: AssetImage(imagePath),
+          fit: BoxFit.cover,
+        ),
       ),
       alignment: Alignment.topRight,
       padding: const EdgeInsets.all(8),

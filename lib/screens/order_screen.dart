@@ -1,4 +1,4 @@
-import 'package:flutter/material.dart';
+﻿import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/order_provider.dart';
@@ -28,8 +28,7 @@ class _OrderScreenState extends State<OrderScreen> {
       final profile = context.read<ProfileProvider>().profile;
       final customerName =
           (profile?.name.trim().isNotEmpty ?? false) ? profile!.name : 'Customer';
-      final savedPath = await InvoiceGenerator.downloadInvoice(order: order, customerName: customerName);
-      final saved = savedPath.isNotEmpty;
+      final saved = await InvoiceGenerator.downloadInvoice(order: order, customerName: customerName);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(

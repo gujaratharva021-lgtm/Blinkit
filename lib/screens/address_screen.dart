@@ -8,6 +8,7 @@ import '../providers/cart_provider.dart';
 import '../services/api_service.dart';
 import 'order_screen.dart';
 import '../services/location_service.dart';
+import 'location_picker_screen.dart';
 
 class AddressScreen extends StatefulWidget {
   final List<Map<String, dynamic>> items;
@@ -203,6 +204,7 @@ class _AddressScreenState extends State<AddressScreen> {
   // For 'cod' this is the whole flow (no Razorpay). For 'online' this
   // creates the order then opens Razorpay checkout.
   void _placeOrder() async {
+    if (_isLoading) return; // guard: ignore double-tap while a checkout is already in flight
     setState(() => _isLoading = true);
     try {
       int? addressId = _addresses[_selectedAddress]['backend_id'];
@@ -256,22 +258,33 @@ class _AddressScreenState extends State<AddressScreen> {
       };
       _razorpay.open(options);
     } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text('Error: $e', style: GoogleFonts.poppins()),
-        backgroundColor: Colors.red,
-        behavior: SnackBarBehavior.floating,
-      ));
+      final message = e.toString();
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: $message', style: GoogleFonts.poppins()),
+          backgroundColor: Colors.red,
+          behavior: SnackBarBehavior.floating,
+        ));
+      }
+      if (message.contains('cart is empty')) {
+        // Local cart snapshot was stale (server already emptied it, e.g.
+        // an earlier order already went through). Re-sync and back out of
+        // checkout instead of leaving the user stuck retrying.
+        await context.read<CartProvider>().loadCart();
+        if (mounted) Navigator.pop(context);
+      }
     }
-    setState(() => _isLoading = false);
+    if (mounted) setState(() => _isLoading = false);
   }
 
   void _showAddressSheet({int? editIndex}) {
     final existing = editIndex != null ? _addresses[editIndex] : null;
 
-    final nameController = TextEditingController(text: existing?['name'] ?? '');
-    final addressController = TextEditingController(text: existing?['address'] ?? '');
+    final receiverNameController = TextEditingController(text: existing?['name'] ?? '');
+    final houseController = TextEditingController(text: existing?['house'] ?? existing?['address'] ?? '');
+    final buildingController = TextEditingController(text: existing?['building'] ?? '');
     final cityController = TextEditingController(text: existing?['city'] ?? '');
-    final phoneController = TextEditingController(text: existing?['phone'] ?? '');
+    final receiverPhoneController = TextEditingController(text: existing?['phone'] ?? '');
     String selectedType = existing?['type'] ?? 'Home';
     double? capturedLat = (existing?['lat'] as num?)?.toDouble();
     double? capturedLng = (existing?['lng'] as num?)?.toDouble();
@@ -337,18 +350,19 @@ class _AddressScreenState extends State<AddressScreen> {
                   ),
                   const SizedBox(height: 16),
 
-                  _buildTextField(nameController, 'Full Name', Icons.person_outline),
+                  _buildTextField(buildingController, 'Building & Block No. (Optional)',
+                      Icons.apartment_outlined),
                   const SizedBox(height: 12),
-                  _buildTextField(phoneController, 'Phone Number', Icons.phone_outlined,
-                      keyboardType: TextInputType.phone),
-                  const SizedBox(height: 12),
-                  _buildTextField(addressController, 'Flat, Street, Area',
-                      Icons.location_on_outlined, maxLines: 2),
+                  _buildTextField(houseController, 'House No. & Floor',
+                      Icons.home_outlined),
                   const SizedBox(height: 12),
                   _buildTextField(cityController, 'City, State, Pincode',
                       Icons.location_city_outlined),
                   const SizedBox(height: 12),
-                  Row(
+                  Wrap(
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    spacing: 8,
+                    runSpacing: 8,
                     children: [
                       GestureDetector(
                         onTap: isLocatingModal
@@ -364,7 +378,7 @@ class _AddressScreenState extends State<AddressScreen> {
                                     capturedLat = result.latitude;
                                     capturedLng = result.longitude;
                                     if (result.streetLine.isNotEmpty) {
-                                      addressController.text = result.streetLine;
+                                      houseController.text = result.streetLine;
                                     }
                                     if (result.cityLine.isNotEmpty) {
                                       cityController.text = result.cityLine;
@@ -397,11 +411,53 @@ class _AddressScreenState extends State<AddressScreen> {
                           ),
                         ),
                       ),
-                      if (capturedLat != null && capturedLng != null) ...[
-                        const SizedBox(width: 8),
+                      GestureDetector(
+                        onTap: () async {
+                          final picked = await Navigator.push<PickedLocation>(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => LocationPickerScreen(
+                                initialLat: capturedLat,
+                                initialLng: capturedLng,
+                              ),
+                            ),
+                          );
+                          if (picked != null) {
+                            setModalState(() {
+                              capturedLat = picked.lat;
+                              capturedLng = picked.lng;
+                              if (picked.streetLine.isNotEmpty) {
+                                houseController.text = picked.streetLine;
+                              }
+                              if (picked.cityLine.isNotEmpty) {
+                                cityController.text = picked.cityLine;
+                              }
+                              locationErrorModal = null;
+                            });
+                          }
+                        },
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.grey.shade300),
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.map_outlined, size: 14, color: Color(0xFF0C831F)),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Select on map',
+                                style: GoogleFonts.poppins(fontSize: 12, color: const Color(0xFF0C831F)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                      if (capturedLat != null && capturedLng != null)
                         Text('Location captured',
                             style: GoogleFonts.poppins(fontSize: 11, color: Colors.green)),
-                      ],
                     ],
                   ),
                   if (locationErrorModal != null)
@@ -412,12 +468,22 @@ class _AddressScreenState extends State<AddressScreen> {
                     ),
                   const SizedBox(height: 24),
 
+                  Text('Receiver details',
+                      style: GoogleFonts.poppins(
+                          fontSize: 15, fontWeight: FontWeight.bold)),
+                  const SizedBox(height: 12),
+                  _buildTextField(receiverNameController, "Receiver's Name",
+                      Icons.person_outline),
+                  const SizedBox(height: 12),
+                  _buildPhoneField(receiverPhoneController),
+                  const SizedBox(height: 24),
+
                   SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (nameController.text.isEmpty ||
-                            addressController.text.isEmpty) {
+                        if (receiverNameController.text.isEmpty ||
+                            houseController.text.isEmpty) {
                           ScaffoldMessenger.of(context).showSnackBar(SnackBar(
                             content: Text('Please fill all fields',
                                 style: GoogleFonts.poppins()),
@@ -427,13 +493,20 @@ class _AddressScreenState extends State<AddressScreen> {
                           return;
                         }
 
+                        final combinedAddress = [
+                          houseController.text,
+                          buildingController.text,
+                        ].where((s) => s.trim().isNotEmpty).join(', ');
+
                         final newAddress = {
                           'type': selectedType,
                           'icon': _iconFromType(selectedType),
-                          'name': nameController.text,
-                          'address': addressController.text,
+                          'name': receiverNameController.text,
+                          'house': houseController.text,
+                          'building': buildingController.text,
+                          'address': combinedAddress,
                           'city': cityController.text,
-                          'phone': phoneController.text,
+                          'phone': receiverPhoneController.text,
                           'lat': capturedLat,
                           'lng': capturedLng,
                         };
@@ -499,6 +572,43 @@ class _AddressScreenState extends State<AddressScreen> {
         hintText: hint,
         hintStyle: GoogleFonts.poppins(color: Colors.grey, fontSize: 13),
         prefixIcon: Icon(icon, color: const Color(0xFF0C831F), size: 20),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: const BorderSide(color: Color(0xFF0C831F), width: 2),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+      ),
+    );
+  }
+
+  Widget _buildPhoneField(TextEditingController controller) {
+    return TextField(
+      controller: controller,
+      keyboardType: TextInputType.phone,
+      maxLength: 10,
+      style: GoogleFonts.poppins(fontSize: 14),
+      decoration: InputDecoration(
+        counterText: '',
+        hintText: "Receiver's Phone Number",
+        hintStyle: GoogleFonts.poppins(color: Colors.grey, fontSize: 13),
+        prefixIcon: Container(
+          width: 64,
+          alignment: Alignment.center,
+          child: Text('+91',
+              style: GoogleFonts.poppins(
+                  fontSize: 14,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.w500)),
+        ),
+        prefixIconConstraints: const BoxConstraints(minWidth: 0, minHeight: 0),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide(color: Colors.grey.shade300),

@@ -1,10 +1,11 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../services/api_service.dart';
 import '../providers/settings_provider.dart';
 import '../providers/profile_provider.dart';
+import '../providers/cart_provider.dart';
 import '../core/avatar/avatar_catalog.dart';
 import 'login_screen.dart';
 import 'profile/edit_profile_screen.dart';
@@ -394,6 +395,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 await prefs.clear();
                 if (context.mounted) {
                   context.read<SettingsProvider>().clear();
+                  context.read<CartProvider>().clearCartLocal();
                   Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(builder: (_) => const LoginScreen()),

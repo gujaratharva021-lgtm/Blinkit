@@ -1,9 +1,11 @@
-﻿import 'dart:async';
+import 'dart:async';
 import 'package:flutter/material.dart';
 import '../services/api_service.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:provider/provider.dart';
+import '../providers/cart_provider.dart';
 import 'home_screen.dart';
 
 const Color kBrandGreen = Color(0xFF0C831F);
@@ -83,6 +85,9 @@ class _OtpScreenState extends State<OtpScreen> {
       if (data['token'] != null) {
         final prefs = await SharedPreferences.getInstance();
         await prefs.setString('user_phone', widget.phone);
+        if (mounted) {
+          await context.read<CartProvider>().loadCart();
+        }
         if (mounted) {
           Navigator.pushAndRemoveUntil(
             context,

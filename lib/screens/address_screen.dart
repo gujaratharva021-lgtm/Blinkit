@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import 'package:razorpay_flutter/razorpay_flutter.dart';
@@ -363,6 +363,12 @@ class _AddressScreenState extends State<AddressScreen> {
                                   setModalState(() {
                                     capturedLat = result.latitude;
                                     capturedLng = result.longitude;
+                                    if (result.streetLine.isNotEmpty) {
+                                      addressController.text = result.streetLine;
+                                    }
+                                    if (result.cityLine.isNotEmpty) {
+                                      cityController.text = result.cityLine;
+                                    }
                                     isLocatingModal = false;
                                   });
                                 } catch (e) {

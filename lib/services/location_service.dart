@@ -1,26 +1,23 @@
 import 'package:geolocator/geolocator.dart';
 import 'package:geocoding/geocoding.dart';
 
-/// Result of a location lookup: a short display line (e.g. "Andheri West,
-/// Mumbai") plus raw coordinates in case they're needed later (e.g. to
-/// save with an address).
 class CurrentLocationResult {
   final String displayAddress;
   final double latitude;
   final double longitude;
+  final String streetLine;
+  final String cityLine;
 
   CurrentLocationResult({
     required this.displayAddress,
     required this.latitude,
     required this.longitude,
+    this.streetLine = '',
+    this.cityLine = '',
   });
 }
 
 class LocationService {
-  /// Requests permission (if needed), fetches the device's current GPS
-  /// position, and reverse-geocodes it into a short human-readable address.
-  /// Throws a descriptive Exception if permission is denied or location
-  /// services are off, so the caller can show a helpful message.
   static Future<CurrentLocationResult> getCurrentLocation() async {
     final serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
@@ -44,6 +41,8 @@ class LocationService {
     );
 
     String display = 'Current location';
+    String streetLine = '';
+    String cityLine = '';
     try {
       final placemarks = await placemarkFromCoordinates(
         position.latitude,
@@ -57,16 +56,28 @@ class LocationService {
         if (parts.isNotEmpty) {
           display = parts.join(', ');
         }
+
+        streetLine = [p.subThoroughfare, p.thoroughfare, p.subLocality]
+            .where((s) => s != null && s.isNotEmpty)
+            .join(', ');
+        if (streetLine.isEmpty && p.name != null && p.name!.isNotEmpty) {
+          streetLine = p.name!;
+        }
+
+        cityLine = [p.locality, p.administrativeArea, p.postalCode]
+            .where((s) => s != null && s.isNotEmpty)
+            .join(', ');
       }
     } catch (_) {
-      // Reverse geocoding failed (e.g. no internet) — fall back to a
-      // generic label; the coordinates are still returned and usable.
+      // Reverse geocoding failed - fall back to a generic label.
     }
 
     return CurrentLocationResult(
       displayAddress: display,
       latitude: position.latitude,
       longitude: position.longitude,
+      streetLine: streetLine,
+      cityLine: cityLine,
     );
   }
 }

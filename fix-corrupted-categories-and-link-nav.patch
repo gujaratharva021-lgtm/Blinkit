@@ -1,0 +1,95 @@
+﻿diff --git a/lib/features/category_nav/screens/home_category_sections.dart b/lib/features/category_nav/screens/home_category_sections.dart
+index 7202afd..2a0c13a 100644
+--- a/lib/features/category_nav/screens/home_category_sections.dart
++++ b/lib/features/category_nav/screens/home_category_sections.dart
+@@ -81,9 +81,43 @@ class _HomeCategorySectionsState extends State<HomeCategorySections> {
+               ),
+               itemBuilder: (context, index) {
+                 final category = section.categories[index];
++                const categoryScreenMap = {
++                  'cat_veg_fruits': 'Fruits',
++                  'cat_atta_rice_dal': 'Atta, Rice & Dal',
++                  'cat_oil_ghee_masala': 'Oil, Ghee & Masala',
++                  'cat_dairy_bread_eggs': 'Dairy, Bread & Eggs',
++                  'cat_bakery_biscuits': 'Bakery',
++                  'cat_dryfruits_cereals': 'Dry Fruits & Cereals',
++                  'cat_kitchenware': 'Kitchenware & Appliances',
++                  'cat_chicken_meat_fish': 'Chicken & Meat',
++                  'cat_chips_namkeen': 'Namkeen',
++                  'cat_sweets_choco': 'Chocolate',
++                  'cat_drinks_juices': 'Beverages',
++                  'cat_tea_coffee': 'Tea, Coffee & Milk Drinks',
++                  'cat_instant_food': 'Instant Food',
++                  'cat_sauces_spreads': 'Ketchup',
++                  'cat_paan_corner': 'Paan Corner',
++                  'cat_ice_creams': 'Ice Creams',
++                  'cat_bath_body': 'Soap',
++                  'cat_hair': 'Shampoo',
++                  'cat_skin_face': 'Skin & Face',
++                  'cat_feminine_hygiene': 'Feminine Hygiene',
++                  'cat_baby_care': 'Baby Care',
++                  'cat_health_pharma': 'Health & Pharma',
++                  'cat_home_lifestyle': 'Home & Lifestyle',
++                  'cat_cleaners_repellents': 'Cleaners & Repellents',
++                  'cat_electronics': 'Electronics',
++                  'cat_stationery_games': 'Stationery & Games',
++                };
+                 return CategoryTile(
+                   category: category,
+-                  onTap: () => CategoryNavRoutes.openCategory(context, category),
++                  onTap: () {
++                    final target = categoryScreenMap[category.id] ?? category.title;
++                    Navigator.push(
++                      context,
++                      MaterialPageRoute(builder: (_) => CategoriesScreen(initialCategory: target)),
++                    );
++                  },
+                 );
+               },
+             ),
+diff --git a/lib/screens/categories_screen.dart b/lib/screens/categories_screen.dart
+index 9c7e287..7778328 100644
+--- a/lib/screens/categories_screen.dart
++++ b/lib/screens/categories_screen.dart
+@@ -494,7 +494,6 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
+       {'name': 'Black and Grey Tshirts', 'price': 299, 'unit': '1 pc', 'category': 'Clothes', 'image': 'assets/images/cloths items/Black and Grey Tshirts.png'},
+       {'name': 'Blue and red Tshirt', 'price': 399, 'unit': '1 pc', 'category': 'Clothes', 'image': 'assets/images/cloths items/Blue and red Tshirt.png'},
+     ],
+-  };
+     'Atta, Rice & Dal': [
+       {'name': 'Aashirvaad Atta', 'price': 280, 'unit': '5kg', 'category': 'Atta, Rice & Dal', 'image': 'https://images.unsplash.com/photo-1509440159596-0249088772ff?w=300'},
+       {'name': 'India Gate Basmati Rice', 'price': 320, 'unit': '5kg', 'category': 'Atta, Rice & Dal', 'image': 'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=300'},
+@@ -614,6 +613,7 @@ class _CategoriesScreenState extends State<CategoriesScreen> {
+       {'name': 'Colour Pencils', 'price': 90, 'unit': '1 set', 'category': 'Stationery & Games', 'image': 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?w=300'},
+       {'name': 'Sketch Book', 'price': 80, 'unit': '1 pc', 'category': 'Stationery & Games', 'image': 'https://images.unsplash.com/photo-1519337265831-281ec6cc8514?w=300'},
+     ],
++  };
+ 
+   Widget _buildCategoryIcon(String imagePath) {
+     if (imagePath.startsWith('http')) {
+diff --git a/lib/screens/home_screen.dart b/lib/screens/home_screen.dart
+index 9014220..138473e 100644
+--- a/lib/screens/home_screen.dart
++++ b/lib/screens/home_screen.dart
+@@ -954,9 +954,18 @@ class _HomeScreenState extends State<HomeScreen> {
+   Widget _promoTile(String categoryId, String label, String imagePath, Color color) {
+     return GestureDetector(
+       onTap: () {
+-        final category = _findCategoryById(categoryId);
+-        if (category != null) {
+-          CategoryNavRoutes.openCategory(context, category);
++        const categoryScreenMap = {
++          'cat_veg_fruits': 'Fruits',
++          'cat_dairy_bread_eggs': 'Dairy, Bread & Eggs',
++          'cat_chips_namkeen': 'Namkeen',
++          'cat_cleaners_repellents': 'Cleaners & Repellents',
++        };
++        final target = categoryScreenMap[categoryId];
++        if (target != null) {
++          Navigator.push(
++            context,
++            MaterialPageRoute(builder: (_) => CategoriesScreen(initialCategory: target)),
++          );
+         }
+       },
+       behavior: HitTestBehavior.opaque,

@@ -1,0 +1,51 @@
+diff --git a/lib/screens/home_screen.dart b/lib/screens/home_screen.dart
+index eb6c591..60b05e5 100644
+--- a/lib/screens/home_screen.dart
++++ b/lib/screens/home_screen.dart
+@@ -749,7 +749,12 @@ class _HomeScreenState extends State<HomeScreen> {
+     ];
+ 
+     Widget eventCard(Map<String, dynamic> event, {double height = 96}) {
+-      return Container(
++      return GestureDetector(
++        onTap: () {
++          Navigator.push(context,
++              MaterialPageRoute(builder: (_) => const CategoriesScreen()));
++        },
++        child: Container(
+         height: height,
+         margin: const EdgeInsets.only(bottom: 8),
+         decoration: BoxDecoration(
+@@ -795,6 +800,7 @@ class _HomeScreenState extends State<HomeScreen> {
+             ),
+           ],
+         ),
++        ),
+       );
+     }
+ 
+@@ -954,12 +960,18 @@ class _HomeScreenState extends State<HomeScreen> {
+           viewportFraction: 0.88,
+         ),
+         items: _slidingPromoImages.map((imagePath) {
+-          return ClipRRect(
+-            borderRadius: BorderRadius.circular(16),
+-            child: Image.asset(
+-              imagePath,
+-              fit: BoxFit.cover,
+-              width: double.infinity,
++          return GestureDetector(
++            onTap: () {
++              Navigator.push(context,
++                  MaterialPageRoute(builder: (_) => const CategoriesScreen()));
++            },
++            child: ClipRRect(
++              borderRadius: BorderRadius.circular(16),
++              child: Image.asset(
++                imagePath,
++                fit: BoxFit.cover,
++                width: double.infinity,
++              ),
+             ),
+           );
+         }).toList(),

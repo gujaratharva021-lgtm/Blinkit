@@ -1,0 +1,27 @@
+﻿[
+  {
+    "id": "addr_1",
+    "fullName": "Rohan Mehta",
+    "mobileNumber": "9876543210",
+    "houseNumber": "Flat 402, Silver Oak Apartments",
+    "areaStreet": "MG Road",
+    "landmark": "Near City Mall",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "pincode": "411001",
+    "isDefault": true
+  },
+  {
+    "id": "addr_2",
+    "fullName": "Rohan Mehta",
+    "mobileNumber": "9876543210",
+    "houseNumber": "Office 12B, Tech Park",
+    "areaStreet": "Baner Road",
+    "landmark": "Opposite Metro Station",
+    "city": "Pune",
+    "state": "Maharashtra",
+    "pincode": "411045",
+    "isDefault": false
+  }
+]
+

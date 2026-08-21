@@ -32,11 +32,6 @@ class LocationService {
   }
 
   static Future<CurrentLocationResult> getCurrentLocation() async {
-    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-    if (!serviceEnabled) {
-      throw Exception('Please turn on location services to detect your address.');
-    }
-
     LocationPermission permission = await Geolocator.checkPermission();
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
@@ -46,6 +41,11 @@ class LocationService {
     }
     if (permission == LocationPermission.deniedForever) {
       throw Exception('Location permission permanently denied. Enable it from app settings.');
+    }
+
+    final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    if (!serviceEnabled) {
+      throw Exception('Please turn on location services to detect your address.');
     }
 
     final pos = await Geolocator.getCurrentPosition(

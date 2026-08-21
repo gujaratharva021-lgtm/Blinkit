@@ -4,11 +4,11 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
 import '../services/api_service.dart';
-import '../services/location_service.dart';
 import '../providers/cart_provider.dart';
 import '../providers/product_provider.dart';
 import '../constants/asset_constants.dart';
 import 'cart_screen.dart';
+import 'select_location_screen.dart';
 import 'search_screen.dart';
 import 'categories_screen.dart';
 import 'profile_screen.dart';
@@ -31,19 +31,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   int _currentIndex = 0;
   String _currentAddress = 'Mumbai, Maharashtra';
-  bool _loadingLocation = false;
 
-  Future<void> _fetchCurrentLocation() async {
-    setState(() => _loadingLocation = true);
-    try {
-      final result = await LocationService.getCurrentLocation();
-      if (mounted) setState(() => _currentAddress = result.displayAddress);
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(e.toString())));
-      }
-    } finally {
-      if (mounted) setState(() => _loadingLocation = false);
+  Future<void> _openSelectLocation() async {
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (_) => const SelectLocationScreen()),
+    );
+    if (result != null && result.trim().isNotEmpty && mounted) {
+      setState(() => _currentAddress = result);
     }
   }
 
@@ -167,11 +162,11 @@ class _HomeScreenState extends State<HomeScreen> {
                                 ],
                               ),
                               GestureDetector(
-                                onTap: _loadingLocation ? null : _fetchCurrentLocation,
+                                onTap: _openSelectLocation,
                                 child: Row(
                                 children: [
                                   const Icon(Icons.location_on, color: Colors.white, size: 14),
-                                  Flexible(child: Text(_loadingLocation ? 'Fetching...' : _currentAddress, overflow: TextOverflow.ellipsis,
+                                  Flexible(child: Text(_currentAddress, overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.poppins(
                                           color: Colors.white, fontSize: 13, fontWeight: FontWeight.bold))),
                                   const Icon(Icons.keyboard_arrow_down, color: Colors.white, size: 16),

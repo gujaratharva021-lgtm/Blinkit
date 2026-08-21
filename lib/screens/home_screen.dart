@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:provider/provider.dart';
+import '../services/api_service.dart';
 import '../services/location_service.dart';
 import '../providers/cart_provider.dart';
 import '../providers/product_provider.dart';
@@ -14,12 +15,10 @@ import 'profile_screen.dart';
 import 'product_detail_screen.dart';
 import '../widgets/wishlist_intro_sheet.dart';
 import '../features/category_nav/screens/home_category_sections.dart';
-import 'notifications/notification_list_screen.dart';
 import '../features/category_nav/data/category_mock_data.dart';
 import '../features/category_nav/models/category_models.dart';
 import '../features/category_nav/routes/category_nav_routes.dart';
 import '../features/category_nav/widgets/product_card.dart';
-import '../widgets/cart_floating_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   final bool showWishlistIntro;
@@ -54,12 +53,20 @@ class _HomeScreenState extends State<HomeScreen> {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (mounted) context.read<ProductProvider>().loadProducts();
     });
-    _fetchCurrentLocation();
     if (widget.showWishlistIntro) {
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted) showWishlistIntro(context);
       });
     }
+  }
+
+  String _cartImageUrl(dynamic item) {
+    final product = item['product'] ?? {};
+    final raw = product['image_url']?.toString() ?? '';
+    if (raw.isEmpty) return 'assets/images/placeholder.png';
+    if (raw.startsWith('http') || raw.startsWith('assets/')) return raw;
+    final host = ApiService.baseUrl.replaceAll('/api/v1', '');
+    return '$host$raw';
   }
 
   Widget _buildImage(String imagePath, {double height = 110}) {
@@ -176,11 +183,6 @@ class _HomeScreenState extends State<HomeScreen> {
                           ),
                           Row(
                             children: [
-                              IconButton(
-                                icon: const Icon(Icons.notifications_none_outlined, color: Colors.white),
-                                onPressed: () => Navigator.push(context,
-                                    MaterialPageRoute(builder: (_) => const NotificationListScreen())),
-                              ),
                               Stack(
                                 children: [
                                   IconButton(
@@ -327,8 +329,91 @@ class _HomeScreenState extends State<HomeScreen> {
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile'),
         ],
       ),
-      floatingActionButton: const CartFloatingBar(),
+      floatingActionButton: cart.cartCount > 0
+          ? Padding(
+              padding: const EdgeInsets.only(bottom: 14),
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  borderRadius: BorderRadius.circular(40),
+                  onTap: () => Navigator.push(context,
+                      MaterialPageRoute(builder: (_) => const CartScreen())),
+                  child: Container(
+                    height: 60,
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF0C831F),
+                      borderRadius: BorderRadius.circular(40),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.25),
+                          blurRadius: 10,
+                          offset: const Offset(0, 4),
+                        ),
+                      ],
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        _buildCartThumbnails(cart),
+                        const SizedBox(width: 12),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text('View cart',
+                                style: GoogleFonts.poppins(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15)),
+                            Text(
+                                '${cart.cartCount} item${cart.cartCount > 1 ? 's' : ''}',
+                                style: GoogleFonts.poppins(
+                                    color: Colors.white70, fontSize: 11)),
+                          ],
+                        ),
+                        const SizedBox(width: 18),
+                        const Icon(Icons.chevron_right,
+                            color: Colors.white, size: 22),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : null,
       floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+    );
+  }
+
+  Widget _buildCartThumbnails(CartProvider cart) {
+    final images = [
+      ...cart.items.map((item) => _cartImageUrl(item)),
+      ...cart.localCartItems.map((item) => (item['image'] ?? '').toString()),
+    ].take(2).toList();
+    return SizedBox(
+      width: images.length > 1 ? 54 : 40,
+      height: 40,
+      child: Stack(
+        children: [
+          for (int i = 0; i < images.length; i++)
+            Positioned(
+              left: i * 22.0,
+              child: Container(
+                width: 40,
+                height: 40,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: Colors.white,
+                  border: Border.all(color: Colors.white, width: 2),
+                ),
+                child: ClipOval(
+                  child: _buildImage(images[i], height: 40),
+                ),
+              ),
+            ),
+        ],
+      ),
     );
   }
 

@@ -1,12 +1,11 @@
-﻿import 'package:dio/dio.dart';
 import '../../../../core/utils/view_state.dart';
 import '../../domain/entities/address_entity.dart';
 import '../../domain/repositories/address_repository.dart';
-import '../datasources/address_mock_datasource.dart';
+import '../datasources/address_remote_datasource.dart';
 import '../models/address_model.dart';
 
 class AddressRepositoryImpl implements AddressRepository {
-  final AddressMockDataSource dataSource;
+  final AddressRemoteDataSource dataSource;
 
   AddressRepositoryImpl({required this.dataSource});
 
@@ -15,10 +14,8 @@ class AddressRepositoryImpl implements AddressRepository {
     try {
       final result = await dataSource.fetchAddresses();
       return Result.success(result);
-    } on DioException catch (e) {
-      return Result.failure(AppFailure(e.error?.toString() ?? 'Network error'));
     } catch (e) {
-      return Result.failure(AppFailure('Failed to load addresses'));
+      return Result.failure(AppFailure(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 
@@ -29,7 +26,7 @@ class AddressRepositoryImpl implements AddressRepository {
           await dataSource.addAddress(AddressModel.fromEntity(address));
       return Result.success(saved);
     } catch (e) {
-      return Result.failure(AppFailure('Failed to save address'));
+      return Result.failure(AppFailure(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 
@@ -40,7 +37,7 @@ class AddressRepositoryImpl implements AddressRepository {
           await dataSource.updateAddress(AddressModel.fromEntity(address));
       return Result.success(saved);
     } catch (e) {
-      return Result.failure(AppFailure('Failed to update address'));
+      return Result.failure(AppFailure(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 
@@ -50,7 +47,7 @@ class AddressRepositoryImpl implements AddressRepository {
       final ok = await dataSource.deleteAddress(id);
       return Result.success(ok);
     } catch (e) {
-      return Result.failure(AppFailure('Failed to delete address'));
+      return Result.failure(AppFailure(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 
@@ -60,8 +57,7 @@ class AddressRepositoryImpl implements AddressRepository {
       final ok = await dataSource.setDefaultAddress(id);
       return Result.success(ok);
     } catch (e) {
-      return Result.failure(AppFailure('Failed to set default address'));
+      return Result.failure(AppFailure(e.toString().replaceFirst('Exception: ', '')));
     }
   }
 }
-

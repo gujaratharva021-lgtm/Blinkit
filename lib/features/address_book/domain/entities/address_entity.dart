@@ -1,4 +1,4 @@
-﻿class AddressEntity {
+class AddressEntity {
   final String id;
   final String fullName;
   final String mobileNumber;
@@ -9,6 +9,8 @@
   final String state;
   final String pincode;
   final bool isDefault;
+  final double? latitude;
+  final double? longitude;
 
   const AddressEntity({
     required this.id,
@@ -21,6 +23,8 @@
     required this.state,
     required this.pincode,
     this.isDefault = false,
+    this.latitude,
+    this.longitude,
   });
 
   AddressEntity copyWith({
@@ -34,6 +38,8 @@
     String? state,
     String? pincode,
     bool? isDefault,
+    double? latitude,
+    double? longitude,
   }) {
     return AddressEntity(
       id: id ?? this.id,
@@ -46,10 +52,11 @@
       state: state ?? this.state,
       pincode: pincode ?? this.pincode,
       isDefault: isDefault ?? this.isDefault,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
     );
   }
 
   String get oneLineAddress =>
       '$houseNumber, $areaStreet${landmark.isNotEmpty ? ", $landmark" : ""}, $city, $state - $pincode';
 }
-

@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:uuid/uuid.dart';
@@ -6,6 +6,7 @@ import '../../../../core/validators/validators.dart';
 import '../../../../core/widgets/custom_text_field.dart';
 import '../../domain/entities/address_entity.dart';
 import '../providers/address_provider.dart';
+import '../../../../services/location_service.dart';
 
 class AddEditAddressScreen extends StatefulWidget {
   final AddressEntity? existing;
@@ -29,6 +30,31 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
   late final TextEditingController _pincode;
 
   bool get isEditing => widget.existing != null;
+  double? _latitude;
+  double? _longitude;
+  bool _isFetchingLocation = false;
+
+  Future<void> _useCurrentLocation() async {
+    setState(() => _isFetchingLocation = true);
+    try {
+      final result = await LocationService.getCurrentLocation();
+      setState(() {
+        _latitude = result.latitude;
+        _longitude = result.longitude;
+      });
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Location captured.')),
+      );
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(e.toString().replaceFirst('Exception: ', ''))),
+      );
+    } finally {
+      if (mounted) setState(() => _isFetchingLocation = false);
+    }
+  }
 
   @override
   void initState() {
@@ -42,6 +68,8 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
     _city = TextEditingController(text: e?.city ?? '');
     _state = TextEditingController(text: e?.state ?? '');
     _pincode = TextEditingController(text: e?.pincode ?? '');
+    _latitude = e?.latitude;
+    _longitude = e?.longitude;
   }
 
   @override
@@ -72,6 +100,8 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
       state: _state.text.trim(),
       pincode: _pincode.text.trim(),
       isDefault: widget.existing?.isDefault ?? false,
+      latitude: _latitude,
+      longitude: _longitude,
     );
 
     final ok = isEditing
@@ -99,6 +129,22 @@ class _AddEditAddressScreenState extends State<AddEditAddressScreen> {
         child: ListView(
           padding: const EdgeInsets.all(16),
           children: [
+            OutlinedButton.icon(
+              onPressed: _isFetchingLocation ? null : _useCurrentLocation,
+              icon: _isFetchingLocation
+                  ? const SizedBox(
+                      width: 16,
+                      height: 16,
+                      child: CircularProgressIndicator(strokeWidth: 2),
+                    )
+                  : const Icon(Icons.my_location),
+              label: Text(
+                _latitude != null
+                    ? 'Location captured'
+                    : 'Use Current Location',
+              ),
+            ),
+            const SizedBox(height: 14),
             CustomTextField(
               controller: _fullName,
               label: 'Full Name',

@@ -1,9 +1,9 @@
-﻿import 'dart:convert';
+import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ApiService {
-  static const String baseUrl = 'https://ecommerce-backend-dd4u.onrender.com/api/v1';
+  static const String baseUrl = 'https://98-92-212-18.sslip.io/api/v1';
 
   static const Duration _timeout = Duration(seconds: 30);
 

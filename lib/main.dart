@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:media_store_plus/media_store_plus.dart';
 import 'package:provider/provider.dart';
 import 'services/api_service.dart';
 import 'screens/login_screen.dart';
@@ -18,7 +19,7 @@ import 'features/wishlist/presentation/providers/wishlist_provider.dart';
 import 'features/category_nav/providers/category_nav_provider.dart';
 
 // Address Book
-import 'features/address_book/data/datasources/address_mock_datasource.dart';
+import 'features/address_book/data/datasources/address_remote_datasource.dart';
 import 'features/address_book/data/repositories/address_repository_impl.dart';
 import 'features/address_book/presentation/providers/address_provider.dart';
 
@@ -32,7 +33,10 @@ import 'features/gift_cards/data/datasources/gift_card_mock_datasource.dart';
 import 'features/gift_cards/data/repositories/gift_card_repository_impl.dart';
 import 'features/gift_cards/presentation/providers/gift_card_provider.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await MediaStore.ensureInitialized();
+  MediaStore.appFolder = "GoFresh";
   runApp(const MyApp());
 }
 
@@ -55,7 +59,7 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider(
           create: (_) => AddressProvider(
             repository: AddressRepositoryImpl(
-              dataSource: AddressMockDataSource(),
+              dataSource: AddressRemoteDataSource(),
             ),
           ),
         ),

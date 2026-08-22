@@ -203,7 +203,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Could not generate invoice', style: GoogleFonts.poppins()),
+          content: Text('Could not save invoice: ${e.toString().replaceFirst('Exception: ', '')}', style: GoogleFonts.poppins()),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ));
@@ -549,7 +549,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
 
             if (order.paymentMethod == 'online' && order.paymentStatus == 'pending') const SizedBox(height: 16),
 
-            if (order.paymentStatus == 'paid')
+            if (order.paymentStatus == 'paid' || order.paymentMethod == 'cod')
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(16),
@@ -609,7 +609,7 @@ class _OrderStatusScreenState extends State<OrderStatusScreen>
                 ),
               ),
 
-            if (order.paymentStatus == 'paid') const SizedBox(height: 16),
+            if (order.paymentStatus == 'paid' || order.paymentMethod == 'cod') const SizedBox(height: 16),
 
             InkWell(
               borderRadius: BorderRadius.circular(16),

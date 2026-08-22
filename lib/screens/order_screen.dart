@@ -1,4 +1,4 @@
-﻿import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:provider/provider.dart';
 import '../providers/order_provider.dart';
@@ -43,7 +43,7 @@ class _OrderScreenState extends State<OrderScreen> {
       debugPrint('INVOICE ERROR: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text('Could not generate invoice', style: GoogleFonts.poppins()),
+          content: Text('Could not save invoice: ${e.toString().replaceFirst('Exception: ', '')}', style: GoogleFonts.poppins()),
           backgroundColor: Colors.red,
           behavior: SnackBarBehavior.floating,
         ));
@@ -386,7 +386,7 @@ class _OrderScreenState extends State<OrderScreen> {
                           ),
                         ],
                       ),
-                      if (order.paymentStatus == 'paid') ...[
+                      if (order.paymentStatus == 'paid' || order.paymentMethod == 'cod') ...[
                         const SizedBox(height: 8),
                         SizedBox(
                           width: double.infinity,

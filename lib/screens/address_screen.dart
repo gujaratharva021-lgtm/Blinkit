@@ -204,6 +204,23 @@ class _AddressScreenState extends State<AddressScreen> {
   // For 'cod' this is the whole flow (no Razorpay). For 'online' this
   // creates the order then opens Razorpay checkout.
   void _placeOrder() async {
+    // Some catalog items (shown via the Categories tab's mock filler
+    // products) never sync to the backend cart - they only live in
+    // CartProvider.localCartItems. If the cart total shown to the user is
+    // made up entirely of these, checkout would silently fail with a
+    // confusing backend "cart is empty" error since nothing was ever
+    // actually added server-side. Catch that here with a clear message.
+    final cart = context.read<CartProvider>();
+    if (cart.items.isEmpty && cart.localCartItems.isNotEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Some items in your cart aren\'t available for purchase yet. Please remove them and add different products.',
+          ),
+        ),
+      );
+      return;
+    }
     setState(() => _isLoading = true);
     try {
       int? addressId = _addresses[_selectedAddress]['backend_id'];

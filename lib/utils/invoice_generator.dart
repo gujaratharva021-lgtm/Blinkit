@@ -6,9 +6,8 @@
 import 'dart:io';
 import 'dart:typed_data';
 
+import 'package:file_picker/file_picker.dart';
 import 'package:http/http.dart' as http;
-import 'package:media_store_plus/media_store_plus.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:printing/printing.dart';
 
 import '../models/order_model.dart';
@@ -34,55 +33,48 @@ class InvoiceGenerator {
     return response.bodyBytes;
   }
 
-  /// Downloads the invoice PDF and saves it to the phone's public Downloads
-  /// folder (Android), showing a "Download complete" notification that
-  /// opens the file on tap. On platforms without a public Downloads folder
-  /// (iOS/desktop), falls back to the share/print sheet.
-  ///
+  /// Downloads the invoice PDF and lets the user save it via the native
+  /// "Save As" picker (Android/iOS/desktop). This avoids MediaStore/scoped
+  /// storage permission quirks entirely - no storage permission is needed
+  /// because the OS handles the write itself once the user picks a
+  /// location. Falls back to the share/print sheet if the user cancels the
+  /// picker on platforms where that makes sense.
   /// Returns true if the file was saved/shared successfully.
   static Future<bool> downloadInvoice({
     required Order order,
     required String customerName,
   }) async {
     final bytes = await fetchInvoicePdf(order);
-    final fileName = 'Invoice_Order${order.id}.pdf';
+    final fileName = 'Invoice_Order${order.id}_${DateTime.now().millisecondsSinceEpoch}.pdf';
 
-    if (Platform.isAndroid) {
-      // media_store_plus needs the file to exist somewhere first (e.g. app's
-      // temp folder); it then copies it into the public Downloads folder via
-      // MediaStore and deletes nothing on our side - we clean up ourselves.
-      final tempDir = await getTemporaryDirectory();
-      final tempFile = File('${tempDir.path}/$fileName');
-      await tempFile.writeAsBytes(bytes, flush: true);
-
-      final mediaStore = MediaStore();
-      SaveInfo? saveInfo;
+    if (Platform.isAndroid || Platform.isIOS) {
+      String? savedPath;
       try {
-        saveInfo = await mediaStore.saveFile(
-          tempFilePath: tempFile.path,
-          dirType: DirType.download,
-          dirName: DirName.download,
+        savedPath = await FilePicker.platform.saveFile(
+          dialogTitle: 'Save Invoice',
+          fileName: fileName,
+          bytes: bytes,
+          type: FileType.custom,
+          allowedExtensions: ['pdf'],
         );
-      } finally {
-        if (await tempFile.exists()) {
-          await tempFile.delete();
-        }
+      } catch (pickerError) {
+        throw Exception('Save failed: $pickerError');
       }
 
-      if (saveInfo == null) {
+      if (savedPath == null) {
+        // User cancelled the save dialog - not an error, just no-op.
         return false;
       }
 
-      // Try to resolve a real filesystem path so tapping the notification
-      // can open the file directly with open_filex.
-      final filePath = await mediaStore.getFilePathFromUri(
-        uriString: saveInfo.uri.toString(),
-      );
-      final openablePath = filePath ?? saveInfo.uri.toString();
 
+      // Open the invoice immediately after saving, Zepto-style, using the
+      // bytes already in memory. This avoids re-reading the file from disk
+      // (which fails with EACCES under scoped storage) and gives an
+      // instant native PDF preview inside the app.
+      await Printing.layoutPdf(onLayout: (_) async => bytes, name: fileName);
       await DownloadNotificationService.showDownloadComplete(
-        fileName: saveInfo.name,
-        filePath: openablePath,
+        fileName: fileName,
+        filePath: savedPath,
       );
 
       return true;
@@ -92,3 +84,5 @@ class InvoiceGenerator {
     }
   }
 }
+
+
